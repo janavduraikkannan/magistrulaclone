@@ -1,0 +1,958 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Verba: Latin sentence practice</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Gentium+Book+Plus:ital,wght@0,400;0,700;1,400&family=Alegreya+Sans:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#E9ECE6; --surface:#F8FAF5; --ink:#1F2430; --muted:#59606C; --line:#C9CEC3;
+  --accent:#6A1E55; --accent-ink:#fff; --ok:#1B6F62; --bad:#AE3527; --gold:#8A6516; --wash:#EFE6EC;
+  --latin:"Gentium Book Plus","Gentium Plus",Georgia,"Times New Roman",serif;
+  --ui:"Alegreya Sans","Segoe UI",system-ui,sans-serif;
+  box-sizing:border-box;
+  padding-top:env(safe-area-inset-top,0px); padding-bottom:env(safe-area-inset-bottom,0px);
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --bg:#17161C; --surface:#211F28; --ink:#ECE9E1; --muted:#A7A3AE; --line:#3A3643;
+    --accent:#D79CCB; --accent-ink:#1B1220; --ok:#62C7B3; --bad:#F28A7B; --gold:#D9B45C; --wash:#2C2431;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#17161C; --surface:#211F28; --ink:#ECE9E1; --muted:#A7A3AE; --line:#3A3643;
+  --accent:#D79CCB; --accent-ink:#1B1220; --ok:#62C7B3; --bad:#F28A7B; --gold:#D9B45C; --wash:#2C2431;
+}
+*,*::before,*::after{box-sizing:inherit}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--ui);font-size:18px;line-height:1.45}
+button,input{font:inherit;color:inherit}
+:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+.wrap{max-width:1180px;margin:0 auto;padding:0 20px}
+header.top{padding:28px 0 18px;border-bottom:1px solid var(--line)}
+header.top h1{font-family:var(--latin);font-weight:400;font-size:clamp(2.4rem,6vw,3.6rem);margin:0;letter-spacing:.01em;line-height:1}
+header.top p{margin:8px 0 0;color:var(--muted);max-width:60ch}
+[hidden]{display:none!important}
+
+/* start screen */
+.levels{display:grid;grid-template-columns:repeat(auto-fit,minmax(255px,1fr));gap:0;margin:22px 0 210px;border-left:1px solid var(--line)}
+.level{padding:4px 18px 20px;border-right:1px solid var(--line);border-bottom:1px solid var(--line)}
+.level h2{font-family:var(--latin);font-weight:400;font-size:1.45rem;margin:12px 0 2px;display:flex;align-items:baseline;gap:10px}
+.level h2 .num{font-size:2.3rem;color:var(--accent);min-width:1.6em}
+.level .all{background:none;border:0;padding:2px 0;color:var(--accent);cursor:pointer;text-decoration:underline;text-underline-offset:3px;font-size:.95rem}
+.level h3{font-size:1rem;font-weight:700;margin:16px 0 4px;color:var(--muted)}
+.level label{display:flex;gap:9px;align-items:flex-start;padding:4px 0;cursor:pointer}
+.level input{margin-top:.28em;width:1.05em;height:1.05em;accent-color:var(--accent);flex:none}
+.bar{position:fixed;left:0;right:0;bottom:0;background:var(--surface);border-top:1px solid var(--line);padding:12px 0 calc(12px + env(safe-area-inset-bottom,0px))}
+.bar .wrap{display:flex;flex-wrap:wrap;gap:10px 26px;align-items:center}
+.bar fieldset{border:0;margin:0;padding:0;display:flex;flex-wrap:wrap;gap:4px 18px;align-items:center}
+.bar legend{float:left;font-weight:700;margin-right:12px;padding:0}
+.bar label{display:inline-flex;gap:7px;align-items:center;cursor:pointer}
+.bar input{accent-color:var(--accent)}
+.bar .go{margin-left:auto;display:flex;gap:14px;align-items:center}
+.btn{background:var(--accent);color:var(--accent-ink);border:0;border-radius:4px;padding:10px 20px;font-weight:700;cursor:pointer}
+.btn:disabled{opacity:.4;cursor:not-allowed}
+.btn.quiet{background:none;color:var(--accent);border:1px solid var(--accent)}
+.hint{color:var(--muted);font-size:.95rem}
+
+/* drill */
+.charts{margin:0 0 20px}
+.charts h2,.charts h2 button{background:none;border:0;color:var(--accent);text-decoration:underline;text-underline-offset:3px;cursor:pointer;padding:0;font-weight:400}
+.cgrid{display:flex;flex-wrap:wrap;gap:16px 36px;margin-top:10px}
+.cwrap{overflow-x:auto;max-width:100%}
+.charts table{border-collapse:collapse;background:var(--surface)}
+.charts caption{text-align:left;font-weight:700;padding-bottom:6px;white-space:nowrap}
+.charts th,.charts td{border:1px solid var(--line);padding:4px 12px;text-align:left;white-space:nowrap}
+.charts th{font-weight:500;color:var(--muted);font-size:.95rem}
+.charts td{font-family:var(--latin);font-size:1.1rem}
+.charts p{margin:6px 0 0;color:var(--muted);font-size:.95rem}
+input.full{display:block;width:100%;margin-top:18px;font-family:var(--latin);font-size:1.35rem;background:var(--wash);border:0;border-bottom:2px solid var(--accent);padding:.35em .5em;border-radius:3px 3px 0 0}
+input.full.ok{border-color:var(--ok)} input.full.bad{border-color:var(--bad)}
+.feedback button{margin-top:8px}
+.drillhead{display:flex;flex-wrap:wrap;gap:10px 20px;align-items:center;justify-content:space-between;padding:16px 0}
+.score{color:var(--muted)} .score b{color:var(--ink)}
+.tablet{background:var(--surface);border:1px solid var(--line);border-top:5px solid var(--accent);padding:26px clamp(16px,4vw,44px) 30px;margin-bottom:22px}
+.concept{color:var(--accent);font-weight:700;margin:0 0 18px}
+.sentence{font-family:var(--latin);font-size:clamp(1.5rem,3.6vw,2.15rem);line-height:2.5;margin:0;display:flex;flex-wrap:wrap;align-items:flex-start;gap:0 .38em}
+.sentence .w{white-space:nowrap}
+.blank{display:inline-flex;flex-direction:column;line-height:1.2;margin-top:.52em}
+.blank input{font-family:var(--latin);font-size:inherit;background:var(--wash);border:0;border-bottom:2px solid var(--accent);padding:.05em .25em;border-radius:3px 3px 0 0;min-width:0}
+.blank small{font-family:var(--ui);font-size:.9rem;color:var(--muted);margin-top:4px;max-width:16em;white-space:normal}
+.blank small i{font-family:var(--latin)}
+.blank.ok input{border-color:var(--ok);color:var(--ok)}
+.blank.bad input{border-color:var(--bad);color:var(--bad);text-decoration:line-through}
+.english{font-size:1.2rem;margin:20px 0 0;max-width:68ch}
+.line{font-family:var(--latin);font-size:clamp(1.4rem,3.4vw,2rem);margin:0}
+.cite{color:var(--muted);margin:4px 0 16px}
+.choices{display:flex;flex-wrap:wrap;gap:8px}
+.choices button{background:var(--wash);border:1px solid var(--line);border-radius:4px;padding:8px 14px;cursor:pointer}
+.choices button.ok{border-color:var(--ok);color:var(--ok);font-weight:700}
+.choices button.bad{border-color:var(--bad);color:var(--bad);text-decoration:line-through}
+.controls{display:flex;flex-wrap:wrap;gap:12px 18px;align-items:center;margin-top:24px}
+.macrons{display:flex;gap:6px;align-items:center}
+.macrons button{font-family:var(--latin);font-size:1.2rem;width:2.2em;height:2.2em;background:var(--bg);border:1px solid var(--line);border-radius:4px;cursor:pointer}
+.feedback{margin:20px 0 0;padding:0;list-style:none}
+.feedback li{padding:8px 0 8px 14px;border-left:4px solid var(--line);margin-bottom:8px}
+.feedback li.ok{border-color:var(--ok)} .feedback li.bad{border-color:var(--bad)} .feedback li.mac{border-color:var(--gold)}
+.feedback b.ok{color:var(--ok)} .feedback b.bad{color:var(--bad)} .feedback b.mac{color:var(--gold)}
+.feedback .la{font-family:var(--latin);font-size:1.15em}
+.vocab{margin-bottom:60px}
+.vocab h2{font-size:1.05rem;margin:0;display:flex;gap:14px;align-items:baseline}
+.vocab h2 button{background:none;border:0;color:var(--accent);text-decoration:underline;text-underline-offset:3px;cursor:pointer;padding:0;font-weight:400}
+.vocab ul{list-style:none;padding:0;margin:10px 0 0;columns:2 300px;column-gap:40px}
+.vocab li{font-family:var(--latin);font-size:1.15rem;padding:3px 0;break-inside:avoid}
+@media (max-width:560px){.bar .go{margin-left:0;width:100%;justify-content:space-between}.levels{margin-bottom:400px}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="top">
+    <h1>Verba</h1>
+    <p>Latin sentence practice from Latin I Honors through AP Latin. Every sentence is built fresh. Your Groq key is used only in this tab to double-check answers and is never saved.</p>
+  </header>
+
+  <main id="start">
+    <div class="levels" id="levels"></div>
+  </main>
+
+  <main id="drill" hidden>
+    <div class="drillhead">
+      <button class="btn quiet" id="back">Change topics</button>
+      <div class="score" id="score"></div>
+    </div>
+    <section class="charts"><h2>Ending charts <button id="ctoggle">Hide</button></h2><div class="cgrid" id="cbody"></div></section>
+    <section class="tablet">
+      <p class="concept" id="concept"></p>
+      <div id="qbody"></div>
+      <div class="controls">
+        <button class="btn" id="check">Check answer</button>
+        <div class="macrons" id="macrons" aria-label="Insert a long vowel"></div>
+        <span class="hint" id="machint">or type - after a vowel: a- becomes ā</span>
+      </div>
+      <ul class="feedback" id="feedback" aria-live="polite"></ul>
+    </section>
+    <section class="vocab" id="vocab">
+      <h2>Vocabulary <button id="vtoggle">Hide</button></h2>
+      <ul id="vlist"></ul>
+    </section>
+  </main>
+</div>
+
+<div class="bar" id="bar">
+  <div class="wrap">
+    <fieldset>
+      <legend>Exercise</legend>
+      <label><input type="radio" name="mode" value="e2l" checked> English to Latin</label>
+      <label><input type="radio" name="mode" value="l2e"> Latin to English</label>
+    </fieldset>
+    <label>Groq API key <input type="password" id="key" autocomplete="off" placeholder="gsk_..." style="background:var(--wash);border:1px solid var(--line);border-radius:4px;padding:6px 10px;width:15em;max-width:60vw"></label>
+    <div class="go">
+      <span class="hint" id="keymsg" style="color:var(--bad)"></span><span class="hint" id="count">Choose at least one topic</span>
+      <button class="btn" id="startbtn" disabled>Start practice</button>
+    </div>
+  </div>
+</div>
+
+<script id="engine">
+/* ===================== ENGINE ===================== */
+const R=a=>a[Math.floor(Math.random()*a.length)], chance=p=>Math.random()<p;
+const T6=s=>s.split(' ');
+const CASES=['nominative','genitive','dative','accusative','ablative','vocative'];
+const NUM=['singular','plural'], GN={m:'masculine',f:'feminine',n:'neuter'};
+const PERS=['1st person singular','2nd person singular','3rd person singular','1st person plural','2nd person plural','3rd person plural'];
+const TN={pres:'present',impf:'imperfect',fut:'future',perf:'perfect',plup:'pluperfect',futp:'future perfect',spres:'present subjunctive',simpf:'imperfect subjunctive',sperf:'perfect subjunctive',splup:'pluperfect subjunctive'};
+const PRON=['I','you','he','we','you (pl.)','they'];
+
+const E={};Object.entries({1:'a ae ae am ā|ae ārum īs ās īs',2:'us ī ō um ō|ī ōrum īs ōs īs','2n':'um ī ō um ō|a ōrum īs a īs',3:'* is ī em e|ēs um ibus ēs ibus','3i':'* is ī em e|ēs ium ibus ēs ibus','3n':'* is ī * e|a um ibus a ibus','3ni':'* is ī * ī|ia ium ibus ia ibus',4:'us ūs uī um ū|ūs uum ibus ūs ibus','4n':'ū ūs ū ū ū|ua uum ibus ua ibus',5:'ēs eī eī em ē|ēs ērum ēbus ēs ēbus'}).forEach(([k,v])=>E[k]=v.split('|').map(x=>x.split(' ')));
+
+/* nom,gen,stem,decl,gender,eng,eng pl,tag,flags  — tags: p person, g group, a animal, t thing, w written, l natural place, c town/building, v ship, o other, x abstract */
+const NOUNS=`puella,-ae,puell,1,f,girl,girls,p
+nauta,-ae,naut,1,m,sailor,sailors,p,T
+agricola,-ae,agricol,1,m,farmer,farmers,p,T
+poēta,-ae,poēt,1,m,poet,poets,p,T
+fēmina,-ae,fēmin,1,f,woman,women,p
+rēgīna,-ae,rēgīn,1,f,queen,queens,p
+via,-ae,vi,1,f,road,roads,l
+silva,-ae,silv,1,f,forest,forests,l
+īnsula,-ae,īnsul,1,f,island,islands,l
+vīlla,-ae,vīll,1,f,farmhouse,farmhouses,c
+aqua,-ae,aqu,1,f,water,waters,t,S
+epistula,-ae,epistul,1,f,letter,letters,w
+pecūnia,-ae,pecūni,1,f,money,money,t,S
+servus,-ī,serv,2,m,slave,slaves,p
+amīcus,-ī,amīc,2,m,friend,friends,p
+dominus,-ī,domin,2,m,master,masters,p
+equus,-ī,equ,2,m,horse,horses,a
+fīlius,-ī,fīli,2,m,son,sons,p
+gladius,-ī,gladi,2,m,sword,swords,t
+puer,-ī,puer,2r,m,boy,boys,p
+vir,-ī,vir,2r,m,man,men,p
+ager,agrī,agr,2r,m,field,fields,l
+magister,-trī,magistr,2r,m,teacher,teachers,p
+liber,librī,libr,2r,m,book,books,w
+dōnum,-ī,dōn,2n,n,gift,gifts,t
+oppidum,-ī,oppid,2n,n,town,towns,c
+templum,-ī,templ,2n,n,temple,temples,c
+tēlum,-ī,tēl,2n,n,spear,spears,t
+rēx,rēgis,rēg,3,m,king,kings,p
+mīles,mīlitis,mīlit,3,m,soldier,soldiers,p
+dux,ducis,duc,3,m,leader,leaders,p
+pater,patris,patr,3,m,father,fathers,p
+frāter,frātris,frātr,3,m,brother,brothers,p
+māter,mātris,mātr,3,f,mother,mothers,p
+soror,sorōris,sorōr,3,f,sister,sisters,p
+hostis,hostis,host,3i,m,enemy,enemies,p
+cīvis,cīvis,cīv,3i,m,citizen,citizens,p
+canis,canis,can,3,m,dog,dogs,a
+urbs,urbis,urb,3i,f,city,cities,c
+nāvis,nāvis,nāv,3i,f,ship,ships,v
+mōns,montis,mont,3i,m,mountain,mountains,l
+arbor,arboris,arbor,3,f,tree,trees,o,T
+corpus,corporis,corpor,3n,n,body,bodies,o,T
+tempus,temporis,tempor,3n,n,time,times,x,T
+flūmen,flūminis,flūmin,3n,n,river,rivers,l
+mare,maris,mar,3ni,n,sea,seas,l
+manus,-ūs,man,4,f,hand,hands,o,T
+exercitus,-ūs,exercit,4,m,army,armies,g
+portus,-ūs,port,4,m,harbor,harbors,c
+cornū,-ūs,corn,4n,n,horn,horns,t
+diēs,-ēī,di,5,m,day,days,x,T
+rēs,reī,r,5,f,thing,things,o
+spēs,speī,sp,5,f,hope,hopes,x,S`.split('\n').map(l=>{const[nom,gen,stem,d,g,e,ep,tag,fl='']=l.split(',');return{nom,gen,stem,d,g,e,ep,tag,sgOnly:fl.includes('S'),tricky:fl.includes('T')}});
+const nn=x=>NOUNS.find(n=>n.nom===x);
+const PEOPLE=NOUNS.filter(n=>n.tag==='p');
+function nf(n,c,k){
+  if(c===5){ if(k===0&&n.d==='2') return n.stem.endsWith('i')?n.stem.slice(0,-1)+'ī':n.stem+'e'; c=0; }
+  let d=n.d; if(d==='2r'){ if(c===0&&k===0) return n.nom; d='2'; }
+  let e=E[d][k][c]; if(e==='*') return n.nom;
+  if(d==='5'&&e==='eī'&&n.stem.endsWith('i')) e='ēī';
+  return n.stem+e;
+}
+const nounV=n=>`${n.nom}, ${n.gen}, ${n.g}. : ${n.e}`;
+const allN=n=>[0,1].flatMap(k=>[0,1,2,3,4,5].map(c=>nf(n,c,k)));
+function N(n,c,k,cid){return{la:nf(n,c,k),lemma:n.nom,cids:[cid,'d'+(n.d[0]>'3'?'45':n.d[0])],concept:CASES[c]+' '+NUM[k],forms:allN(n),vocab:nounV(n)}}
+const W=(la,vocab)=>({la,vocab:vocab||WV[la]});
+const WV={ut:'ut (+subjunctive) : so that, that',nē:'nē (+subjunctive) : so that … not; that (after fearing)',cum:'cum (+subjunctive) : when',sī:'sī : if',quam:'quam : than',tam:'tam : so',causā:'causā (+gen, placed after) : for the sake of',cūr:'cūr : why',quōmodo:'quōmodo : how',num:'num : whether',partem:'pars, partis, f. : part'};
+
+/* inf|perfect|supine|conj|eng|past|pp|ing|object tags|flags (D takes dative, M motion, S static, X deponent, Z helper) */
+const VERBS=`laudāre|laudāvī|laudātum|1|praise|praised|praised|praising|pg
+amāre|amāvī|amātum|1|love|loved|loved|loving|pa
+portāre|portāvī|portātum|1|carry|carried|carried|carrying|tw
+vocāre|vocāvī|vocātum|1|call|called|called|calling|pa
+spectāre|spectāvī|spectātum|1|watch|watched|watched|watching|palcvog
+servāre|servāvī|servātum|1|save|saved|saved|saving|pacv
+superāre|superāvī|superātum|1|defeat|defeated|defeated|defeating|pg
+exspectāre|exspectāvī|exspectātum|1|await|awaited|awaited|awaiting|patwlcvoxg
+dōnāre|dōnāvī|dōnātum|1|give|gave|given|giving|tw|D
+mōnstrāre|mōnstrāvī|mōnstrātum|1|show|showed|shown|showing|twa|D
+vidēre|vīdī|vīsum|2|see|saw|seen|seeing|patwlcvog
+monēre|monuī|monitum|2|warn|warned|warned|warning|p
+tenēre|tenuī|tentum|2|hold|held|held|holding|tw
+terrēre|terruī|territum|2|frighten|frightened|frightened|frightening|pag
+docēre|docuī|doctum|2|teach|taught|taught|teaching|p
+dēlēre|dēlēvī|dēlētum|2|destroy|destroyed|destroyed|destroying|cv
+dūcere|dūxī|ductum|3|lead|led|led|leading|pag
+mittere|mīsī|missum|3|send|sent|sent|sending|ptwg
+legere|lēgī|lēctum|3|read|read|read|reading|w
+scrībere|scrīpsī|scrīptum|3|write|wrote|written|writing|w
+vincere|vīcī|victum|3|conquer|conquered|conquered|conquering|pg
+dēfendere|dēfendī|dēfēnsum|3|defend|defended|defended|defending|pcv
+relinquere|relīquī|relictum|3|abandon|abandoned|abandoned|abandoning|patwlcvoxg
+regere|rēxī|rēctum|3|rule|ruled|ruled|ruling|c
+trādere|trādidī|trāditum|3|hand over|handed over|handed over|handing over|tw|D
+capere|cēpī|captum|3i|capture|captured|captured|capturing|pacv
+iacere|iēcī|iactum|3i|throw|threw|thrown|throwing|t
+accipere|accēpī|acceptum|3i|receive|received|received|receiving|tw
+cōnspicere|cōnspexī|cōnspectum|3i|notice|noticed|noticed|noticing|patwlcvog
+interficere|interfēcī|interfectum|3i|kill|killed|killed|killing|pa
+audīre|audīvī|audītum|4|hear|heard|heard|hearing|pa
+pūnīre|pūnīvī|pūnītum|4|punish|punished|punished|punishing|p
+custōdīre|custōdīvī|custōdītum|4|guard|guarded|guarded|guarding|pacvt
+invenīre|invēnī|inventum|4|find|found|found|finding|patwlcvoxg
+impedīre|impedīvī|impedītum|4|hinder|hindered|hindered|hindering|pg
+mūnīre|mūnīvī|mūnītum|4|fortify|fortified|fortified|fortifying|c
+ambulāre|ambulāvī|ambulātum|1|walk|walked|walked|walking||M
+festīnāre|festīnāvī|festīnātum|1|hurry|hurried|hurried|hurrying||M
+currere|cucurrī|cursum|3|run|ran|run|running||M
+venīre|vēnī|ventum|4|come|came|come|coming||M
+habitāre|habitāvī|habitātum|1|live|lived|lived|living||S
+manēre|mānsī|mānsum|2|stay|stayed|stayed|staying||S
+sedēre|sēdī|sessum|2|sit|sat|sat|sitting||S
+dormīre|dormīvī|dormītum|4|sleep|slept|slept|sleeping||S
+hortāre||hortātum|1|encourage|encouraged|encouraged|encouraging|pg|X
+verēre||veritum|2|fear|feared|feared|fearing|patlcvog|X
+sequere||secūtum|3|follow|followed|followed|following|pag|X
+mīrāre||mīrātum|1|admire|admired|admired|admiring|patlcvog|X
+dīcere|dīxī|dictum|3|say|said|said|saying||Z
+putāre|putāvī|putātum|1|think|thought|thought|thinking||Z
+scīre|scīvī|scītum|4|know|knew|known|knowing||Z
+rogāre|rogāvī|rogātum|1|ask|asked|asked|asking||Z
+imperāre|imperāvī|imperātum|1|order|ordered|ordered|ordering||Z
+ōrāre|ōrāvī|ōrātum|1|beg|begged|begged|begging||Z
+timēre|timuī|timitum|2|fear|feared|feared|fearing||Z
+dēbēre|dēbuī|dēbitum|2|owe|owed|owed|owing||Z`.split('\n').map(l=>{const[inf,pf,sup,cj,e,past,pp,ing,obj='',fl='']=l.split('|');return{inf,ps:pf.slice(0,-1),ss:sup.slice(0,-2),cj,stem:inf.slice(0,-3),e,past,pp,ing,obj,fl}});
+const vb=x=>VERBS.find(v=>v.inf===x);
+const TV=VERBS.filter(v=>v.obj&&!v.fl.includes('X')), IV=VERBS.filter(v=>v.fl==='M'||v.fl==='S'), DEPS=VERBS.filter(v=>v.fl==='X');
+const MEANSV=['superāre','interficere','vincere','dēfendere','terrēre'].map(vb), WEAPONS=[nn('gladius'),nn('tēlum')];
+const mkIrr=(inf,first,pres,ib,fut,e,past,pp,ing,obj,fl)=>({inf,first,irr:{pres:T6(pres).map(x=>x.replace('_',' ')),ib,fut:T6(fut)},e,past,pp,ing,obj,fl,cj:'irr',stem:'',ps:'',ss:''});
+const EO=mkIrr('īre','eō','eō īs it īmus ītis eunt','ī','ībō ībis ībit ībimus ībitis ībunt','go','went','gone','going','','M');
+const FERO=mkIrr('ferre','ferō','ferō fers fert ferimus fertis ferunt','ferē','feram ferēs feret ferēmus ferētis ferent','bring','brought','brought','bringing','tw','');
+const VOLO=mkIrr('velle','volō','volō vīs vult volumus vultis volunt','volē','volam volēs volet volēmus volētis volent','want','wanted','wanted','wanting','','');
+const NOLO=mkIrr('nōlle','nōlō','nōlō nōn_vīs nōn_vult nōlumus nōn_vultis nōlunt','nōlē','nōlam nōlēs nōlet nōlēmus nōlētis nōlent','refuse','refused','refused','refusing','','');
+const objFor=v=>NOUNS.filter(n=>v.obj.includes(n.tag));
+const isDep=v=>v.fl.includes('X');
+
+const PA={1:'ō ās at āmus ātis ant',2:'eō ēs et ēmus ētis ent',3:'ō is it imus itis unt','3i':'iō is it imus itis iunt',4:'iō īs it īmus ītis iunt'};
+const PP={1:'or āris ātur āmur āminī antur',2:'eor ēris ētur ēmur ēminī entur',3:'or eris itur imur iminī untur','3i':'ior eris itur imur iminī iuntur',4:'ior īris ītur īmur īminī iuntur'};
+const TH={1:'ā',2:'ē',3:'ē','3i':'iē',4:'iē'};
+const SUM={pres:T6('sum es est sumus estis sunt'),impf:T6('eram erās erat erāmus erātis erant'),fut:T6('erō eris erit erimus eritis erunt'),spres:T6('sim sīs sit sīmus sītis sint'),simpf:T6('essem essēs esset essēmus essētis essent')};
+function d12(st,c,k,g,nomM){ if(g==='m'){ if(nomM&&c===0&&k===0)return nomM; return st+E['2'][k][c]; } return st+E[g==='f'?'1':'2n'][k][c]; }
+const ppp=(v,c,k,g)=>d12(v.ss,c,k,g);
+function vf(v,t,vc,p,g='m'){
+  if(v.irr){ if(t==='pres')return v.irr.pres[p]; if(t==='impf')return v.irr.ib+T6('bam bās bat bāmus bātis bant')[p]; return v.irr.fut[p]; }
+  const cj=v.cj,s=v.stem,pas=vc==='pass';
+  switch(t){
+    case'pres':return s+T6((pas?PP:PA)[cj])[p];
+    case'impf':return s+TH[cj]+T6(pas?'bar bāris bātur bāmur bāminī bantur':'bam bās bat bāmus bātis bant')[p];
+    case'fut':if(cj==='1'||cj==='2')return s+TH[cj]+T6(pas?'bor beris bitur bimur biminī buntur':'bō bis bit bimus bitis bunt')[p];
+      return s+(cj==='3'?'':'i')+T6(pas?'ar ēris ētur ēmur ēminī entur':'am ēs et ēmus ētis ent')[p];
+    case'spres':if(cj==='1')return s+T6(pas?'er ēris ētur ēmur ēminī entur':'em ēs et ēmus ētis ent')[p];
+      return s+{2:'e',3:'','3i':'i',4:'i'}[cj]+T6(pas?'ar āris ātur āmur āminī antur':'am ās at āmus ātis ant')[p];
+    case'simpf':return v.inf.slice(0,-1)+T6(pas?'er ēris ētur ēmur ēminī entur':'em ēs et ēmus ētis ent')[p];
+  }
+  if(!pas)return v.ps+T6({perf:'ī istī it imus istis ērunt',plup:'eram erās erat erāmus erātis erant',futp:'erō eris erit erimus eritis erint',sperf:'erim erīs erit erīmus erītis erint',splup:'issem issēs isset issēmus issētis issent'}[t])[p];
+  return ppp(v,0,p>2?1:0,g)+' '+SUM[{perf:'pres',plup:'impf',futp:'fut',sperf:'spres',splup:'simpf'}[t]][p];
+}
+const passInf=v=>(v.cj==='3'||v.cj==='3i')?v.stem+'ī':v.inf.slice(0,-1)+'ī';
+const dispInf=v=>isDep(v)?passInf(v):v.inf;
+const verbV=v=>v.irr?`${v.inf}, ${v.first} : to ${v.e}`:isDep(v)?`${passInf(v)}, -${{1:'or',2:'eor',3:'or'}[v.cj]} : to ${v.e}`:`${v.inf}, -${{1:'ō',2:'eō',3:'ō','3i':'iō',4:'iō'}[v.cj]} : to ${v.e}`;
+function vforms(v){ if(v.irr)return v.irr.pres; const six=[0,1,2,3,4,5],a=[];
+  for(const t of['pres','fut'])for(const vc of isDep(v)?['pass']:['act','pass'])a.push(...six.map(p=>vf(v,t,vc,p)));
+  if(v.ps)a.push(...six.map(p=>vf(v,'perf','act',p))); return a; }
+function vcids(v,t,vc){
+  if(v.irr)return['irr']; if(isDep(v))return['dep'];
+  if(t[0]==='s'&&t!=='sum')return[{spres:'sjpres',simpf:'sjimpf',sperf:'sjperf',splup:'sjperf'}[t]];
+  if(vc==='pass')return[{pres:'ppas',impf:'ipas',fut:'ipas'}[t]||'perfpas'];
+  return[{pres:'pa'+v.cj,impf:'impf',fut:'fut',perf:'perf'}[t]||'plup'];
+}
+function V(v,t,vc,p,g,xc=[]){
+  const dep=isDep(v),la=vf(v,t,dep?'pass':vc,p,g);
+  const tok={la,lemma:dispInf(v),cids:[...xc,...vcids(v,t,vc)],concept:`${PERS[p]} ${TN[t]} ${dep?'(deponent)':vc==='pass'?'passive':'active'}`,forms:vforms(v),vocab:verbV(v)};
+  if(t==='perf'&&vc==='act'&&p===5&&!dep)tok.alt=[v.ps+'ēre'];
+  return tok;
+}
+function s3(b){const[w,...r]=b.split(' ');const x=/(s|sh|ch|x|o)$/.test(w)?w+'es':/[^aeiou]y$/.test(w)?w.slice(0,-1)+'ies':w+'s';return[x,...r].join(' ')}
+const beP=p=>['am','are','is','are','are','are'][p], beQ=p=>['was','were','was','were','were','were'][p];
+const be=(t,p)=>t==='pres'?beP(p):t==='impf'?beQ(p):'will be';
+let ALT=[];
+function engV(v,t,vc,p){
+  const hv=p===2?'has':'have',bp=beP(p),bq=beQ(p);
+  const o=vc==='pass'?{pres:[bp+' '+v.pp,bp+' being '+v.pp],impf:[bq+' being '+v.pp,bq+' '+v.pp,'used to be '+v.pp],fut:['will be '+v.pp,'shall be '+v.pp,bp+' going to be '+v.pp],perf:[bq+' '+v.pp,hv+' been '+v.pp],plup:['had been '+v.pp],futp:['will have been '+v.pp,'shall have been '+v.pp]}[t]
+   :{pres:[p===2?s3(v.e):v.e,bp+' '+v.ing,(p===2?'does ':'do ')+v.e],impf:[bq+' '+v.ing,'used to '+v.e,'kept '+v.ing,v.past],fut:['will '+v.e,'shall '+v.e,bp+' going to '+v.e],perf:[v.past,hv+' '+v.pp,'did '+v.e],plup:['had '+v.pp],futp:['will have '+v.pp,'shall have '+v.pp]}[t];
+  if(o.length>1)ALT.push(o);
+  return o[0];
+}
+function SUMT(t,p,poss){
+  const la=poss?(t==='pres'?T6('possum potes potest possumus potestis possunt')[p]:'pot'+SUM[t][p]):SUM[t][p];
+  return{la,lemma:poss?'posse':'esse',cids:['sum'],concept:PERS[p]+' '+TN[t],forms:poss?[]:[...SUM.pres,...SUM.impf,...SUM.fut],vocab:poss?'posse, possum : to be able':'esse, sum : to be'};
+}
+function INF(v,kind,g='m',k=0,cid){
+  const la={pa:v.inf,pp:passInf(v),pfa:v.ps+'isse',pfp:ppp(v,3,k,g)+' esse',fa:d12(v.ss+'ūr',3,k,g)+' esse'}[kind];
+  return{la,lemma:v.inf,cids:cid?[cid]:[],concept:{pa:'present active',pp:'present passive',pfa:'perfect active',pfp:'perfect passive',fa:'future active'}[kind]+' infinitive',forms:[v.inf,passInf(v)],vocab:verbV(v)};
+}
+function pap(v,c,k,g){
+  if(k===0&&(c===0||(g==='n'&&c===3)))return v.stem+TH[v.cj]+'ns';
+  const b=v.stem+{1:'a',2:'e',3:'e','3i':'ie',4:'ie'}[v.cj]+'nt', neu=g==='n';
+  return b+(k===0?['','is','ī','em','e'][c]:[neu?'ia':'ēs','ium','ibus',neu?'ia':'ēs','ibus'][c]);
+}
+function PT(v,kind,c,k,g,cid){return{la:kind==='ppp'?ppp(v,c,k,g):pap(v,c,k,g),lemma:v.inf,cids:[cid],concept:`${kind==='ppp'?'perfect passive':'present active'} participle, ${CASES[c]} ${NUM[k]} ${GN[g]}`,forms:[],vocab:verbV(v)}}
+function GV(v,c,k,g,cid){return{la:d12(v.stem+{1:'and',2:'end',3:'end','3i':'iend',4:'iend'}[v.cj],c,k,g),lemma:v.inf,cids:[cid],concept:`gerundive, ${CASES[c]} ${NUM[k]} ${GN[g]}`,forms:[],vocab:verbV(v)}}
+
+/* nom|stem|type|eng|tags|comparative|superlative|adverb|adverb eng */
+const ADJ=`bonus|bon|12|good|pt|better|best|bene|well
+malus|mal|12|bad|pt|worse|worst|male|badly
+magnus|magn|12|great|pt|greater|greatest
+parvus|parv|12|small|pt|smaller|smallest
+laetus|laet|12|happy|p|happier|happiest|laetē|happily
+fessus|fess|12|tired|p|more tired|most tired
+īrātus|īrāt|12|angry|p|angrier|angriest|īrātē|angrily
+novus|nov|12|new|t|newer|newest
+pulcher|pulchr|12|beautiful|pt|more beautiful|most beautiful|pulchrē|beautifully
+miser|miser|12|wretched|p|more wretched|most wretched|miserē|wretchedly
+fortis|fort|32|brave|p|braver|bravest|fortiter|bravely
+trīstis|trīst|32|sad|p|sadder|saddest
+ingēns|ingent|31|huge|t|more huge|most huge
+fēlīx|fēlīc|31|lucky|p|luckier|luckiest|fēlīciter|luckily
+sapiēns|sapient|31|wise|p|wiser|wisest|sapienter|wisely
+ācer|ācr|33|fierce|p|fiercer|fiercest|ācriter|fiercely
+celer|celer|33|swift|p|swifter|swiftest|celeriter|swiftly`.split('\n').map(l=>{const[nom,stem,ty,e,tags,ce,se,adv,adve]=l.split('|');return{nom,stem,ty,e,tags,ce,se,adv,adve}});
+function af(a,c,k,g){
+  if(a.ty==='12')return d12(a.stem,c,k,g,a.nom);
+  const neu=g==='n';
+  if(k===0&&(c===0||(neu&&c===3))){ if(a.ty==='31')return a.nom; if(neu)return a.stem+'e'; if(a.ty==='33'&&g==='m')return a.nom; return a.stem+'is'; }
+  return a.stem+(k===0?['','is','ī','em','ī'][c]:[neu?'ia':'ēs','ium','ibus',neu?'ia':'ēs','ibus'][c]);
+}
+const adjV=a=>(a.ty==='12'?(a.nom.endsWith('us')?`${a.nom} -a -um`:`${a.nom} ${a.stem}a ${a.stem}um`):a.ty==='32'?`${a.nom} -e`:a.ty==='31'?`${a.nom}, ${a.stem}is`:`${a.nom}, ${a.stem}is, ${a.stem}e`)+' : '+a.e;
+const allA=(f)=>['m','f','n'].flatMap(g=>[0,1].flatMap(k=>[0,1,2,3,4].map(c=>f(c,k,g))));
+function A(a,c,k,g,cids){return{la:af(a,c,k,g),lemma:a.nom,cids:cids||[a.ty==='12'?'adj12':'adj3'],concept:`${CASES[c]} ${NUM[k]} ${GN[g]}`,forms:allA((c,k,g)=>af(a,c,k,g)),vocab:adjV(a)}}
+const IRC={bonus:['melior','melius','meliōr','optim'],malus:['peior','peius','peiōr','pessim'],magnus:['maior','maius','maiōr','maxim'],parvus:['minor','minus','minōr','minim']};
+function cf(a,deg,c,k,g){
+  const ir=IRC[a.nom];
+  if(deg==='sup')return d12(ir?ir[3]:a.nom.endsWith('er')?a.nom+'rim':a.stem+'issim',c,k,g);
+  const neu=g==='n';
+  if(k===0&&c===0&&!neu)return ir?ir[0]:a.stem+'ior';
+  if(k===0&&neu&&(c===0||c===3))return ir?ir[1]:a.stem+'ius';
+  return(ir?ir[2]:a.stem+'iōr')+(k===0?['','is','ī','em','e'][c]:[neu?'a':'ēs','um','ibus',neu?'a':'ēs','ibus'][c]);
+}
+function CMP(a,deg,c,k,g){return{la:cf(a,deg,c,k,g),lemma:a.nom,cids:[deg],concept:`${deg==='comp'?'comparative':'superlative'}, ${CASES[c]} ${NUM[k]} ${GN[g]}`,forms:allA((c,k,g)=>cf(a,deg,c,k,g)),vocab:adjV(a)}}
+const adjFor=(n,types)=>R(ADJ.filter(a=>types.includes(a.ty)&&a.tags.includes('pag'.includes(n.tag)?'p':'t')));
+
+const pt=(m,f,n)=>{const s=x=>{x=x.split(' ');return[x.slice(0,5),x.slice(5)]};return{m:s(m),f:s(f),n:s(n)}};
+const DEMOS=[{nom:'hic',t:pt('hic huius huic hunc hōc hī hōrum hīs hōs hīs','haec huius huic hanc hāc hae hārum hīs hās hīs','hoc huius huic hoc hōc haec hōrum hīs haec hīs'),det:['this','these'],vocab:'hic, haec, hoc : this'},
+ {nom:'ille',t:pt('ille illīus illī illum illō illī illōrum illīs illōs illīs','illa illīus illī illam illā illae illārum illīs illās illīs','illud illīus illī illud illō illa illōrum illīs illa illīs'),det:['that','those'],vocab:'ille, illa, illud : that'}];
+const QUI={nom:'quī',t:pt('quī cuius cui quem quō quī quōrum quibus quōs quibus','quae cuius cui quam quā quae quārum quibus quās quibus','quod cuius cui quod quō quae quōrum quibus quae quibus'),vocab:'quī, quae, quod : who, which'};
+function D(d,c,k,g,cid='demo'){return{la:d.t[g][k][c],lemma:d.nom,cids:[cid],concept:`${CASES[c]} ${NUM[k]} ${GN[g]}`,forms:allA((c,k,g)=>d.t[g][k][c]),vocab:d.vocab}}
+
+/* form, case, eng, verb class, object tags */
+const PREPS=[['ad',3,'to','M','lcp'],['in',3,'into','M','lc'],['per',3,'through','M','lc'],['trāns',3,'across','M','l'],['prope',3,'near','S','lcp'],['ante',3,'in front of','S','cp'],
+ ['ē/ex',4,'out of','M','c'],['ā/ab',4,'away from','M','lcp'],['cum',4,'with','MS','pg'],['sine',4,'without','MS','pg'],['in',4,'in','S','lc']].map(([la,c,e,cl,tags])=>({la,c,e,cl,tags}));
+const prepW=(pr,next)=>{const vw=/^[aeiouāēīōūh]/i.test(next);const la=pr.la.includes('/')?pr.la.split('/')[vw?1:0]:pr.la;return W(la,`${pr.la} (+${pr.c===3?'acc':'abl'}) : ${pr.e}`)};
+const AB=PREPS[7];
+
+const num=n=>n.sgOnly?0:(chance(.5)?1:0);
+const pick=(arr,ex=[])=>R(arr.filter(x=>!ex.includes(x)));
+const np=(n,k,o={})=>(o.det?o.det[k]:'the')+' '+(o.adj?o.adj+' ':'')+(k?n.ep:n.e);
+const heShe=(n,k)=>k?'they':n.g==='f'?'she':'he';
+const S=(tokens,en,end='.')=>({tokens,en,end});
+
+/* ---------- generators ---------- */
+function gTrans(o={}){
+  const t=o.t||'pres';let v=o.v;
+  if(!v){let pool=o.pool||TV;if(o.dat)pool=pool.filter(x=>x.fl.includes('D'));if(o.means)pool=MEANSV;if(o.obj)pool=pool.filter(x=>x.obj.includes(o.obj.tag));if(o.cj)pool=pool.filter(x=>x.cj===o.cj);v=R(pool);}
+  const used=[o.subj,o.obj,o.io,o.genN].filter(Boolean);
+  const obj=o.obj||pick(objFor(v),used);used.push(obj);
+  const subj=o.subj||pick(PEOPLE,used);used.push(subj);
+  const on=num(obj),sn=num(subj);
+  const pron=o.pron&&!o.subj&&!o.modS&&chance(.45)&&!(isDep(v)&&t==='perf');
+  const p=pron?R([0,1,3,4]):(sn?5:2);
+  const tk=[];let sE;
+  if(pron)sE=PRON[p];else{const m=o.modS&&o.modS(0,sn,subj.g);if(m&&m.pre)tk.push(m.tok);tk.push(N(subj,0,sn,'nom'));if(m&&!m.pre)tk.push(m.tok);sE=np(subj,sn,m||{});}
+  let tail='';
+  if(o.dat){const io=o.io||pick(PEOPLE,used);used.push(io);const k=num(io);tk.push(N(io,2,k,'dat'));tail+=' to '+np(io,k);}
+  const mo=o.modO&&o.modO(3,on,obj.g);
+  if(mo&&mo.pre)tk.push(mo.tok);tk.push(N(obj,3,on,'acc'));if(mo&&!mo.pre)tk.push(mo.tok);
+  let oE=np(obj,on,mo||{});
+  if(o.gen){const g=o.genN||pick(PEOPLE,used);const k=num(g);tk.push(N(g,1,k,'gen'));oE+=' of '+np(g,k);}
+  if(o.means){const m=R(WEAPONS),k=num(m);tk.push(N(m,4,k,'means'));tail+=' with '+np(m,k);}
+  if(o.adv)tk.push(o.adv.tok);
+  tk.push(V(v,t,'act',p,subj.g,o.xc));
+  return S(tk,`${sE} ${engV(v,t,'act',p)} ${oE}${tail}${o.adv?' '+o.adv.e:''}`);
+}
+function gPrep(o={}){
+  const vcl=o.v&&o.v.fl;
+  const pr=o.prep||R(PREPS.filter(p=>(!o.c||p.c===o.c)&&(!o.noun||p.tags.includes(o.noun.tag))&&(!vcl||p.cl.includes(vcl))));
+  const n=o.noun||R(NOUNS.filter(x=>pr.tags.includes(x.tag))),k=num(n);
+  const v=o.v||R(IV.filter(x=>pr.cl.includes(x.fl))),t=o.t||'pres';
+  const s=pick(PEOPLE,[n]),sn=num(s),pron=o.pron&&chance(.45),p=pron?R([0,1,3,4]):(sn?5:2);
+  const nt=N(n,pr.c,k,pr.c===3?'accprep':'ablprep'),tk=[];
+  if(!pron)tk.push(N(s,0,sn,'nom'));
+  tk.push(prepW(pr,nt.la),nt,V(v,t,'act',p));
+  return S(tk,`${pron?PRON[p]:np(s,sn)} ${engV(v,t,'act',p)} ${pr.e} ${np(n,k)}`);
+}
+const gAct=(t,cj)=>{const iv=IV.filter(x=>!cj||x.cj===cj);return iv.length&&chance(.3)?gPrep({v:R(iv),t,pron:1}):gTrans({t,cj,pron:1})};
+function gPass(o={}){
+  const t=o.t||'pres',v=R(TV),perfSys=!['pres','impf','fut'].includes(t);
+  const pron=o.pron&&v.obj.includes('p')&&!perfSys&&chance(.45);
+  const pat=R(objFor(v)),pk=num(pat),ag=pick(PEOPLE,[pat]),ak=num(ag),p=pron?R([0,1,3,4]):(pk?5:2);
+  const at=N(ag,4,ak,'agent'),tk=[];
+  if(!pron)tk.push(N(pat,0,pk,'nom'));
+  tk.push(prepW(AB,at.la),at,V(v,t,'pass',p,pat.g,o.xc));
+  return S(tk,`${pron?PRON[p]:np(pat,pk)} ${engV(v,t,'pass',p)} by ${np(ag,ak)}`);
+}
+function gPred(){
+  const fem=chance(.2),s=nn(R(fem?['fēmina','puella','māter','soror']:['vir','puer','frāter','pater','amīcus','fīlius'])),pr=nn(R(fem?['rēgīna']:['nauta','agricola','poēta','mīles','rēx','servus','magister','dux','cīvis']));
+  const k=chance(.5)?1:0,t=R(['pres','pres','impf']),p=k?5:2;
+  return S([N(s,0,k,'nom'),SUMT(t,p),N(pr,0,k,'pred')],`${np(s,k)} ${be(t,p)} ${k?pr.ep:'a '+pr.e}`);
+}
+function gDecl(d){
+  const n=R(NOUNS.filter(x=>(x.d[0]>'3'?'45':x.d[0])===d));let s;
+  if(n.tag==='p'){const m=R(['s','o','io','gen','cum']);
+    s=m==='s'?gTrans({subj:n}):m==='o'?gTrans({obj:n}):m==='io'?gTrans({dat:1,io:n}):m==='gen'?gTrans({gen:1,genN:n}):gPrep({noun:n});}
+  else s=('lc'.includes(n.tag)&&chance(.5))||n.tag==='g'&&chance(.4)?gPrep({noun:n}):gTrans({obj:n});
+  s.focus=s.tokens.find(t=>t.lemma===n.nom&&t.cids);return s;
+}
+const modA=(a,cids)=>(c,k,g)=>({tok:A(a,c,k,g,cids),adj:a.e});
+function gAdj(types,cid,tricky){
+  const n=tricky?R(NOUNS.filter(x=>x.tricky)):chance(.75)?R(PEOPLE):R(NOUNS.filter(x=>!x.sgOnly));
+  const a=adjFor(n,types)||adjFor(R(PEOPLE),types),cids=tricky?['tricky','adj12']:[cid];
+  const person=n.tag==='p',m=R(person?['s','o','pred']:['o','pred']);let s;
+  if(!a.tags.includes('pag'.includes(n.tag)?'p':'t'))return gAdj(types,cid,tricky);
+  if(m==='s')s=gTrans({subj:n,modS:modA(a,cids)});
+  else if(m==='o')s=gTrans({obj:n,modO:modA(a,cids)});
+  else{const k=num(n),p=k?5:2;s=S([N(n,0,k,'nom'),SUMT('pres',p),A(a,0,k,n.g,cids)],`${np(n,k)} ${beP(p)} ${a.e}`);}
+  s.focus=s.tokens.find(t=>t.lemma===a.nom);return s;
+}
+function gSum(){
+  const t=R(['pres','pres','impf','fut']),p=R([0,1,2,3,4,5]),m=R([0,1,2]);
+  if(m===0){const pr=PREPS[10],n=R(NOUNS.filter(x=>x.tag==='c'||x.nom==='silva'||x.nom==='ager')),k=num(n);
+    return S([prepW(pr,''),N(n,4,k,'ablprep'),SUMT(t,p)],`${PRON[p]} ${be(t,p)} in ${np(n,k)}`);}
+  if(m===1){const v=R(TV),o=R(objFor(v)),k=num(o);
+    return S([N(o,3,k,'acc'),INF(v,'pa','m',0,'inf'),SUMT(t,p,true)],`${PRON[p]} ${be(t,p)} able to ${v.e} ${np(o,k)}`);}
+  const s=R(PEOPLE),k=num(s),a=adjFor(s,['12']),q=k?5:2;
+  return S([N(s,0,k,'nom'),A(a,0,k,s.g),SUMT(t,q)],`${np(s,k)} ${be(t,q)} ${a.e}`);
+}
+function gCompl(vc){
+  const poss=chance(.5),D2=vb('dēbēre');
+  const modal=p=>poss?SUMT('pres',p,true):Object.assign(V(D2,'pres','act',p),{vocab:'dēbēre, -eō : to owe; (+infinitive) ought'});
+  const mE=p=>poss?beP(p)+' able to':'ought to';
+  if(vc==='act'){const v=R(TV),o=R(objFor(v)),k=num(o),s=pick(PEOPLE,[o]),sn=num(s),pron=chance(.45),p=pron?R([0,1,3,4]):(sn?5:2),tk=[];
+    if(!pron)tk.push(N(s,0,sn,'nom'));tk.push(N(o,3,k,'acc'),INF(v,'pa','m',0,'inf'),modal(p));
+    return S(tk,`${pron?PRON[p]:np(s,sn)} ${mE(p)} ${v.e} ${np(o,k)}`);}
+  const v=R(TV),pron=v.obj.includes('p')&&chance(.4),pat=R(objFor(v)),pk=num(pat),p=pron?R([0,1,3,4]):(pk?5:2),tk=[];let tail='';
+  if(!pron)tk.push(N(pat,0,pk,'nom'));
+  if(chance(.5)){const ag=pick(PEOPLE,[pat]),ak=num(ag),at=N(ag,4,ak,'agent');tk.push(prepW(AB,at.la),at);tail=' by '+np(ag,ak);}
+  tk.push(INF(v,'pp','m',0,'pinf'),modal(p));
+  return S(tk,`${pron?PRON[p]:np(pat,pk)} ${mE(p)} be ${v.pp}${tail}`);
+}
+function gImp(o={}){
+  const v=R(TV),ob=R(objFor(v)),on=num(ob),ad=o.voc&&chance(.65)?pick(PEOPLE.filter(n=>n.d==='2'),[ob]):pick(PEOPLE,[ob]),ak=num(ad),neg=!o.voc&&chance(.3);
+  const voc=N(ad,5,ak,'voc');voc.post=',';
+  const en=`${ak?ad.ep:ad.e}, ${neg?"don't ":''}${v.e} ${np(ob,on)}`;
+  if(neg)return S([voc,{la:ak?'nōlīte':'nōlī',lemma:'nōlle',cids:['imp'],concept:'negative command, '+NUM[ak],forms:[],vocab:'nōlī, nōlīte (+infinitive) : don’t …'},N(ob,3,on,'acc'),INF(v,'pa')],en,'!');
+  const la=ak?v.stem+{1:'āte',2:'ēte',3:'ite','3i':'ite',4:'īte'}[v.cj]:v.inf==='dūcere'?'dūc':v.stem+{1:'ā',2:'ē',3:'e','3i':'e',4:'ī'}[v.cj];
+  return S([voc,N(ob,3,on,'acc'),{la,lemma:v.inf,cids:['imp'],concept:'imperative '+NUM[ak],forms:[],vocab:verbV(v)}],en,'!');
+}
+function gCompare(kind){
+  const a=R(ADJ.filter(x=>x.tags.includes('p'))),deg=kind==='sup'?'sup':'comp',e=deg==='sup'?a.se:a.ce;
+  if(kind!=='ablcomp'&&chance(.5)){const s=gTrans({pool:TV.filter(v=>v.obj.includes('p')),obj:R(PEOPLE),modO:(c,k,g)=>({tok:CMP(a,deg,c,k,g),adj:e})});s.focus=s.tokens.find(t=>t.cids&&t.cids[0]===deg);return s;}
+  const s=R(PEOPLE),k=num(s),p=k?5:2;
+  if(deg==='sup')return S([N(s,0,k,'nom'),CMP(a,'sup',0,k,s.g),SUMT('pres',p)],`${np(s,k)} ${beP(p)} the ${e}`);
+  const s2=pick(PEOPLE,[s]),k2=num(s2);
+  if(kind==='ablcomp')return S([N(s,0,k,'nom'),N(s2,4,k2,'ablcomp'),CMP(a,'comp',0,k,s.g),SUMT('pres',p)],`${np(s,k)} ${beP(p)} ${e} than ${np(s2,k2)} (no quam)`);
+  return S([N(s,0,k,'nom'),CMP(a,'comp',0,k,s.g),SUMT('pres',p),W('quam'),N(s2,0,k2,'nom')],`${np(s,k)} ${beP(p)} ${e} than ${np(s2,k2)}`);
+}
+function gAdv(){const a=R(ADJ.filter(x=>x.adv));return gTrans({pool:TV.filter(v=>v.obj.includes('p')),adv:{tok:{la:a.adv,lemma:a.nom,cids:['adv'],concept:'adverb',forms:[],vocab:adjV(a)},e:a.adve}})}
+function gDemo(){const d=R(DEMOS),m=(c,k,g)=>({tok:D(d,c,k,g),det:d.det,pre:1});return chance(.5)?gTrans({modS:m}):gTrans({modO:m})}
+function gRel(){
+  const ant=R(PEOPLE),ak=num(ant),ap=ak?5:2,c=R([0,3,2,1]),a=adjFor(ant,['12','32','31','33']);
+  const first=N(ant,0,ak,'nom');first.post=',';const tk=[first,D(QUI,c,ak,ant.g,'rel')];let cl;
+  if(c===0){const v=R(TV),o=pick(objFor(v),[ant]),k=num(o);tk.push(N(o,3,k,'acc'),V(v,'pres','act',ap));cl=`who ${engV(v,'pres','act',ap)} ${np(o,k)}`;}
+  else if(c===3){const v=R(TV.filter(x=>x.obj.includes('p'))),s=pick(PEOPLE,[ant]),k=num(s);tk.push(N(s,0,k,'nom'),V(v,'pres','act',k?5:2));cl=`whom ${np(s,k)} ${engV(v,'pres','act',k?5:2)}`;}
+  else if(c===2){const v=R(TV.filter(x=>x.fl==='D')),s=pick(PEOPLE,[ant]),k=num(s),th=R(objFor(v)),tn=num(th);tk.push(N(s,0,k,'nom'),N(th,3,tn,'acc'),V(v,'pres','act',k?5:2));cl=`to whom ${np(s,k)} ${engV(v,'pres','act',k?5:2)} ${np(th,tn)}`;}
+  else{const kin=pick(['pater','māter','frāter','soror','amīcus','servus'].map(nn),[ant]),kk=num(kin),v=R(TV.filter(x=>x.obj.includes('p'))),o=pick(PEOPLE,[ant,kin]),k=num(o);tk.push(N(kin,0,kk,'nom'),N(o,3,k,'acc'),V(v,'pres','act',kk?5:2));cl=`whose ${kk?kin.ep:kin.e} ${engV(v,'pres','act',kk?5:2)} ${np(o,k)}`;}
+  tk[tk.length-1].post=',';tk.push(A(a,0,ak,ant.g),SUMT('pres',ap));
+  return S(tk,`${np(ant,ak)}, ${cl}, ${beP(ap)} ${a.e}`);
+}
+function gDatPoss(){const p=R(PEOPLE),k=num(p),th=R(NOUNS.filter(n=>'twa'.includes(n.tag))),tn=num(th);
+  return S([N(p,2,k,'datposs'),N(th,0,tn,'nom'),SUMT('pres',tn?5:2)],`${np(p,k)} ${k?'have':'has'} ${np(th,tn)} (use a dative of possession)`)}
+function gPart(){
+  if(chance(.5)){const iv=R(IV),o=R(PEOPLE);return gTrans({pool:['vidēre','audīre','spectāre','cōnspicere','exspectāre'].map(vb),obj:o,modO:(c,k,g)=>({tok:PT(iv,'pap',c,k,g,'ppart'),adj:iv.ing})});}
+  const v1=R(TV),o=R(objFor(v1));return gTrans({pool:['vidēre','relinquere','invenīre','cōnspicere'].map(vb).filter(x=>x.obj.includes(o.tag)),obj:o,modO:(c,k,g)=>({tok:PT(v1,'ppp',c,k,g,'ppart'),adj:v1.pp})});
+}
+function gIrr(){
+  const v=R([EO,FERO,VOLO,NOLO]),t=R(['pres','pres','impf','fut']);
+  if(v===EO)return gPrep({v,t,pron:1});
+  if(v===FERO)return gTrans({v,t,pron:1});
+  const u=R(TV),o=R(objFor(u)),k=num(o),s=pick(PEOPLE,[o]),sn=num(s),pron=chance(.5),p=pron?R([0,1,3,4]):(sn?5:2),tk=[];
+  if(!pron)tk.push(N(s,0,sn,'nom'));tk.push(N(o,3,k,'acc'),INF(u,'pa'),V(v,t,'act',p));
+  return S(tk,`${pron?PRON[p]:np(s,sn)} ${engV(v,t,'act',p)} to ${u.e} ${np(o,k)}`);
+}
+function gForm(tenses){
+  const v=R(TV),t=R(tenses),p=R([0,1,2,3,4,5]),vc=R(['act','pass']),two=vc==='pass'&&(t==='sperf'||t==='splup');
+  const s=S([V(v,t,vc,p,'m')],`Form the ${PERS[p]} ${TN[t]} ${vc==='act'?'active':'passive'} of ${v.inf}, “to ${v.e}”${two?' (masculine subject)':''}`);s.form=1;return s;
+}
+/* subjunctive clauses */
+const clause=()=>{const v=R(TV),s=R(PEOPLE),sn=num(s),o=pick(objFor(v),[s]),on=num(o);return{v,s,sn,o,on,p:sn?5:2}};
+function gPurpose(){
+  const sec=chance(.5),{v,s,sn,o,on,p}=clause(),m=R(IV.filter(x=>x.fl==='M')),neg=chance(.2);
+  return S([N(s,0,sn,'nom'),V(m,sec?'perf':'pres','act',p),W(neg?'nē':'ut'),N(o,3,on,'acc'),V(v,sec?'simpf':'spres','act',p,'m',['purpose'])],
+    `${np(s,sn)} ${engV(m,sec?'perf':'pres','act',p)} so that ${heShe(s,sn)} ${sec?'might':'may'}${neg?' not':''} ${v.e} ${np(o,on)}`);
+}
+function gResult(){
+  const sec=chance(.5),{v,s,sn,o,on,p}=clause(),a=adjFor(s,['12','32','31','33']);
+  return S([N(s,0,sn,'nom'),W('tam'),A(a,0,sn,s.g),SUMT(sec?'impf':'pres',p),W('ut'),N(o,3,on,'acc'),V(v,sec?'simpf':'spres','act',p,'m',['result'])],
+    `${np(s,sn)} ${be(sec?'impf':'pres',p)} so ${a.e} that ${heShe(s,sn)} ${engV(v,sec?'perf':'pres','act',p)} ${np(o,on)}`);
+}
+function gIndQ(){
+  const sec=chance(.5),prior=chance(.4),{v,s,sn,o,on,p}=clause(),a=pick(PEOPLE,[s,o]),an=num(a),ap=an?5:2,q=R([['cūr','why'],['quōmodo','how'],['num','whether']]);
+  return S([N(a,0,an,'nom'),V(vb('rogāre'),sec?'perf':'pres','act',ap),W(q[0]),N(s,0,sn,'nom'),N(o,3,on,'acc'),V(v,sec?(prior?'splup':'simpf'):(prior?'sperf':'spres'),'act',p,'m',['indq'])],
+    `${np(a,an)} ${engV(vb('rogāre'),sec?'perf':'pres','act',ap)} ${q[1]} ${np(s,sn)} ${engV(v,sec?(prior?'plup':'impf'):(prior?'perf':'pres'),'act',p)} ${np(o,on)}`);
+}
+function gIndCmd(){
+  const sec=chance(.5),{v,s,sn,o,on,p}=clause(),a=pick(PEOPLE,[s,o]),an=num(a),ap=an?5:2,imp=chance(.6),h=vb(imp?'imperāre':'ōrāre'),neg=chance(.2);
+  return S([N(a,0,an,'nom'),N(s,imp?2:3,sn,imp?'dat':'acc'),V(h,sec?'perf':'pres','act',ap),W(neg?'nē':'ut'),N(o,3,on,'acc'),V(v,sec?'simpf':'spres','act',p,'m',['indcmd'])],
+    `${np(a,an)} ${engV(h,sec?'perf':'pres','act',ap)} ${np(s,sn)} ${neg?'not ':''}to ${v.e} ${np(o,on)}`);
+}
+function gCum(){
+  const plu=chance(.5),{v,s,sn,o,on,p}=clause(),s2=pick(PEOPLE,[s,o]),k2=num(s2),m=R(IV);
+  const sv=V(v,plu?'splup':'simpf','act',p,'m',['cumcl']);sv.post=',';
+  return S([W('cum'),N(s,0,sn,'nom'),N(o,3,on,'acc'),sv,N(s2,0,k2,'nom'),V(m,'perf','act',k2?5:2)],
+    `When ${np(s,sn)} ${engV(v,plu?'plup':'impf','act',p)} ${np(o,on)}, ${np(s2,k2)} ${engV(m,'perf','act',5)}`);
+}
+function gFear(){
+  const sec=chance(.5),{v,s,sn,o,on,p}=clause(),a=pick(PEOPLE,[s,o]),an=num(a),ap=an?5:2,h=vb('timēre');
+  return S([N(a,0,an,'nom'),V(h,sec?'impf':'pres','act',ap),W('nē'),N(s,0,sn,'nom'),N(o,3,on,'acc'),V(v,sec?'simpf':'spres','act',p,'m',['fear'])],
+    `${np(a,an)} ${engV(h,sec?'impf':'pres','act',ap)} that ${np(s,sn)} ${sec?'might':'may'} ${v.e} ${np(o,on)}`);
+}
+function gHort(){
+  const{v,s,sn,o,on,p}=clause();
+  if(chance(.5))return S([N(o,3,on,'acc'),V(v,'spres','act',3,'m',['hort'])],`Let us ${v.e} ${np(o,on)}`,'!');
+  return S([N(s,0,sn,'nom'),N(o,3,on,'acc'),V(v,'spres','act',p,'m',['hort'])],`Let ${np(s,sn)} ${v.e} ${np(o,on)}`,'!');
+}
+function gCond(){
+  const{v,s,sn,o,on,p}=clause(),s2=pick(PEOPLE,[s,o]),k2=num(s2),p2=k2?5:2,m=R(IV);
+  const[t,name,e1,e2]=R([['fut','future more vivid',engV(v,'pres','act',p),'will '+m.e],['spres','future less vivid','should '+v.e,'would '+m.e],['simpf','present contrary to fact','were '+v.ing,'would be '+m.ing],['splup','past contrary to fact','had '+v.pp,'would have '+m.pp]]);
+  const a=V(v,t,'act',p,'m',['cond']),b=V(m,t,'act',p2,'m',['cond']);a.post=',';
+  a.concept+=', '+name+' (if-clause)';b.concept+=', '+name+' (conclusion)';
+  if(t==='fut')a.alt=[vf(v,'futp','act',p)];
+  return S([W('sī'),N(s,0,sn,'nom'),N(o,3,on,'acc'),a,N(s2,0,k2,'nom'),b],`If ${np(s,sn)} ${e1} ${np(o,on)}, ${np(s2,k2)} ${e2}`);
+}
+function gIndSt(){
+  const a=R(PEOPLE),an=num(a),ap=an?5:2,h=R(['dīcere','putāre','scīre','audīre'].map(vb)),v=R(TV),kind=R(['pa','pfa','fa','pp','pfp']),et={pa:'pres',pfa:'perf',fa:'fut',pp:'pres',pfp:'perf'}[kind];
+  const head=[N(a,0,an,'nom'),V(h,'pres','act',ap)],hE=`${np(a,an)} ${engV(h,'pres','act',ap)} that `;
+  if(kind[kind.length-1]==='a'){const s=pick(PEOPLE,[a]),sn=num(s),o=pick(objFor(v),[a,s]),on=num(o),sa=N(s,3,sn,'indst');sa.concept+=' (subject of the infinitive)';
+    return S([...head,sa,N(o,3,on,'acc'),INF(v,kind,s.g,sn,'indst')],hE+`${np(s,sn)} ${engV(v,et,'act',sn?5:2)} ${np(o,on)}`);}
+  const pat=pick(objFor(v),[a]),pk=num(pat),ag=pick(PEOPLE,[a,pat]),ak=num(ag),at=N(ag,4,ak,'agent'),sa=N(pat,3,pk,'indst');sa.concept+=' (subject of the infinitive)';
+  return S([...head,sa,prepW(AB,at.la),at,INF(v,kind,pat.g,pk,'indst')],hE+`${np(pat,pk)} ${engV(v,et,'pass',pk?5:2)} by ${np(ag,ak)}`);
+}
+function gAbs(){
+  const s=R(PEOPLE),sn=num(s),m=R(IV.filter(x=>x.fl==='M')),main=[N(s,0,sn,'nom'),V(m,'perf','act',sn?5:2)],mE=`${np(s,sn)} ${m.past}`;
+  if(chance(.3)){const n=pick(PEOPLE,[s]),k=num(n),iv=R(IV.filter(x=>x.fl==='S')),pt=PT(iv,'pap',4,k,n.g,'abs');pt.post=',';
+    return S([N(n,4,k,'abs'),pt,...main],`With ${np(n,k)} ${iv.ing}, ${mE}`);}
+  const v=R(TV),n=pick(objFor(v),[s]),k=num(n),pt=PT(v,'ppp',4,k,n.g,'abs');pt.post=',';
+  return S([N(n,4,k,'abs'),pt,...main],`With ${np(n,k)} having been ${v.pp}, ${mE}`);
+}
+function gPeri(){
+  const v=R(TV),pat=R(objFor(v)),pk=num(pat),ag=pick(PEOPLE,[pat]),ak=num(ag),past=chance(.3),at=N(ag,2,ak,'pperi');at.concept+=' (dative of agent)';
+  return S([N(pat,0,pk,'nom'),at,GV(v,0,pk,pat.g,'pperi'),SUMT(past?'impf':'pres',pk?5:2)],`${np(pat,pk)} ${past?'had to':'must'} be ${v.pp} by ${np(ag,ak)}`);
+}
+function gGerv(){
+  const{v,s,sn,o,on,p}=clause(),m=R(IV.filter(x=>x.fl==='M')),t=R(['pres','perf']),en=`${np(s,sn)} ${engV(m,t,'act',p)} for the purpose of ${v.ing} ${np(o,on)}`;
+  if(chance(.5))return S([N(s,0,sn,'nom'),W('ad','ad (+acc) : to, for'),N(o,3,on,'accprep'),GV(v,3,on,o.g,'gerv'),V(m,t,'act',p)],en+' (use ad)');
+  return S([N(s,0,sn,'nom'),N(o,1,on,'gen'),GV(v,1,on,o.g,'gerv'),W('causā'),V(m,t,'act',p)],en+' (use causā)');
+}
+/* AP */
+function gRelPurp(){
+  const sec=chance(.5),{v,s,sn,o,on,p}=clause(),a=pick(PEOPLE,[s,o]),an=num(a),ap=an?5:2,h=vb('mittere');
+  return S([N(a,0,an,'nom'),N(s,3,sn,'acc'),V(h,sec?'perf':'pres','act',ap),D(QUI,0,sn,s.g,'rel'),N(o,3,on,'acc'),V(v,sec?'simpf':'spres','act',p,'m',['relpurp'])],
+    `${np(a,an)} ${engV(h,sec?'perf':'pres','act',ap)} ${np(s,sn)} to ${v.e} ${np(o,on)} (relative clause of purpose)`);
+}
+function gSupine(){
+  const{v,s,sn,o,on,p}=clause(),m=R(IV.filter(x=>x.fl==='M')),t=R(['pres','perf']);
+  return S([N(s,0,sn,'nom'),V(m,t,'act',p),N(o,3,on,'acc'),{la:v.ss+'um',lemma:v.inf,cids:['supine'],concept:'supine in -um',forms:[],vocab:verbV(v)}],`${np(s,sn)} ${engV(m,t,'act',p)} to ${v.e} ${np(o,on)} (use the supine)`);
+}
+function gDdat(){
+  const[la,lem,voc,e]=R([['auxiliō','auxilium','auxilium, -ī, n. : help','a help'],['praesidiō','praesidium','praesidium, -ī, n. : protection','a protection'],['cūrae','cūra','cūra, -ae, f. : concern','a concern'],['impedīmentō','impedīmentum','impedīmentum, -ī, n. : hindrance','a hindrance'],['salūtī','salūs','salūs, salūtis, f. : safety','a source of safety']]);
+  const s=R(PEOPLE),sn=num(s),b=pick(PEOPLE,[s]),bk=num(b),bt=N(b,2,bk,'ddat');bt.concept+=' (dative of reference)';
+  return S([N(s,0,sn,'nom'),bt,{la,lemma:lem,cids:['ddat'],concept:'dative singular (dative of purpose)',forms:[],vocab:voc},SUMT('pres',sn?5:2)],`${np(s,sn)} ${beP(sn?5:2)} ${e} to ${np(b,bk)} (double dative)`);
+}
+function gPartGen(){
+  const v=R(TV.filter(x=>x.obj.includes('p'))),s=R(PEOPLE),sn=num(s),g=pick(PEOPLE,[s]),p=sn?5:2;
+  return S([N(s,0,sn,'nom'),W('partem'),N(g,1,1,'partgen'),V(v,'pres','act',p)],`${np(s,sn)} ${engV(v,'pres','act',p)} part of ${np(g,1)}`);
+}
+function gSync(){
+  const v=R(VERBS.filter(x=>/[āī]v$/.test(x.ps)&&!x.fl.includes('Z'))),a=v.ps.endsWith('āv'),b=v.ps.slice(0,-2);
+  const[full,la,how]=R([[v.ps+'ērunt',v.ps+'ēre','the alternate -ēre ending'],[v.ps+'isse',b+(a?'āsse':'īsse'),'syncope (drop the -vi-)'],[v.ps+'ērunt',b+(a?'ārunt':'iērunt'),'syncope (drop the -v-)'],[v.ps+'istī',b+(a?'āstī':'īstī'),'syncope (drop the -vi-)']]);
+  const s=S([{la,lemma:v.inf,cids:['sync'],concept:how,forms:[],vocab:verbV(v)}],`Rewrite ${full} using ${how}, as Vergil often does`);s.form=1;return s;
+}
+const DEVICES=[['hīc illius arma, hīc currus fuit','Aeneid 1.16–17','anaphora','hīc is repeated at the start of successive phrases.'],
+['magnō cum murmure montis','Aeneid 1.55','alliteration','The repeated m sounds imitate the rumbling.'],
+['ac velutī magnō in populō cum saepe coorta est sēditiō','Aeneid 1.148–149','simile','velutī introduces an explicit comparison.'],
+['Īlionēa petit dextrā laevāque Serestum','Aeneid 1.611','chiasmus','Accusative, ablative, ablative, accusative: an ABBA arrangement.'],
+['nōn ignāra malī','Aeneid 1.630','litotes','A double negative (“not ignorant”) makes a strong positive.'],
+['Mūsa, mihī causās memorā','Aeneid 1.8','apostrophe','The poet turns to address the Muse directly.'],
+['circum dea fūdit','Aeneid 1.412','tmesis','The compound circumfūdit is split into two words.'],
+['saevae memorem Iūnōnis ob īram','Aeneid 1.4','synchysis','Interlocked word order, ABAB: saevae … memorem … Iūnōnis … īram.'],
+['mōlemque et montēs','Aeneid 1.61','hendiadys','Two nouns joined by “and” express one idea: a mass of mountains.'],
+['ūnā Eurusque Notusque ruunt crēberque procellīs Āfricus','Aeneid 1.85–86','polysyndeton','-que is repeated more often than needed.'],
+['Cererem corruptam undīs','Aeneid 1.177','metonymy','Ceres, the goddess, stands for grain.'],
+['tantaene animīs caelestibus īrae?','Aeneid 1.11','rhetorical question','A question asked for effect, with no answer expected.']];
+function gDevice(){const d=R(DEVICES),names=[...new Set(DEVICES.map(x=>x[2]))].filter(x=>x!==d[2]).sort(()=>Math.random()-.5).slice(0,5);
+  return{choice:1,line:d[0],cite:d[1],answer:d[2],explain:d[3],options:[d[2],...names].sort()}}
+
+/* id, level, group, name, generator */
+const TOPICS=[
+['nom','I','Cases','Nominative: subject',()=>gTrans()],
+['pred','I','Cases','Predicate nominative',gPred],
+['gen','I','Cases','Genitive: possession',()=>gTrans({gen:1})],
+['dat','I','Cases','Dative: indirect object',()=>gTrans({dat:1})],
+['acc','I','Cases','Accusative: direct object',()=>gTrans()],
+['accprep','I','Cases','Accusative with prepositions',()=>gPrep({c:3})],
+['ablprep','I','Cases','Ablative with prepositions',()=>gPrep({c:4})],
+['means','I','Cases','Ablative of means',()=>gTrans({means:1})],
+['voc','I','Cases','Vocative',()=>gImp({voc:1})],
+['d1','I','Nouns','1st declension',()=>gDecl('1')],
+['d2','I','Nouns','2nd declension',()=>gDecl('2')],
+['d3','I','Nouns','3rd declension',()=>gDecl('3')],
+['adj12','I','Adjectives','1st and 2nd declension adjectives',()=>gAdj(['12'],'adj12')],
+['tricky','I','Adjectives','Nouns that look like a different gender',()=>gAdj(['12'],'tricky',true)],
+['pa1','I','Verbs','1st conjugation: present',()=>gAct('pres','1')],
+['pa2','I','Verbs','2nd conjugation: present',()=>gAct('pres','2')],
+['pa3','I','Verbs','3rd conjugation: present',()=>gAct('pres','3')],
+['pa3i','I','Verbs','3rd -iō conjugation: present',()=>gAct('pres','3i')],
+['pa4','I','Verbs','4th conjugation: present',()=>gAct('pres','4')],
+['sum','I','Verbs','sum and possum',gSum],
+['impf','I','Verbs','Imperfect active',()=>gAct('impf')],
+['fut','I','Verbs','Future active',()=>gAct('fut')],
+['perf','I','Verbs','Perfect active',()=>gAct('perf')],
+['inf','I','Verbs','Complementary infinitive',()=>gCompl('act')],
+['imp','I','Verbs','Commands: imperative and nōlī',()=>gImp()],
+['ppas','II','Verbs','Present passive, all conjugations',()=>gPass({t:'pres',pron:1})],
+['pinf','II','Verbs','Passive infinitive with possum and dēbeō',()=>gCompl('pass')],
+['ipas','II','Verbs','Imperfect and future passive',()=>gPass({t:R(['impf','fut']),pron:1})],
+['plup','II','Verbs','Pluperfect and future perfect active',()=>gAct(R(['plup','plup','futp']))],
+['perfpas','II','Verbs','Perfect, pluperfect, future perfect passive',()=>gPass({t:R(['perf','perf','plup','futp'])})],
+['dep','II','Verbs','Deponent verbs',()=>gTrans({v:R(DEPS),t:R(['pres','impf','fut','perf']),pron:1})],
+['irr','II','Verbs','eō, ferō, volō, nōlō',gIrr],
+['ppart','II','Verbs','Participles: present active and perfect passive',gPart],
+['agent','II','Cases','Ablative of agent',()=>gPass({t:R(['pres','impf','perf'])})],
+['datposs','II','Cases','Dative of possession',gDatPoss],
+['d45','II','Nouns and pronouns','4th and 5th declension',()=>gDecl('45')],
+['demo','II','Nouns and pronouns','hic and ille',gDemo],
+['rel','II','Nouns and pronouns','Relative pronoun quī, quae, quod',gRel],
+['adj3','II','Adjectives and adverbs','3rd declension adjectives',()=>gAdj(['32','31','33'],'adj3')],
+['comp','II','Adjectives and adverbs','Comparatives',()=>gCompare('comp')],
+['sup','II','Adjectives and adverbs','Superlatives',()=>gCompare('sup')],
+['adv','II','Adjectives and adverbs','Adverbs from adjectives',gAdv],
+['sjpres','III','Subjunctive forms','Present subjunctive',()=>gForm(['spres'])],
+['sjimpf','III','Subjunctive forms','Imperfect subjunctive',()=>gForm(['simpf'])],
+['sjperf','III','Subjunctive forms','Perfect and pluperfect subjunctive',()=>gForm(['sperf','splup'])],
+['hort','III','Subjunctive clauses','Hortatory and jussive',gHort],
+['purpose','III','Subjunctive clauses','Purpose clauses',gPurpose],
+['result','III','Subjunctive clauses','Result clauses',gResult],
+['indcmd','III','Subjunctive clauses','Indirect commands',gIndCmd],
+['indq','III','Subjunctive clauses','Indirect questions',gIndQ],
+['cumcl','III','Subjunctive clauses','Cum clauses',gCum],
+['fear','III','Subjunctive clauses','Fearing clauses',gFear],
+['cond','III','Subjunctive clauses','Conditionals',gCond],
+['indst','III','Infinitives and participles','Indirect statement',gIndSt],
+['abs','III','Infinitives and participles','Ablative absolute',gAbs],
+['pperi','III','Infinitives and participles','Passive periphrastic and dative of agent',gPeri],
+['gerv','III','Infinitives and participles','Gerundive of purpose: ad and causā',gGerv],
+['ablcomp','III','Cases','Ablative of comparison',()=>gCompare('ablcomp')],
+['relpurp','AP','Syntax in Vergil and Pliny','Relative clause of purpose',gRelPurp],
+['supine','AP','Syntax in Vergil and Pliny','Supine of purpose',gSupine],
+['ddat','AP','Syntax in Vergil and Pliny','Double dative',gDdat],
+['partgen','AP','Syntax in Vergil and Pliny','Partitive genitive',gPartGen],
+['sync','AP','Reading poetry','Syncopated and -ēre perfects',gSync],
+['devices','AP','Reading poetry','Literary devices in the Aeneid',gDevice]
+].map(([id,level,group,name,gen])=>({id,level,group,name,gen}));
+
+function makeQuestion(selected,mixed){
+  ALT=[];const pickId=R([...selected]),topic=TOPICS.find(t=>t.id===pickId),q=topic.gen();q.alts=ALT;
+  q.topic=topic;if(q.choice)return q;
+  const can=q.tokens.filter(t=>t.cids&&t.cids.includes(topic.id));
+  const focus=q.focus||R(can)||q.tokens.find(t=>t.cids&&t.cids.length);
+  focus.blank=true;
+  if(mixed&&!q.form){
+    const extra=q.tokens.filter(t=>!t.blank&&t.cids&&t.cids.some(c=>selected.has(c))).sort(()=>Math.random()-.5).slice(0,2);
+    extra.forEach(t=>t.blank=true);
+  }
+  return q;
+}
+const stripM=s=>s.normalize('NFD').replace(/\u0304/g,'').normalize('NFC');
+const normA=s=>s.toLowerCase().replace(/[.,!?;:]/g,'').trim().split(/\s+/).sort().join(' ');
+function grade(tok,input){
+  const u=normA(input);if(!u)return{ok:false,empty:true};
+  const ans=[tok.la,...(tok.alt||[])].map(normA);
+  if(ans.includes(u))return{ok:true};
+  if(ans.some(a=>stripM(a)===stripM(u))){
+    const clash=(tok.forms||[]).map(normA).some(f=>f===u&&!ans.includes(f));
+    return clash?{ok:false,essential:true}:{ok:true,macron:true};
+  }
+  return{ok:false};
+}
+const wordsL=s=>s.toLowerCase().replace(/[.,!?;:"“”]/g,' ').trim().split(/\s+/).filter(Boolean);
+function gradeLatin(q,input){
+  const u=wordsL(input);if(!u.length)return{ok:false,empty:true};
+  let cands=[[]];for(const t of q.tokens){const opts=[t.la,...(t.alt||[])];cands=cands.flatMap(c=>opts.map(o=>[...c,...wordsL(o)]));}
+  const key=a=>[...a].sort().join(' '),uk=key(u),us=key(u.map(stripM));
+  if(cands.some(c=>key(c)===uk))return{ok:true};
+  const c=cands.find(c=>key(c.map(stripM))===us);
+  if(!c)return{ok:false};
+  const forms=new Set(q.tokens.flatMap(t=>(t.forms||[]).flatMap(wordsL))),clash=u.filter(w=>!c.includes(w)&&forms.has(w));
+  return clash.length?{ok:false,essential:clash}:{ok:true,macron:true};
+}
+const normE=s=>s.toLowerCase().replace(/\([^)]*\)/g,' ').replace(/[’‘]/g,"'").replace(/\bdon't\b/g,'do not').replace(/[^a-z' ]/g,' ').replace(/\b(the|a|an)\b/g,' ').replace(/\b(am|are|is) able to\b/g,'can').replace(/\b(was|were) able to\b/g,'could').replace(/\bought to\b/g,'should').replace(/\baway from\b/g,'from').replace(/\byou all\b|\by'all\b/g,'you').replace(/\s+/g,' ').trim();
+function gradeEnglish(q,input){
+  const u=normE(input);if(!u)return{ok:false,empty:true};
+  let vs=[q.en];
+  for(const g of q.alts||[]){const re=new RegExp('\\b'+g[0].replace(/[()]/g,'\\$&')+'(?![a-z])');vs=vs.flatMap(v=>re.test(v)?g.map(a=>v.replace(re,a)):[v]).slice(0,600);}
+  return{ok:vs.some(v=>normE(v)===u)};
+}
+if(typeof module!=='undefined')module.exports={TOPICS,makeQuestion,grade,gradeLatin,gradeEnglish,NOUNS,VERBS,ADJ,nf,vf,af,cf};
+</script>
+
+<script>
+/* ===================== UI ===================== */
+const $=id=>document.getElementById(id);
+const LEVELS=[['I','Latin I Honors'],['II','Latin II Honors'],['III','Latin III Honors'],['AP','AP Latin']];
+const selected=new Set();let q=null,checked=false,lastInput=null;
+const stats={right:0,total:0,streak:0};
+const store={get(k,d){try{const v=localStorage.getItem('verba.'+k);return v===null?d:JSON.parse(v)}catch(e){return d}},set(k,v){try{localStorage.setItem('verba.'+k,JSON.stringify(v))}catch(e){}}};
+const esc=s=>s.replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const cap=s=>s.charAt(0).toUpperCase()+s.slice(1);
+
+function buildStart(){
+  store.get('topics',[]).forEach(id=>TOPICS.some(t=>t.id===id)&&selected.add(id));
+  $('levels').innerHTML=LEVELS.map(([lv,name])=>{
+    const ts=TOPICS.filter(t=>t.level===lv),groups=[...new Set(ts.map(t=>t.group))];
+    return `<section class="level"><h2><span class="num">${lv}</span>${name}</h2><button class="all" data-lv="${lv}">Select all</button>`+
+      groups.map(g=>`<h3>${g}</h3>`+ts.filter(t=>t.group===g).map(t=>`<label><input type="checkbox" value="${t.id}" ${selected.has(t.id)?'checked':''}><span>${esc(t.name)}</span></label>`).join('')).join('')+`</section>`;
+  }).join('');
+  $('levels').addEventListener('change',e=>{if(e.target.value){e.target.checked?selected.add(e.target.value):selected.delete(e.target.value);sync();}});
+  $('levels').addEventListener('click',e=>{const lv=e.target.dataset.lv;if(!lv)return;
+    const boxes=[...e.target.parentNode.querySelectorAll('input')],on=!boxes.every(b=>b.checked);
+    boxes.forEach(b=>{b.checked=on;on?selected.add(b.value):selected.delete(b.value)});sync();});
+  const m0=document.querySelector(`input[name=mode][value=${store.get('mode','e2l')}]`);if(m0)m0.checked=true;
+  sync();
+}
+function sync(){
+  const n=selected.size;$('startbtn').disabled=!n;
+  $('count').textContent=n?`${n} topic${n>1?'s':''} selected`:'Choose at least one topic';
+  document.querySelectorAll('.all').forEach(b=>{const boxes=[...b.parentNode.querySelectorAll('input')];b.textContent=boxes.every(x=>x.checked)?'Clear all':'Select all'});
+  store.set('topics',[...selected]);
+}
+const mixed=()=>document.querySelector('input[name=style]:checked').value==='mixed';
+const modeSel=()=>document.querySelector('input[name=mode]:checked').value;
+let groqKey='',groqModel='';
+async function groqInit(key){
+  const r=await fetch('https://api.groq.com/openai/v1/models',{headers:{Authorization:'Bearer '+key}});
+  if(!r.ok)throw new Error(r.status===401?'Groq did not accept that key.':'Groq returned error '+r.status+'.');
+  const ids=((await r.json()).data||[]).map(m=>m.id).filter(id=>!/whisper|guard|tts|embed|speech|orpheus|compound/i.test(id));
+  groqModel=['llama-3.3-70b','gpt-oss-120b','70b','llama'].map(p=>ids.find(i=>i.includes(p))).find(Boolean)||ids[0];
+  if(!groqModel)throw new Error('No usable Groq model found for this key.');
+  groqKey=key;
+}
+async function groqGrade(q,answer){
+  const e2l=q.mode==='e2l',src=e2l?cap(q.en)+q.end:q.latin,model=e2l?q.latin:cap(q.en)+q.end;
+  const vocab=[...new Set(q.tokens.map(t=>t.vocab).filter(Boolean))].join('; ');
+  const r=await fetch('https://api.groq.com/openai/v1/chat/completions',{method:'POST',headers:{Authorization:'Bearer '+groqKey,'Content-Type':'application/json'},body:JSON.stringify({model:groqModel,temperature:0,response_format:{type:'json_object'},messages:[
+    {role:'system',content:'You grade Latin translation exercises for a high school student. The reference answer is known to be correct. Mark the student correct only if their sentence means the same as the reference: same case roles, number, tense, voice, mood and person. Accept any valid phrasing or synonym, either English article, and any Latin word order. Ignore macrons, capitalization and punctuation. If the student sentence contains a wrong ending or wrong word, it is incorrect. Reply only with JSON: {"correct": true or false, "reason": "one short sentence for the student"}.'},
+    {role:'user',content:`Direction: ${e2l?'English to Latin':'Latin to English'}\nSentence to translate: ${src}\nReference answer: ${model}\nVocabulary: ${vocab}\nStudent answer: ${answer}`}]})});
+  if(!r.ok)throw new Error('Groq error '+r.status);
+  const j=JSON.parse((await r.json()).choices[0].message.content);
+  return{ok:j.correct===true,reason:String(j.reason||'')};
+}
+function buildCharts(){
+  const P=['1st sing.','2nd sing.','3rd sing.','1st pl.','2nd pl.','3rd pl.'],a=T6(PA[1]),p=T6(PP[1]);
+  const t1=`<div class="cwrap"><table><caption>1st conjugation, present tense (laudāre)</caption><tr><th>Person</th><th>Active</th><th>Passive</th></tr>${P.map((x,i)=>`<tr><th>${x}</th><td>-${a[i]}</td><td>-${p[i]}</td></tr>`).join('')}</table></div>`;
+  const cols=[E[1],E[2],E['2n']];
+  const t2=`<div class="cwrap"><table><caption>1st and 2nd declension noun endings</caption><tr><th rowspan="2">Case</th><th colspan="2">1st declension</th><th colspan="2">2nd masculine</th><th colspan="2">2nd neuter</th></tr><tr>${'<th>Sing.</th><th>Pl.</th>'.repeat(3)}</tr>${[0,1,2,3,4].map(c=>`<tr><th>${cap(CASES[c])}</th>${cols.map(d=>`<td>-${d[0][c]}</td><td>-${d[1][c]}</td>`).join('')}</tr>`).join('')}</table><p>Vocative matches the nominative, except 2nd masculine singular: -e.</p></div>`;
+  $('cbody').innerHTML=t1+t2;
+  const set=h=>{$('cbody').hidden=h;$('ctoggle').textContent=h?'Show':'Hide'};
+  $('ctoggle').addEventListener('click',()=>set(!$('cbody').hidden));
+}
+
+async function tryStart(){
+  const k=$('key').value.trim();$('keymsg').textContent='';
+  if(!k){$('keymsg').textContent='Paste your Groq API key first.';$('key').focus();return;}
+  if(k!==groqKey){$('startbtn').disabled=true;$('startbtn').textContent='Checking key…';
+    try{await groqInit(k)}catch(e){$('keymsg').textContent=e.message||'Could not reach Groq.';return}finally{$('startbtn').textContent='Start practice';sync()}}
+  start();
+}
+function start(){
+  store.set('mode',modeSel());
+  stats.right=stats.total=stats.streak=0;
+  $('start').hidden=true;$('bar').hidden=true;$('drill').hidden=false;window.scrollTo(0,0);next();
+}
+function next(){
+  q=makeQuestion(selected,false);checked=false;
+  $('feedback').innerHTML='';$('check').textContent='Check answer';
+  const blanks=q.choice?[]:q.tokens.filter(t=>t.blank);
+  $('concept').textContent=blanks.length>1?'Mixed: '+[...new Set(blanks.map(b=>TOPICS.find(t=>b.cids.includes(t.id)&&selected.has(t.id))||q.topic).map(t=>t.name))].join(' + '):q.topic.name;
+  q.mode=(q.choice||q.form)?'blank':modeSel();
+  if(q.mode!=='blank')$('concept').textContent=q.topic.name;
+  $('macrons').hidden=$('machint').hidden=!!q.choice||q.mode==='l2e';$('check').hidden=!!q.choice;$('vocab').hidden=!!q.choice;
+  if(q.choice){
+    $('qbody').innerHTML=`<p class="line">${esc(q.line)}</p><p class="cite">${esc(q.cite)}</p><p class="english">Which device does this line show?</p><div class="choices">${q.options.map(o=>`<button data-o="${o}">${cap(o)}</button>`).join('')}</div>`;
+  }else if(q.mode!=='blank'){
+    const e2l=q.mode==='e2l';q.latin=cap(q.tokens.map(t=>t.la+(t.post||'')).join(' '))+q.end;
+    $('qbody').innerHTML=`<p class="${e2l?'english':'line'}" style="margin-top:0">${esc(e2l?cap(q.en)+q.end:q.latin)}</p><input class="full" type="text" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false" placeholder="Type the whole sentence in ${e2l?'Latin':'English'}" aria-label="Your translation">`;
+    const seen=new Set();
+    $('vlist').innerHTML=q.tokens.filter(t=>t.vocab&&!seen.has(t.vocab)&&seen.add(t.vocab)).map(t=>`<li>${esc(t.vocab)}</li>`).join('');
+    const f=$('qbody').querySelector('input');f.focus();lastInput=f;
+  }else{
+    const showForm=false;let first=true,i=0;
+    const html=q.tokens.map(t=>{
+      let out;
+      if(t.blank){const w=Math.max(7,t.la.length+2);
+        out=`<span class="blank" data-i="${i++}"><input type="text" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false" style="width:${w}ch" aria-label="Form of ${esc(t.lemma)}"><small><i>${esc(t.lemma)}</i>${showForm&&!q.form?' · '+esc(t.concept):''}</small></span>`;}
+      else out=`<span class="w">${esc(first?cap(t.la):t.la)}</span>`;
+      first=false;return out+(t.post?`<span class="w" style="margin-left:-.38em">${t.post}</span>`:'');
+    }).join('')+(q.form?'':`<span class="w" style="margin-left:-.38em">${q.end}</span>`);
+    $('qbody').innerHTML=(q.form?`<p class="english" style="margin:0 0 6px">${esc(q.en)}.</p>`:'')+`<p class="sentence">${html}</p>`+(q.form?'':`<p class="english">${esc(cap(q.en))}${q.end}</p>`);
+    const seen=new Set();
+    $('vlist').innerHTML=q.tokens.filter(t=>t.vocab&&!seen.has(t.vocab)&&seen.add(t.vocab)).map(t=>`<li>${esc(t.vocab)}</li>`).join('');
+    const f=$('qbody').querySelector('input');if(f){f.focus();lastInput=f;}
+  }
+  score();
+}
+function score(){$('score').innerHTML=`<b>${stats.right}</b> of <b>${stats.total}</b> correct · streak <b>${stats.streak}</b>`}
+function check(){
+  if(checked){next();return;}
+  if(q.mode!=='blank')return checkT();
+  const blanks=q.tokens.filter(t=>t.blank),spans=[...$('qbody').querySelectorAll('.blank')];let all=true;const fb=[];
+  blanks.forEach((t,i)=>{
+    const inp=spans[i].querySelector('input'),r=grade(t,inp.value);inp.disabled=true;
+    spans[i].classList.add(r.ok?'ok':'bad');stats.total++;if(r.ok)stats.right++;else all=false;
+    const la=`<span class="la">${esc(t.la)}</span>`,what=`${esc(t.concept)} of <span class="la">${esc(t.lemma)}</span>`;
+    if(r.ok&&!r.macron)fb.push(`<li class="ok"><b class="ok">Correct.</b> ${la}: ${what}</li>`);
+    else if(r.ok)fb.push(`<li class="mac"><b class="ok">Correct</b>, <b class="mac">but check the macrons.</b> You wrote <span class="la">${esc(inp.value.trim())}</span>; the full form is ${la} (${what}).</li>`);
+    else if(r.essential)fb.push(`<li class="bad"><b class="bad">Incorrect: the macron matters here.</b> <span class="la">${esc(inp.value.trim())}</span> is a different form of this word. The answer is ${la} (${what}).</li>`);
+    else fb.push(`<li class="bad"><b class="bad">Incorrect.</b> ${r.empty?'No answer given. ':''}The answer is ${la}${t.alt?' or <span class="la">'+esc(t.alt.join(', '))+'</span>':''}: ${what}</li>`);
+  });
+  stats.streak=all?stats.streak+1:0;
+  $('feedback').innerHTML=fb.join('');checked=true;$('check').textContent='Next sentence';$('check').focus();score();
+}
+let busy=false;
+async function checkT(){
+  if(busy)return;
+  const inp=$('qbody').querySelector('input.full'),e2l=q.mode==='e2l',prev=stats.streak,cur=q;
+  let r=e2l?gradeLatin(q,inp.value):gradeEnglish(q,inp.value),ai=null,aiErr='';
+  inp.disabled=true;
+  if(!r.ok&&!r.empty&&!r.essential){
+    busy=true;$('check').disabled=true;$('feedback').innerHTML='<li>Checking with Groq…</li>';
+    try{ai=await groqGrade(q,inp.value.trim())}catch(e){aiErr=e.message||'Groq could not be reached'}
+    busy=false;$('check').disabled=false;if(cur!==q)return;
+    if(ai&&ai.ok)r={ok:true,ai:true};
+  }
+  inp.classList.add(r.ok?'ok':'bad');stats.total++;if(r.ok)stats.right++;stats.streak=r.ok?prev+1:0;
+  const model=`<span class="la">${esc(e2l?q.latin:cap(q.en)+q.end)}</span>`,order=e2l?' Any word order is accepted.':'';
+  const why=ai&&ai.reason?`<br>${esc(ai.reason)}`:aiErr?`<br>Groq check failed (${esc(aiErr)}), so only the built-in checker ran.`:'';
+  let li;
+  if(r.ai)li=`<li class="ok"><b class="ok">Correct.</b>${why} The site's version: ${model}</li>`;
+  else if(r.ok&&!r.macron)li=`<li class="ok"><b class="ok">Correct.</b> ${model}</li>`;
+  else if(r.ok)li=`<li class="mac"><b class="ok">Correct</b>, <b class="mac">but check the macrons.</b> With every macron: ${model}</li>`;
+  else if(r.essential)li=`<li class="bad"><b class="bad">Incorrect: a macron matters here.</b> <span class="la">${esc(r.essential.join(', '))}</span> is a different form. The answer is ${model}</li>`;
+  else li=`<li class="bad"><b class="bad">${r.empty?'No answer given.':'Incorrect.'}</b>${why}${why?'<br>':' '}One correct answer: ${model}${order}${r.empty?'':'<br><button class="btn quiet" id="override">Count my answer as correct</button>'}</li>`;
+  $('feedback').innerHTML=li;checked=true;$('check').textContent='Next sentence';$('check').focus();score();
+  const o=$('override');if(o)o.addEventListener('click',()=>{stats.right++;stats.streak=prev+1;o.remove();score()});
+}
+$('qbody').addEventListener('click',e=>{
+  const o=e.target.dataset&&e.target.dataset.o;if(!o||checked)return;checked=true;
+  const ok=o===q.answer;stats.total++;if(ok)stats.right++;stats.streak=ok?stats.streak+1:0;
+  $('qbody').querySelectorAll('.choices button').forEach(b=>{b.disabled=true;if(b.dataset.o===q.answer)b.classList.add('ok');else if(b===e.target)b.classList.add('bad')});
+  $('feedback').innerHTML=`<li class="${ok?'ok':'bad'}"><b class="${ok?'ok':'bad'}">${ok?'Correct.':'Incorrect.'}</b> ${cap(q.answer)}: ${esc(q.explain)}</li>`;
+  $('check').hidden=false;$('check').textContent='Next line';$('check').focus();score();
+});
+$('qbody').addEventListener('focusin',e=>{if(e.target.tagName==='INPUT')lastInput=e.target});
+$('qbody').addEventListener('keydown',e=>{if(e.key==='Enter'&&e.target.tagName==='INPUT'){e.preventDefault();
+  const ins=[...$('qbody').querySelectorAll('input')],i=ins.indexOf(e.target);if(i<ins.length-1)ins[i+1].focus();else check();}});
+const MAC={a:'ā',e:'ē',i:'ī',o:'ō',u:'ū',A:'Ā',E:'Ē',I:'Ī',O:'Ō',U:'Ū'};
+$('qbody').addEventListener('input',e=>{const t=e.target;if(t.tagName!=='INPUT'||q.mode==='l2e')return;
+  const p=t.selectionStart,v=t.value;if(p>1&&(v[p-1]==='-'||v[p-1]==='_')&&MAC[v[p-2]]){t.value=v.slice(0,p-2)+MAC[v[p-2]]+v.slice(p);t.setSelectionRange(p-1,p-1);}});
+$('macrons').innerHTML=['ā','ē','ī','ō','ū'].map(c=>`<button type="button" aria-label="Insert ${c}">${c}</button>`).join('');
+$('macrons').addEventListener('click',e=>{if(e.target.tagName!=='BUTTON'||!lastInput||lastInput.disabled)return;
+  const t=lastInput,p=t.selectionStart??t.value.length;t.value=t.value.slice(0,p)+e.target.textContent+t.value.slice(t.selectionEnd??p);t.focus();t.setSelectionRange(p+1,p+1);});
+$('check').addEventListener('click',check);
+$('startbtn').addEventListener('click',tryStart);
+$('back').addEventListener('click',()=>{$('drill').hidden=true;$('start').hidden=false;$('bar').hidden=false;window.scrollTo(0,0)});
+$('vtoggle').addEventListener('click',()=>{const l=$('vlist');l.hidden=!l.hidden;$('vtoggle').textContent=l.hidden?'Show':'Hide'});
+buildCharts();
+buildStart();
+</script>
+</body>
+</html>
