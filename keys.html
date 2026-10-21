@@ -73,7 +73,7 @@ code{font-family:ui-monospace,Menlo,Consolas,monospace;background:var(--wash);pa
     <dt>Get a key</dt><dd><a href="https://cloud.cerebras.ai" target="_blank" rel="noopener">cloud.cerebras.ai</a></dd>
     <dt>Free limits</dt><dd>Free trial tier: 5 requests a minute and about 1 million tokens a day.</dd>
     <dt>Key starts with</dt><dd><code>csk-</code></dd>
-    <dt>Notes</dt><dd>Extremely fast, but 5 a minute is tight if you ask a lot of questions.</dd>
+    <dt>Notes</dt><dd>Extremely fast, but 5 a minute is tight if you ask a lot of questions. Some recent reports say new sign-ups now get trial credit and may need a card, so check before relying on it.</dd>
   </dl>
 </section>
 
@@ -84,6 +84,35 @@ code{font-family:ui-monospace,Menlo,Consolas,monospace;background:var(--wash);pa
     <dt>Free limits</dt><dd>About 1 request a second, with a large monthly token allowance.</dd>
     <dt>Key starts with</dt><dd>No special prefix, so choose “Mistral” in the AI provider list.</dd>
     <dt>Notes</dt><dd>Needs phone verification, and the free plan requires agreeing that Mistral may train on your requests.</dd>
+  </dl>
+</section>
+
+<section class="card">
+  <h2>Hugging Face</h2>
+  <dl>
+    <dt>Get a key</dt><dd><a href="https://huggingface.co/settings/tokens" target="_blank" rel="noopener">huggingface.co/settings/tokens</a> (free account; make a token with “Make calls to Inference Providers” allowed)</dd>
+    <dt>Free limits</dt><dd>A small monthly credit (about $0.10) shared across many hosted models. Enough for a modest amount of practice each month, then it stops until next month.</dd>
+    <dt>Key starts with</dt><dd><code>hf_</code></dd>
+    <dt>Notes</dt><dd>Huge model catalog, but the smallest free allowance here. Good as a spare.</dd>
+  </dl>
+</section>
+
+<section class="card">
+  <h2>Cohere</h2>
+  <dl>
+    <dt>Get a key</dt><dd><a href="https://dashboard.cohere.com/api-keys" target="_blank" rel="noopener">dashboard.cohere.com/api-keys</a> (a free trial key is made when you sign up, no card)</dd>
+    <dt>Free limits</dt><dd>1,000 requests a month and 20 a minute, for non-commercial use.</dd>
+    <dt>Key starts with</dt><dd>No special prefix, so choose “Cohere” in the AI provider list.</dd>
+    <dt>Notes</dt><dd>Uses Cohere’s Command A model. Fine for personal studying.</dd>
+  </dl>
+</section>
+
+<section class="card" style="border-top-color:var(--muted)">
+  <h2>Checked, but they don’t work here</h2>
+  <dl>
+    <dt>NVIDIA NIM</dt><dd>Generous free tier (about 40 requests a minute), but NVIDIA’s servers refuse requests that come straight from a web page, which is how this site talks to the AI.</dd>
+    <dt>Cloudflare Workers AI</dt><dd>Needs your account ID as well as a token, and its API is meant to be called from a server, not a web page.</dd>
+    <dt>BazaarLink</dt><dd>A small reseller that passes your requests on to other companies. Its free limits aren’t clearly published and there’s little independent information about it, so it isn’t listed.</dd>
   </dl>
 </section>
 
