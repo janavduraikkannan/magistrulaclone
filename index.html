@@ -77,11 +77,13 @@ header.top p{margin:8px 0 0;color:var(--muted);max-width:60ch}
 .hint{color:var(--muted);font-size:.95rem}
 
 /* drill */
-.askai{margin-top:26px;border-top:1px solid var(--line);padding-top:14px}
+.askai{margin:-30px 0 70px;border-top:1px solid var(--line);padding-top:14px}
 .askai h3{font-size:1.05rem;margin:0 0 8px}
 .chat{list-style:none;margin:0 0 10px;padding:0}
 .chat li{margin-bottom:12px}
-.chat p{margin:2px 0}
+.chat p,.chat .ca{margin:2px 0}
+.chat .ca ul,.chat .ca ol{margin:4px 0;padding-left:1.4em}
+.chat .ca code{font-family:ui-monospace,Menlo,Consolas,monospace;background:var(--wash);padding:0 4px;border-radius:3px;font-size:.9em}
 .chat .ca{padding-left:14px;border-left:3px solid var(--line)}
 .chat small{color:var(--muted)}
 .tag{display:inline-block;font-size:.8rem;font-weight:700;padding:1px 7px;border-radius:3px;margin-right:4px;border:1px solid currentColor}
@@ -104,7 +106,8 @@ header.top p{margin:8px 0 0;color:var(--muted);max-width:60ch}
 .charts td{font-family:var(--latin);font-size:1.1rem}
 .charts p{margin:6px 0 0;color:var(--muted);font-size:.95rem}
 input.full{display:block;width:100%;margin-top:18px;font-family:var(--latin);font-size:1.35rem;background:var(--wash);border:0;border-bottom:2px solid var(--accent);padding:.35em .5em;border-radius:3px 3px 0 0}
-input.full.ok{border-color:var(--ok)} input.full.bad{border-color:var(--bad)}
+input.full.ok{border-color:var(--ok)} input.full.leak{border-color:var(--gold);color:var(--gold)}
+.choices button.leak{border-color:var(--gold);color:var(--gold);font-weight:700} input.full.bad{border-color:var(--bad)}
 .feedback button{margin-top:8px}
 .drillhead{display:flex;flex-wrap:wrap;gap:10px 20px;align-items:center;justify-content:space-between;padding:16px 0}
 .score{color:var(--muted)} .score b{color:var(--ink)}
@@ -179,16 +182,16 @@ input.full.ok{border-color:var(--ok)} input.full.bad{border-color:var(--bad)}
         <span class="hint" id="machint">or type - after a vowel: a- becomes ā</span>
       </div>
       <ul class="feedback" id="feedback" aria-live="polite"></ul>
-      <div class="askai">
-        <h3>Ask the AI</h3>
-        <ul class="chat" id="chat" aria-live="polite"></ul>
-        <div class="askrow"><input type="text" id="askq" autocomplete="off" placeholder="Ask a question (you can ask as many as you like)" aria-label="Your question for the AI"><button class="btn quiet" id="askbtn">Ask</button></div>
-        <p class="hint" id="askhint"></p>
-      </div>
     </section>
     <section class="vocab" id="vocab">
       <h2>Vocabulary <button id="vtoggle">Hide</button></h2>
       <ul id="vlist"></ul>
+    </section>
+    <section class="askai" id="askai">
+        <h3>Ask the AI</h3>
+        <ul class="chat" id="chat" aria-live="polite"></ul>
+        <div class="askrow"><input type="text" id="askq" autocomplete="off" placeholder="Ask a question (you can ask as many as you like)" aria-label="Your question for the AI"><button class="btn quiet" id="askbtn">Ask</button></div>
+        <p class="hint" id="askhint"></p>
     </section>
   </main>
 </div>
@@ -1294,20 +1297,43 @@ async function aiGrade(q,answer){
     {role:'user',content:`Direction: ${c.e2l?'English to Latin':'Latin to English'}\nSentence to translate: ${c.src}\nReference answer: ${c.model}\nVocabulary: ${c.vocab}\nStudent answer: ${answer}`}]);
   const j=parseJ(t);return{ok:j.correct===true,reason:String(j.reason||'')};
 }
-const ASK_BEFORE="You are a Latin tutor helping a high school Latin I student with one practice exercise. The student has NOT submitted yet and is asking you a question. You are shown the exercise, the correct answer, the student's current draft (whatever is typed in the answer box right now), and every earlier question and reply about this exercise, each with the draft as it was at that moment. Treat the whole conversation as context. Use the draft only as a reference to understand what the student is thinking. Do NOT correct the draft, point out mistakes in it, or say whether it is right or wrong, unless the student specifically asks you to check, correct, fix or fill in their answer. Jobs: 1) Decide whether the newest question is too leading. Too leading means it gets you to do part of the exercise: asking for the answer or any part of the translation, asking which form, case, ending, tense or person a specific word in THIS sentence should have or has, asking what a specific word in this sentence is doing in it, asking you to translate a word or phrase from the sentence in context, or asking you to check, correct, confirm, fix or fill in their answer. Not too leading means it is about the language in general and the student must still apply it: how a case, construction or tense works, what endings a declension or conjugation uses, what a grammar term means, what a vocabulary word means in general (the vocabulary list is already shown), or how to approach the sentence. A question that only becomes a giveaway combined with earlier ones counts as too leading. 2) Answer the newest question helpfully in 2 to 4 short sentences. If it is too leading, still answer it, but do not write out the whole translated sentence unless the student asked you to correct or fill in their answer. 3) Only if the student explicitly asks you to correct, fix, change, rewrite or fill in their answer, put the full corrected answer in \"edit\" (it will replace the text in their answer box; keep everything in their draft that was already right and fix only what is wrong). Otherwise \"edit\" must be null. Reply only with JSON: {\"leading\": true or false, \"why\": \"one short sentence explaining the judgment\", \"reply\": \"your answer to the student\", \"edit\": null or \"the full corrected answer\"}.";
+const COURSE={I:'Latin I Honors',II:'Latin II Honors',III:'Latin III Honors',AP:'AP Latin'};
+const LEAD_RULES={
+ I:"This is a Latin I exercise, so be LIGHT about what counts as leading; beginners are expected to ask lots of questions about forms. NOT leading (judge as fine): any question about how a word declines or conjugates, including a word from this sentence, when the student names the form they want or proposes it themselves (for example 'is the ablative plural of vir virīs?' or 'pelagus is neuter, so is the ablative singular still pelagō?'); confirming the student's own reasoning about a paradigm, gender, ending or macron; general grammar; what a case or construction does; vocabulary meanings; how to approach the sentence. TOO leading only if the student asks you to: give the answer or translate any part of the sentence; decide which case, number, tense, person or voice a word needs in THIS sentence (the choice itself, not the form once chosen); parse or identify a word as it appears in the sentence; or check, correct, confirm or fill in their draft.",
+ II:"This is a Latin II exercise, so be MODERATE about what counts as leading. NOT leading: questions about how a word declines or conjugates when the student names the form or proposes it themselves; confirming the student's own reasoning about a paradigm; general grammar; vocabulary meanings; how to approach the sentence. TOO leading: asking for the answer or any part of the translation; asking which case, number, tense, person, voice or construction a word or clause needs in THIS sentence; asking you to parse or identify a word or construction as it appears in the sentence; asking for a form of a word in the sentence without naming which form; or asking you to check, correct, confirm or fill in their draft.",
+ III:"This is a Latin III exercise, so be FIRM about what counts as leading; students should know their forms. NOT leading: general grammar, how a construction works in general, vocabulary meanings, how to approach the sentence. TOO leading: asking for the answer or any part of the translation; asking for or confirming any specific form of a word from this sentence; asking which case, mood, tense or construction anything in this sentence needs; asking you to parse anything in the sentence; or asking you to check, correct, confirm or fill in their draft.",
+ AP:"This is an AP Latin exercise, so be STRICT about what counts as leading. NOT leading: general grammar, general questions about poetic devices or meter, vocabulary meanings. TOO leading: anything that resolves part of this specific exercise, including any form, parsing, construction, device or translation of something in it, or checking, correcting, confirming or filling in their draft."};
+const askBefore=lv=>"You are a Latin tutor helping a high school student with one practice exercise from "+COURSE[lv]+". The student has NOT submitted yet and is asking you a question. You are shown the exercise, the correct answer, the student's current draft (whatever is typed in the answer box right now), and every earlier question and reply about this exercise, each with the draft as it was at that moment. Treat the whole conversation as context. Use the draft only as a reference to understand what the student is thinking. Do NOT correct the draft, point out mistakes in it, or say whether it is right or wrong, unless the student specifically asks you to check, correct, fix or fill in their answer. Jobs: 1) Decide whether the newest question is too leading, using these rules for this course. "+LEAD_RULES[lv]+" Judge the question by what it asks, not by whether your honest reply happens to touch the sentence. A question that only becomes a giveaway combined with earlier ones counts as too leading. When it is a close call, decide in the student's favor. 2) Answer the newest question helpfully in 2 to 4 short sentences. If it is too leading, still answer it, but do not write out the whole translated sentence unless the student asked you to correct or fill in their answer. 3) Only if the student explicitly asks you to correct, fix, change, rewrite or fill in their answer, put the full corrected answer in \"edit\" (it will replace the text in their answer box; keep everything in their draft that was already right and fix only what is wrong). Otherwise \"edit\" must be null. Reply only with JSON: {\"leading\": true or false, \"why\": \"one short sentence explaining the judgment\", \"reply\": \"your answer to the student\", \"edit\": null or \"the full corrected answer\"}.";
+const levelOf=q=>{const order=['I','II','III','AP'];const lv=q.topic&&q.topic.level;return order.includes(lv)?lv:'I'};
 const ASK_AFTER="You are a Latin tutor helping a high school Latin I student. The student has already submitted an answer to this exercise, so you may explain everything openly, including the full answer, why their answer was right or wrong, and the grammar involved. Treat the whole conversation about this exercise as context. Answer the newest question clearly in 2 to 5 short sentences. Reply with plain text only.";
 const draftOf=()=>{const f=$('qbody').querySelector('input.full');return f?f.value.trim():''};
 async function aiAsk(q,question,draft){
   const c=ctxOf(q),after=checked;
   const hist=q.chat.filter(x=>!x.pending&&!x.err).map((x,i)=>`Q${i+1}${x.after?' (after submitting)':''} [answer box said: ${x.draft||'(empty)'}]: ${x.q}\nA${i+1}: ${x.a}${x.after?'':x.leading?' [judged too leading]':' [judged fine]'}${x.edit?` [you edited their answer to: ${x.edit}]`:''}`).join('\n')||'(none)';
-  const user=`Exercise type: ${q.choice?'identify the literary device in a line of Latin poetry':c.e2l?'translate English into Latin':'translate Latin into English'}\nSentence: ${c.src}\nCorrect answer: ${c.model}\nVocabulary shown to the student: ${c.vocab||'(none)'}\n${after?`Student's submitted answer: ${q.submitted||'(none)'}\nResult: ${q.result||''}\n`:`Student's current draft in the answer box: ${draft||'(empty)'}\n`}Earlier conversation about this exercise:\n${hist}\nNewest question: ${question}`;
-  const t=await aiChat([{role:'system',content:after?ASK_AFTER:ASK_BEFORE},{role:'user',content:user}]);
+  const user=`Course: ${COURSE[levelOf(q)]}\nExercise type: ${q.choice?'identify the literary device in a line of Latin poetry':c.e2l?'translate English into Latin':'translate Latin into English'}\nSentence: ${c.src}\nCorrect answer: ${c.model}\nVocabulary shown to the student: ${c.vocab||'(none)'}\n${after?`Student's submitted answer: ${q.submitted||'(none)'}\nResult: ${q.result||''}\n`:`Student's current draft in the answer box: ${draft||'(empty)'}\n`}Earlier conversation about this exercise:\n${hist}\nNewest question: ${question}`;
+  const t=await aiChat([{role:'system',content:after?ASK_AFTER:askBefore(levelOf(q))},{role:'user',content:user}]);
   if(after)return{a:t.trim(),after:true};
   const j=parseJ(t),edit=typeof j.edit==='string'&&j.edit.trim()&&!q.choice?j.edit.trim():null;
   return{a:String(j.reply||''),leading:j.leading===true||!!edit,why:String(j.why||''),edit};
 }
+function md(s){
+  const inl=t=>esc(t).replace(/`([^`]+)`/g,'<code>$1</code>').replace(/\*\*([^*]+?)\*\*/g,'<b>$1</b>').replace(/__([^_]+?)__/g,'<b>$1</b>')
+    .replace(/(^|[^*\w])\*(?!\s)([^*\n]+?)\*(?!\w)/g,'$1<i>$2</i>').replace(/(^|[^_\w])_(?!\s)([^_\n]+?)_(?!\w)/g,'$1<i>$2</i>');
+  const out=[];let list=null;
+  const close=()=>{if(list){out.push(`<${list.t}>${list.items.map(i=>`<li>${i}</li>`).join('')}</${list.t}>`);list=null}};
+  for(const raw of String(s).replace(/\r/g,'').split('\n')){
+    const line=raw.trim(),ul=line.match(/^[-*•]\s+(.*)/),ol=line.match(/^\d+[.)]\s+(.*)/),hd=line.match(/^#{1,6}\s+(.*)/);
+    if(ul||ol){const t=ul?'ul':'ol';if(!list||list.t!==t){close();list={t,items:[]}}list.items.push(inl((ul||ol)[1]));continue}
+    close();
+    if(!line){out.push('');continue}
+    if(/^(-{3,}|\*{3,})$/.test(line))continue;
+    out.push(hd?`<b>${inl(hd[1])}</b>`:inl(line));
+  }
+  close();
+  return out.join('\n').replace(/\n{2,}/g,'<br><br>').replace(/\n(?!<\/?[uo]l)/g,'<br>').replace(/\n/g,'').replace(/(<br>)+(<[uo]l>)/g,'$2').replace(/(<\/[uo]l>)(<br>)+/g,'$1');
+}
 function renderChat(){
-  $('chat').innerHTML=q.chat.map(x=>`<li><p class="cq"><b>You${x.after?' (after answering)':''}:</b> ${esc(x.q)}</p>${x.pending?'<p class="ca">Thinking…</p>':`<p class="ca">${x.err?`<span class="tag bad">Couldn't ask</span> ${esc(x.err)}`:`${x.after?'':x.leading?`<span class="tag bad">Too leading</span> `:`<span class="tag ok">Fine to ask</span> `}${esc(x.a)}${x.why&&!x.after?`<br><small>${esc(x.why)}</small>`:''}${x.edit?`<br><span class="tag edit">Edited your answer</span> <span class="la">${esc(x.edit)}</span>`:''}`}</p>`}</li>`).join('');
+  $('chat').innerHTML=q.chat.map(x=>`<li><p class="cq"><b>You${x.after?' (after answering)':''}:</b> ${esc(x.q)}</p>${x.pending?'<div class="ca">Thinking…</div>':`<div class="ca">${x.err?`<span class="tag bad">Couldn't ask</span> ${esc(x.err)}`:`${x.after?'':x.leading?`<span class="tag bad">Too leading</span> `:`<span class="tag ok">Fine to ask</span> `}${md(x.a)}${x.why&&!x.after?`<br><small>${esc(x.why)}</small>`:''}${x.edit?`<br><span class="tag edit">Edited your answer</span> <span class="la">${esc(x.edit)}</span>`:''}`}</div>`}</li>`).join('');
   const box=$('chat');box.scrollTop=box.scrollHeight;
   $('askhint').textContent=checked?'Ask anything now; questions after answering never affect your score.':q.leaked?'A question was too leading, so this sentence will count as wrong. You can still answer it.':'Before you answer: a question that gives away part of the answer makes this sentence count as wrong.';
   $('askhint').className='hint'+(q.leaked&&!checked?' warn':'');
@@ -1409,7 +1435,7 @@ async function checkT(){
     if(aiR&&aiR.ok)r={ok:true,ai:true};
   }
   const counts=r.ok&&!q.leaked;
-  inp.classList.add(counts?'ok':'bad');stats.total++;if(counts)stats.right++;stats.streak=counts?prev+1:0;
+  inp.classList.add(counts?'ok':r.ok&&q.leaked?'leak':'bad');stats.total++;if(counts)stats.right++;stats.streak=counts?prev+1:0;
   q.submitted=inp.value.trim();q.result=r.ok?'correct':'incorrect';
   const model=`<span class="la">${esc(e2l?q.latin:cap(q.en)+q.end)}</span>`,order=e2l?' Any word order is accepted.':'';
   const why=aiR&&aiR.reason?`<br>${esc(aiR.reason)}`:aiErr?`<br>The AI check failed (${esc(aiErr)}), so only the built-in checker ran.`:'';
@@ -1419,15 +1445,16 @@ async function checkT(){
   else if(r.ok)li=`<li class="mac"><b class="ok">Correct</b>, <b class="mac">but check the macrons.</b> With every macron: ${model}</li>`;
   else if(r.essential)li=`<li class="bad"><b class="bad">Incorrect: a macron matters here.</b> <span class="la">${esc(r.essential.join(', '))}</span> is a different form. The answer is ${model}</li>`;
   else li=`<li class="bad"><b class="bad">${r.empty?'No answer given.':'Incorrect.'}</b>${why}${why?'<br>':' '}One correct answer: ${model}${order}${r.empty?'':'<br><button class="btn quiet" id="override">Count my answer as correct</button>'}</li>`;
-  if(q.leaked){li=li.replace('<b class="ok">Correct.</b>','<b class="ok">Right answer.</b>').replace('<b class="ok">Correct</b>','<b class="ok">Right answer</b>');li=li.replace(/<br><button class="btn quiet" id="override">[^<]*<\/button>/,'');li+=`<li class="bad"><b class="bad">${r.ok?'Your answer was right, but this sentence counts as wrong':'This sentence also counts as wrong'}</b> because one of your questions before answering was too leading.</li>`;}
+  if(q.leaked&&r.ok)li=`<li class="mac"><b class="mac">Correct, but not counted.</b> Your answer was right, but a question you asked before answering was too leading, so this one doesn't count toward your score.${why} ${model}</li>`;
+  else if(q.leaked){li=li.replace(/<br><button class="btn quiet" id="override">[^<]*<\/button>/,'');li+=`<li class="bad"><b class="bad">This sentence also counts as wrong</b> because one of your questions before answering was too leading.</li>`;}
   $('feedback').innerHTML=li;checked=true;$('check').textContent='Next sentence';$('check').focus();score();renderChat();
   const o=$('override');if(o)o.addEventListener('click',()=>{stats.right++;stats.streak=prev+1;o.remove();score()});
 }
 $('qbody').addEventListener('click',e=>{
   const o=e.target.dataset&&e.target.dataset.o;if(!o||checked)return;checked=true;
   const right=o===q.answer,ok=right&&!q.leaked;stats.total++;if(ok)stats.right++;stats.streak=ok?stats.streak+1:0;q.submitted=o;q.result=right?'correct':'incorrect';
-  $('qbody').querySelectorAll('.choices button').forEach(b=>{b.disabled=true;if(b.dataset.o===q.answer)b.classList.add('ok');else if(b===e.target)b.classList.add('bad')});
-  $('feedback').innerHTML=`<li class="${ok?'ok':'bad'}"><b class="${ok?'ok':'bad'}">${ok?'Correct.':right?'Right answer, but it counts as wrong because a question before answering was too leading.':'Incorrect.'}</b> ${cap(q.answer)}: ${esc(q.explain)}</li>`;renderChat();
+  $('qbody').querySelectorAll('.choices button').forEach(b=>{b.disabled=true;if(b.dataset.o===q.answer)b.classList.add(q.leaked&&b===e.target?'leak':'ok');else if(b===e.target)b.classList.add('bad')});
+  $('feedback').innerHTML=`<li class="${ok?'ok':right?'mac':'bad'}"><b class="${ok?'ok':right?'mac':'bad'}">${ok?'Correct.':right?'Correct, but not counted.':'Incorrect.'}</b>${right&&!ok?' A question you asked before answering was too leading, so this one doesn’t count toward your score.':''} ${cap(q.answer)}: ${esc(q.explain)}</li>`;renderChat();
   $('check').hidden=false;$('check').textContent='Next line';$('check').focus();score();
 });
 $('qbody').addEventListener('focusin',e=>{if(e.target.tagName==='INPUT')lastInput=e.target});
@@ -1441,6 +1468,7 @@ $('macrons').addEventListener('click',e=>{if(e.target.tagName!=='BUTTON'||!lastI
   const t=lastInput,p=t.selectionStart??t.value.length;t.value=t.value.slice(0,p)+e.target.textContent+t.value.slice(t.selectionEnd??p);t.focus();t.setSelectionRange(p+1,p+1);});
 $('check').addEventListener('click',check);
 $('askbtn').addEventListener('click',ask);
+$('askq').addEventListener('input',e=>{const t=e.target,p=t.selectionStart,v=t.value;if(p>1&&(v[p-1]==='-'||v[p-1]==='_')&&MAC[v[p-2]]){t.value=v.slice(0,p-2)+MAC[v[p-2]]+v.slice(p);t.setSelectionRange(p-1,p-1);}});
 $('askq').addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();ask()}});
 $('startbtn').addEventListener('click',tryStart);
 $('back').addEventListener('click',()=>{$('drill').hidden=true;$('start').hidden=false;$('bar').hidden=false;window.scrollTo(0,0)});
