@@ -5,22 +5,23 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Free AI keys for Verba</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Gentium+Book+Plus:wght@400;700&family=Alegreya+Sans:wght@400;500;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600&family=Nunito:wght@400;600;700;800&family=Gentium+Book+Plus:wght@400;700&display=swap" rel="stylesheet">
+<link rel="icon" href="img/felix-happy.png">
+<script>try{var t=localStorage.getItem('verba.theme');document.documentElement.dataset.theme=t?JSON.parse(t):(matchMedia('(prefers-color-scheme: light)').matches?'light':'dark')}catch(e){document.documentElement.dataset.theme='dark'}</script>
 <style>
-:root{--bg:#E9ECE6;--surface:#F8FAF5;--ink:#1F2430;--muted:#59606C;--line:#C9CEC3;--accent:#6A1E55;--wash:#EFE6EC;
-  --latin:"Gentium Book Plus",Georgia,serif;--ui:"Alegreya Sans","Segoe UI",system-ui,sans-serif;box-sizing:border-box;
-  padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
-@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#17161C;--surface:#211F28;--ink:#ECE9E1;--muted:#A7A3AE;--line:#3A3643;--accent:#D79CCB;--wash:#2C2431}}
-:root[data-theme="dark"]{--bg:#17161C;--surface:#211F28;--ink:#ECE9E1;--muted:#A7A3AE;--line:#3A3643;--accent:#D79CCB;--wash:#2C2431}
+:root{--latin:"Gentium Book Plus",Georgia,serif;--ui:"Nunito","Segoe UI",system-ui,sans-serif;--display:"Fredoka","Nunito",system-ui,sans-serif;box-sizing:border-box;
+  padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);
+  --bg:#0D0F24;--surface:#171A3A;--ink:#EEF0FF;--muted:#A4A9D8;--line:#2C3168;--accent:#8F82FF;--gold:#FFC53D;--wash:#20244D;color-scheme:dark}
+:root[data-theme="light"]{--bg:#F8F5EC;--surface:#FFFFFF;--ink:#1E1B3A;--muted:#5F5B7E;--line:#E4DECF;--accent:#5B3FE0;--gold:#B26A00;--wash:#F2EEFF;color-scheme:light}
 *,*::before,*::after{box-sizing:inherit}
-body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--ui);font-size:18px;line-height:1.5}
+body{margin:0;background:radial-gradient(900px 500px at 0% -10%,color-mix(in srgb,var(--accent) 20%,transparent),transparent 60%),var(--bg);background-attachment:fixed;color:var(--ink);font-family:var(--ui);font-size:18px;line-height:1.5}
 .wrap{max-width:860px;margin:0 auto;padding:0 20px 60px}
 header{padding:28px 0 16px;border-bottom:1px solid var(--line)}
-h1{font-family:var(--latin);font-weight:400;font-size:clamp(2rem,5vw,2.8rem);margin:0;line-height:1.1}
+h1{font-family:var(--display);font-weight:600;font-size:clamp(2rem,5vw,2.8rem);margin:0;line-height:1.1}
 header p{color:var(--muted);margin:8px 0 0}
 a{color:var(--accent)}
-.card{background:var(--surface);border:1px solid var(--line);border-top:4px solid var(--accent);padding:16px 22px 18px;margin:22px 0}
-.card h2{font-family:var(--latin);font-weight:400;font-size:1.6rem;margin:0}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:18px;padding:16px 22px 18px;margin:18px 0;box-shadow:0 10px 26px rgba(0,0,0,.18)}
+.card h2{font-family:var(--display);font-weight:600;font-size:1.6rem;margin:0}
 .card .pick{display:inline-block;font-size:.85rem;font-weight:700;color:var(--accent);border:1px solid var(--accent);border-radius:3px;padding:0 7px;margin-left:8px;vertical-align:4px;font-family:var(--ui)}
 dl{display:grid;grid-template-columns:max-content 1fr;gap:4px 16px;margin:12px 0 0}
 dt{font-weight:700;color:var(--muted)}
@@ -33,6 +34,7 @@ code{font-family:ui-monospace,Menlo,Consolas,monospace;background:var(--wash);pa
 <body>
 <div class="wrap">
 <header>
+  <img src="img/felix-sly.png" alt="Fēlix the cat" style="width:84px;float:right;margin:0 0 8px 12px">
   <h1>Free AI keys that work with Verba</h1>
   <p>Any one of these unlocks the AI answer checking and the “Ask the AI” box. All have a free option without a credit card. Paste the key on the start screen; the site reads the key’s first letters to tell which service it belongs to.</p>
 </header>
