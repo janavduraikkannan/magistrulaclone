@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Free AI keys for Verba</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Gentium+Book+Plus:wght@400;700&family=Alegreya+Sans:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#E9ECE6;--surface:#F8FAF5;--ink:#1F2430;--muted:#59606C;--line:#C9CEC3;--accent:#6A1E55;--wash:#EFE6EC;
+  --latin:"Gentium Book Plus",Georgia,serif;--ui:"Alegreya Sans","Segoe UI",system-ui,sans-serif;box-sizing:border-box;
+  padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#17161C;--surface:#211F28;--ink:#ECE9E1;--muted:#A7A3AE;--line:#3A3643;--accent:#D79CCB;--wash:#2C2431}}
+:root[data-theme="dark"]{--bg:#17161C;--surface:#211F28;--ink:#ECE9E1;--muted:#A7A3AE;--line:#3A3643;--accent:#D79CCB;--wash:#2C2431}
+*,*::before,*::after{box-sizing:inherit}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--ui);font-size:18px;line-height:1.5}
+.wrap{max-width:860px;margin:0 auto;padding:0 20px 60px}
+header{padding:28px 0 16px;border-bottom:1px solid var(--line)}
+h1{font-family:var(--latin);font-weight:400;font-size:clamp(2rem,5vw,2.8rem);margin:0;line-height:1.1}
+header p{color:var(--muted);margin:8px 0 0}
+a{color:var(--accent)}
+.card{background:var(--surface);border:1px solid var(--line);border-top:4px solid var(--accent);padding:16px 22px 18px;margin:22px 0}
+.card h2{font-family:var(--latin);font-weight:400;font-size:1.6rem;margin:0}
+.card .pick{display:inline-block;font-size:.85rem;font-weight:700;color:var(--accent);border:1px solid var(--accent);border-radius:3px;padding:0 7px;margin-left:8px;vertical-align:4px;font-family:var(--ui)}
+dl{display:grid;grid-template-columns:max-content 1fr;gap:4px 16px;margin:12px 0 0}
+dt{font-weight:700;color:var(--muted)}
+dd{margin:0}
+code{font-family:ui-monospace,Menlo,Consolas,monospace;background:var(--wash);padding:1px 5px;border-radius:3px;font-size:.9em}
+.note{color:var(--muted);font-size:.95rem}
+@media (max-width:520px){dl{grid-template-columns:1fr}dt{margin-top:6px}}
+</style>
+</head>
+<body>
+<div class="wrap">
+<header>
+  <h1>Free AI keys that work with Verba</h1>
+  <p>Any one of these unlocks the AI answer checking and the “Ask the AI” box. All have a free option without a credit card. Paste the key on the start screen; the site reads the key’s first letters to tell which service it belongs to.</p>
+</header>
+
+<section class="card">
+  <h2>Groq <span class="pick">Best first choice</span></h2>
+  <dl>
+    <dt>Get a key</dt><dd><a href="https://console.groq.com/keys" target="_blank" rel="noopener">console.groq.com/keys</a> (free account, no card)</dd>
+    <dt>Free limits</dt><dd>About 30 requests a minute and roughly 1,000 a day on the Llama 3.3 70B model the site uses.</dd>
+    <dt>Key starts with</dt><dd><code>gsk_</code></dd>
+    <dt>Notes</dt><dd>Very fast. This is the one the site has been using all along.</dd>
+  </dl>
+</section>
+
+<section class="card">
+  <h2>Google Gemini <span class="pick">Good backup</span></h2>
+  <dl>
+    <dt>Get a key</dt><dd><a href="https://aistudio.google.com/apikey" target="_blank" rel="noopener">aistudio.google.com/apikey</a> (Google account)</dd>
+    <dt>Free limits</dt><dd>Free on the Flash and Flash-Lite models, which is what the site uses. Google changes the exact numbers often and shows your current ones in AI Studio. The Pro models are no longer free.</dd>
+    <dt>Key starts with</dt><dd><code>AIza</code></dd>
+    <dt>Notes</dt><dd>On the free tier, Google may use what you send to improve its products, and people may review it.</dd>
+  </dl>
+</section>
+
+<section class="card">
+  <h2>OpenRouter</h2>
+  <dl>
+    <dt>Get a key</dt><dd><a href="https://openrouter.ai/keys" target="_blank" rel="noopener">openrouter.ai/keys</a> (free account, no card)</dd>
+    <dt>Free limits</dt><dd>Models whose names end in <code>:free</code> cost nothing: 20 requests a minute and 50 a day (1,000 a day if the account has ever bought $10 of credit). The site only picks free models.</dd>
+    <dt>Key starts with</dt><dd><code>sk-or-</code></dd>
+    <dt>Notes</dt><dd>One key, many models. Free models can be busy at peak times and get swapped out.</dd>
+  </dl>
+</section>
+
+<section class="card">
+  <h2>Cerebras</h2>
+  <dl>
+    <dt>Get a key</dt><dd><a href="https://cloud.cerebras.ai" target="_blank" rel="noopener">cloud.cerebras.ai</a></dd>
+    <dt>Free limits</dt><dd>Free trial tier: 5 requests a minute and about 1 million tokens a day.</dd>
+    <dt>Key starts with</dt><dd><code>csk-</code></dd>
+    <dt>Notes</dt><dd>Extremely fast, but 5 a minute is tight if you ask a lot of questions.</dd>
+  </dl>
+</section>
+
+<section class="card">
+  <h2>Mistral</h2>
+  <dl>
+    <dt>Get a key</dt><dd><a href="https://console.mistral.ai/api-keys" target="_blank" rel="noopener">console.mistral.ai/api-keys</a> (free “Experiment” plan)</dd>
+    <dt>Free limits</dt><dd>About 1 request a second, with a large monthly token allowance.</dd>
+    <dt>Key starts with</dt><dd>No special prefix, so choose “Mistral” in the AI provider list.</dd>
+    <dt>Notes</dt><dd>Needs phone verification, and the free plan requires agreeing that Mistral may train on your requests.</dd>
+  </dl>
+</section>
+
+<p class="note">Free limits change often; these were checked in October 2026. Your key stays in the open tab only and is never saved by the site. Treat a key like a password: don’t share it or post it anywhere.</p>
+<p><a href="./">← Back to Verba</a></p>
+</div>
+</body>
+</html>
