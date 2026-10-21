@@ -85,7 +85,8 @@ header.top p{margin:8px 0 0;color:var(--muted);max-width:60ch}
 .chat .ca{padding-left:14px;border-left:3px solid var(--line)}
 .chat small{color:var(--muted)}
 .tag{display:inline-block;font-size:.8rem;font-weight:700;padding:1px 7px;border-radius:3px;margin-right:4px;border:1px solid currentColor}
-.tag.ok{color:var(--ok)} .tag.bad{color:var(--bad)}
+.tag.ok{color:var(--ok)} .tag.bad{color:var(--bad)} .tag.edit{color:var(--gold)}
+.chat{max-height:26em;overflow-y:auto}
 .askrow{display:flex;gap:10px;flex-wrap:wrap}
 .askrow input{flex:1 1 16em;font:inherit;background:var(--wash);border:0;border-bottom:2px solid var(--accent);padding:.4em .5em;border-radius:3px 3px 0 0;color:var(--ink)}
 .hint.warn{color:var(--bad);font-weight:700}
@@ -181,7 +182,7 @@ input.full.ok{border-color:var(--ok)} input.full.bad{border-color:var(--bad)}
       <div class="askai">
         <h3>Ask the AI</h3>
         <ul class="chat" id="chat" aria-live="polite"></ul>
-        <div class="askrow"><input type="text" id="askq" autocomplete="off" placeholder="Ask a question about this sentence" aria-label="Your question for the AI"><button class="btn quiet" id="askbtn">Ask</button></div>
+        <div class="askrow"><input type="text" id="askq" autocomplete="off" placeholder="Ask a question (you can ask as many as you like)" aria-label="Your question for the AI"><button class="btn quiet" id="askbtn">Ask</button></div>
         <p class="hint" id="askhint"></p>
       </div>
     </section>
@@ -200,7 +201,7 @@ input.full.ok{border-color:var(--ok)} input.full.bad{border-color:var(--bad)}
       <label><input type="radio" name="mode" value="l2e"> Latin to English</label>
     </fieldset>
     <label><input type="checkbox" id="limit" checked> Only 1st and 2nd declension nouns and adjectives</label>
-    <label>AI provider <select id="prov" style="font:inherit;background:var(--wash);color:var(--ink);border:1px solid var(--line);border-radius:4px;padding:5px 8px"><option value="auto">Detect from key</option><option value="groq">Groq</option><option value="gemini">Google Gemini</option><option value="openrouter">OpenRouter</option><option value="cerebras">Cerebras</option><option value="mistral">Mistral</option></select></label>
+    <label>AI provider <select id="prov" style="font:inherit;background:var(--wash);color:var(--ink);border:1px solid var(--line);border-radius:4px;padding:5px 8px"><option value="auto">Detect from key</option><option value="groq">Groq</option><option value="gemini">Google Gemini</option><option value="openrouter">OpenRouter</option><option value="cerebras">Cerebras</option><option value="mistral">Mistral</option><option value="huggingface">Hugging Face</option><option value="cohere">Cohere</option></select></label>
     <span class="keyfield"><label>AI API key <input type="password" id="key" autocomplete="off" placeholder="Paste a free key" style="background:var(--wash);border:1px solid var(--line);border-radius:4px;padding:6px 10px;width:15em;max-width:52vw"></label><a class="info" href="keys.html" target="_blank" rel="noopener" title="Which free AI keys work?" aria-label="Which free AI keys work? Opens in a new tab">i</a></span>
     <div class="go">
       <span class="hint" id="keymsg" style="color:var(--bad)"></span><span class="hint" id="count">Choose at least one topic</span>
@@ -1252,16 +1253,19 @@ const PROVIDERS={
   gemini:{name:'Google Gemini',base:'https://generativelanguage.googleapis.com/v1beta/openai',re:/^AIza/,prefer:['gemini-2.5-flash','gemini-flash-latest','flash'],skip:/image|tts|audio|live|embed|imagen|veo|pro|aqa|gemma|learnlm|thinking|lite/i,fallback:'gemini-2.5-flash'},
   openrouter:{name:'OpenRouter',base:'https://openrouter.ai/api/v1',re:/^sk-or-/,prefer:['llama-3.3-70b','gpt-oss-120b','deepseek','qwen','gemma','mistral'],skip:/vision|image|audio|embed/i,fallback:'openrouter/free',check:'/key',freeOnly:true},
   cerebras:{name:'Cerebras',base:'https://api.cerebras.ai/v1',re:/^csk-/,prefer:['gpt-oss-120b','llama-3.3-70b','llama','qwen'],skip:/embed/i,fallback:'gpt-oss-120b'},
+  huggingface:{name:'Hugging Face',base:'https://router.huggingface.co/v1',re:/^hf_/,prefer:['openai/gpt-oss-120b','llama-3.3-70b','Llama-3.3-70B','Qwen3','qwen'],skip:/vision|VL|embed|coder|image/i,fallback:'openai/gpt-oss-120b',check:'https://huggingface.co/api/whoami-v2'},
+  cohere:{name:'Cohere',base:'https://api.cohere.ai/compatibility/v1',re:/^[A-Za-z0-9]{40}$/,prefer:['command-a-03-2025','command-a','command-r-plus','command-r'],skip:/vision|translate|reasoning|embed|rerank|light|nightly/i,fallback:'command-a-03-2025',check:'https://api.cohere.com/v1/models?endpoint=chat',listFromCheck:r=>(r.models||[]).map(m=>m.name)},
   mistral:{name:'Mistral',base:'https://api.mistral.ai/v1',re:/^[A-Za-z0-9]{32}$/,prefer:['mistral-small-latest','mistral-medium-latest','mistral-large-latest'],skip:/embed|ocr|moderation|codestral|pixtral|voxtral|devstral/i,fallback:'mistral-small-latest'}
 };
 let ai={key:'',prov:null,model:''};
 async function tryProvider(id,key){
   const P=PROVIDERS[id],h={Authorization:'Bearer '+key};
-  let r;try{r=await fetch(P.base+(P.check||'/models'),{headers:h})}catch(e){throw new Error(`Couldn't reach ${P.name} from this page.`)}
+  const url=c=>/^https?:/.test(c)?c:P.base+c;
+  let r;try{r=await fetch(url(P.check||'/models'),{headers:h})}catch(e){throw new Error(`Couldn't reach ${P.name} from this page.`)}
   if(r.status===401||r.status===403||r.status===400)throw new Error(`${P.name} did not accept that key.`);
   if(!r.ok)throw new Error(`${P.name} returned error ${r.status}.`);
   let ids=[];
-  try{const lr=P.check?await fetch(P.base+'/models'):r;ids=((await lr.json()).data||[]).map(m=>String(m.id).replace(/^models\//,''));}catch(e){}
+  try{if(P.listFromCheck)ids=P.listFromCheck(await r.json());else{const lr=P.check?await fetch(P.base+'/models',{headers:h}):r;ids=((await lr.json()).data||[]).map(m=>String(m.id).replace(/^models\//,''));}}catch(e){}
   if(P.freeOnly)ids=ids.filter(i=>i.endsWith(':free'));
   ids=ids.filter(i=>!P.skip.test(i));
   const model=(id==='gemini'&&ids.includes('gemini-2.5-flash'))?'gemini-2.5-flash':P.prefer.map(x=>ids.find(i=>i.includes(x))).find(Boolean)||ids[0]||P.fallback;
@@ -1290,26 +1294,31 @@ async function aiGrade(q,answer){
     {role:'user',content:`Direction: ${c.e2l?'English to Latin':'Latin to English'}\nSentence to translate: ${c.src}\nReference answer: ${c.model}\nVocabulary: ${c.vocab}\nStudent answer: ${answer}`}]);
   const j=parseJ(t);return{ok:j.correct===true,reason:String(j.reason||'')};
 }
-const ASK_BEFORE="You are a Latin tutor helping a high school Latin I student with one practice exercise. The student has NOT answered yet and is asking you a question first. Two jobs. 1) Decide whether the question is too leading. Too leading means it gets you to do part of the exercise for them: asking for the answer or any part of the translation, asking which form, case, ending, tense or person a specific word in THIS sentence should have or has, asking what a specific word in this sentence is doing in it, asking you to translate a word or phrase from the sentence in context, or asking you to check, correct or confirm a draft answer. Not too leading means it is about the language in general and the student must still apply it themselves: how a case, construction or tense works, what endings a declension or conjugation uses, what a grammar term means, what a vocabulary word means in general (the vocabulary list is already shown to the student), or how to start or approach the sentence. Judge only the newest question, but use the earlier questions as context: a question that only becomes a giveaway when combined with earlier ones counts as too leading. 2) Answer the newest question helpfully in 2 to 4 short sentences. If it is too leading, still answer it, but never write out the whole translated sentence. Reply only with JSON: {\"leading\": true or false, \"why\": \"one short sentence explaining the judgment\", \"reply\": \"your answer to the student\"}.";
-const ASK_AFTER="You are a Latin tutor helping a high school Latin I student. The student has already submitted an answer to this exercise, so you may explain everything openly, including the full answer, why their answer was right or wrong, and the grammar involved. Use the earlier questions as context. Answer the newest question clearly in 2 to 5 short sentences. Reply with plain text only.";
-async function aiAsk(q,question){
+const ASK_BEFORE="You are a Latin tutor helping a high school Latin I student with one practice exercise. The student has NOT submitted yet and is asking you a question. You are shown the exercise, the correct answer, the student's current draft (whatever is typed in the answer box right now), and every earlier question and reply about this exercise, each with the draft as it was at that moment. Treat the whole conversation as context. Use the draft only as a reference to understand what the student is thinking. Do NOT correct the draft, point out mistakes in it, or say whether it is right or wrong, unless the student specifically asks you to check, correct, fix or fill in their answer. Jobs: 1) Decide whether the newest question is too leading. Too leading means it gets you to do part of the exercise: asking for the answer or any part of the translation, asking which form, case, ending, tense or person a specific word in THIS sentence should have or has, asking what a specific word in this sentence is doing in it, asking you to translate a word or phrase from the sentence in context, or asking you to check, correct, confirm, fix or fill in their answer. Not too leading means it is about the language in general and the student must still apply it: how a case, construction or tense works, what endings a declension or conjugation uses, what a grammar term means, what a vocabulary word means in general (the vocabulary list is already shown), or how to approach the sentence. A question that only becomes a giveaway combined with earlier ones counts as too leading. 2) Answer the newest question helpfully in 2 to 4 short sentences. If it is too leading, still answer it, but do not write out the whole translated sentence unless the student asked you to correct or fill in their answer. 3) Only if the student explicitly asks you to correct, fix, change, rewrite or fill in their answer, put the full corrected answer in \"edit\" (it will replace the text in their answer box; keep everything in their draft that was already right and fix only what is wrong). Otherwise \"edit\" must be null. Reply only with JSON: {\"leading\": true or false, \"why\": \"one short sentence explaining the judgment\", \"reply\": \"your answer to the student\", \"edit\": null or \"the full corrected answer\"}.";
+const ASK_AFTER="You are a Latin tutor helping a high school Latin I student. The student has already submitted an answer to this exercise, so you may explain everything openly, including the full answer, why their answer was right or wrong, and the grammar involved. Treat the whole conversation about this exercise as context. Answer the newest question clearly in 2 to 5 short sentences. Reply with plain text only.";
+const draftOf=()=>{const f=$('qbody').querySelector('input.full');return f?f.value.trim():''};
+async function aiAsk(q,question,draft){
   const c=ctxOf(q),after=checked;
-  const hist=q.chat.map((x,i)=>`Q${i+1}${x.after?' (after answering)':''}: ${x.q}\nA${i+1}: ${x.a}${x.after?'':x.leading?' [judged too leading]':' [judged fine]'}`).join('\n')||'(none)';
-  const user=`Exercise type: ${q.choice?'identify the literary device in a line of Latin poetry':c.e2l?'translate English into Latin':'translate Latin into English'}\nSentence: ${c.src}\nCorrect answer: ${c.model}\nVocabulary shown to the student: ${c.vocab||'(none)'}\n${after?`Student's submitted answer: ${q.submitted||'(none)'}\nResult: ${q.result||''}\n`:''}Earlier questions about this sentence:\n${hist}\nNewest question: ${question}`;
+  const hist=q.chat.filter(x=>!x.pending&&!x.err).map((x,i)=>`Q${i+1}${x.after?' (after submitting)':''} [answer box said: ${x.draft||'(empty)'}]: ${x.q}\nA${i+1}: ${x.a}${x.after?'':x.leading?' [judged too leading]':' [judged fine]'}${x.edit?` [you edited their answer to: ${x.edit}]`:''}`).join('\n')||'(none)';
+  const user=`Exercise type: ${q.choice?'identify the literary device in a line of Latin poetry':c.e2l?'translate English into Latin':'translate Latin into English'}\nSentence: ${c.src}\nCorrect answer: ${c.model}\nVocabulary shown to the student: ${c.vocab||'(none)'}\n${after?`Student's submitted answer: ${q.submitted||'(none)'}\nResult: ${q.result||''}\n`:`Student's current draft in the answer box: ${draft||'(empty)'}\n`}Earlier conversation about this exercise:\n${hist}\nNewest question: ${question}`;
   const t=await aiChat([{role:'system',content:after?ASK_AFTER:ASK_BEFORE},{role:'user',content:user}]);
   if(after)return{a:t.trim(),after:true};
-  const j=parseJ(t);return{a:String(j.reply||''),leading:j.leading===true,why:String(j.why||'')};
+  const j=parseJ(t),edit=typeof j.edit==='string'&&j.edit.trim()&&!q.choice?j.edit.trim():null;
+  return{a:String(j.reply||''),leading:j.leading===true||!!edit,why:String(j.why||''),edit};
 }
 function renderChat(){
-  $('chat').innerHTML=q.chat.map(x=>`<li><p class="cq"><b>You${x.after?' (after answering)':''}:</b> ${esc(x.q)}</p>${x.pending?'<p class="ca">Thinking…</p>':`<p class="ca">${x.err?`<span class="tag bad">Couldn't ask</span> ${esc(x.err)}`:`${x.after?'':x.leading?`<span class="tag bad">Too leading</span> `:`<span class="tag ok">Fine to ask</span> `}${esc(x.a)}${x.why&&!x.after?`<br><small>${esc(x.why)}</small>`:''}`}</p>`}</li>`).join('');
+  $('chat').innerHTML=q.chat.map(x=>`<li><p class="cq"><b>You${x.after?' (after answering)':''}:</b> ${esc(x.q)}</p>${x.pending?'<p class="ca">Thinking…</p>':`<p class="ca">${x.err?`<span class="tag bad">Couldn't ask</span> ${esc(x.err)}`:`${x.after?'':x.leading?`<span class="tag bad">Too leading</span> `:`<span class="tag ok">Fine to ask</span> `}${esc(x.a)}${x.why&&!x.after?`<br><small>${esc(x.why)}</small>`:''}${x.edit?`<br><span class="tag edit">Edited your answer</span> <span class="la">${esc(x.edit)}</span>`:''}`}</p>`}</li>`).join('');
+  const box=$('chat');box.scrollTop=box.scrollHeight;
   $('askhint').textContent=checked?'Ask anything now; questions after answering never affect your score.':q.leaked?'A question was too leading, so this sentence will count as wrong. You can still answer it.':'Before you answer: a question that gives away part of the answer makes this sentence count as wrong.';
   $('askhint').className='hint'+(q.leaked&&!checked?' warn':'');
 }
 async function ask(){
   const inp=$('askq'),text=inp.value.trim();if(!text||!q)return;
-  const cur=q,item={q:text,pending:true,after:checked};q.chat.push(item);inp.value='';renderChat();
-  try{Object.assign(item,await aiAsk(cur,text))}catch(e){item.err=e.message||'The AI could not be reached'}
+  const draft=checked?(q.submitted||''):draftOf(),cur=q,item={q:text,pending:true,after:checked,draft};
+  q.chat.push(item);inp.value='';renderChat();
+  try{Object.assign(item,await aiAsk(cur,text,draft))}catch(e){item.err=e.message||'The AI could not be reached'}
   item.pending=false;if(!item.after&&item.leading)cur.leaked=true;
+  if(item.edit&&cur===q&&!checked){const f=$('qbody').querySelector('input.full');if(f&&!f.disabled){f.value=item.edit;}}
   if(cur===q)renderChat();
 }
 function buildCharts(){
