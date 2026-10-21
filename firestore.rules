@@ -1,0 +1,18 @@
+rules_version = '2';
+// Verba accounts: each account is one document named by its secret account key.
+// A key can read and save its own document; nobody can list or delete accounts.
+service cloud.firestore {
+  match /databases/{database}/documents {
+    match /accounts/{id} {
+      allow get: if id.size() == 24;
+      allow create, update: if id.size() == 24
+        && request.resource.data.keys().hasOnly(['data', 'updated'])
+        && request.resource.data.data is string
+        && request.resource.data.data.size() < 20000;
+      allow list, delete: if false;
+    }
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}
