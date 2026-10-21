@@ -77,6 +77,21 @@ header.top p{margin:8px 0 0;color:var(--muted);max-width:60ch}
 .hint{color:var(--muted);font-size:.95rem}
 
 /* drill */
+.askai{margin-top:26px;border-top:1px solid var(--line);padding-top:14px}
+.askai h3{font-size:1.05rem;margin:0 0 8px}
+.chat{list-style:none;margin:0 0 10px;padding:0}
+.chat li{margin-bottom:12px}
+.chat p{margin:2px 0}
+.chat .ca{padding-left:14px;border-left:3px solid var(--line)}
+.chat small{color:var(--muted)}
+.tag{display:inline-block;font-size:.8rem;font-weight:700;padding:1px 7px;border-radius:3px;margin-right:4px;border:1px solid currentColor}
+.tag.ok{color:var(--ok)} .tag.bad{color:var(--bad)}
+.askrow{display:flex;gap:10px;flex-wrap:wrap}
+.askrow input{flex:1 1 16em;font:inherit;background:var(--wash);border:0;border-bottom:2px solid var(--accent);padding:.4em .5em;border-radius:3px 3px 0 0;color:var(--ink)}
+.hint.warn{color:var(--bad);font-weight:700}
+.keyfield{display:inline-flex;align-items:center;gap:6px}
+.info{display:inline-flex;align-items:center;justify-content:center;width:1.6em;height:1.6em;border-radius:50%;border:2px solid var(--accent);color:var(--accent);font-family:var(--latin);font-style:italic;font-weight:700;text-decoration:none}
+.info:hover{background:var(--accent);color:var(--accent-ink)}
 .charts{margin:0 0 20px}
 .charts h2,.charts h2 button{background:none;border:0;color:var(--accent);text-decoration:underline;text-underline-offset:3px;cursor:pointer;padding:0;font-weight:400}
 .cgrid{display:flex;flex-wrap:wrap;gap:16px 36px;margin-top:10px}
@@ -129,7 +144,7 @@ input.full.ok{border-color:var(--ok)} input.full.bad{border-color:var(--bad)}
 <div class="wrap">
   <header class="top">
     <h1>Verba</h1>
-    <p>Latin sentence practice from Latin I Honors through AP Latin. Every sentence is built fresh. Your Groq key is used only in this tab to double-check answers and is never saved.</p>
+    <p>Latin sentence practice from Latin I Honors through AP Latin. Every sentence is built fresh. Your AI key is used only in this tab, to double-check answers and answer your questions, and is never saved.</p>
   </header>
 
   <main id="start">
@@ -163,6 +178,12 @@ input.full.ok{border-color:var(--ok)} input.full.bad{border-color:var(--bad)}
         <span class="hint" id="machint">or type - after a vowel: a- becomes ā</span>
       </div>
       <ul class="feedback" id="feedback" aria-live="polite"></ul>
+      <div class="askai">
+        <h3>Ask the AI</h3>
+        <ul class="chat" id="chat" aria-live="polite"></ul>
+        <div class="askrow"><input type="text" id="askq" autocomplete="off" placeholder="Ask a question about this sentence" aria-label="Your question for the AI"><button class="btn quiet" id="askbtn">Ask</button></div>
+        <p class="hint" id="askhint"></p>
+      </div>
     </section>
     <section class="vocab" id="vocab">
       <h2>Vocabulary <button id="vtoggle">Hide</button></h2>
@@ -179,7 +200,8 @@ input.full.ok{border-color:var(--ok)} input.full.bad{border-color:var(--bad)}
       <label><input type="radio" name="mode" value="l2e"> Latin to English</label>
     </fieldset>
     <label><input type="checkbox" id="limit" checked> Only 1st and 2nd declension nouns and adjectives</label>
-    <label>Groq API key <input type="password" id="key" autocomplete="off" placeholder="gsk_..." style="background:var(--wash);border:1px solid var(--line);border-radius:4px;padding:6px 10px;width:15em;max-width:60vw"></label>
+    <label>AI provider <select id="prov" style="font:inherit;background:var(--wash);color:var(--ink);border:1px solid var(--line);border-radius:4px;padding:5px 8px"><option value="auto">Detect from key</option><option value="groq">Groq</option><option value="gemini">Google Gemini</option><option value="openrouter">OpenRouter</option><option value="cerebras">Cerebras</option><option value="mistral">Mistral</option></select></label>
+    <span class="keyfield"><label>AI API key <input type="password" id="key" autocomplete="off" placeholder="Paste a free key" style="background:var(--wash);border:1px solid var(--line);border-radius:4px;padding:6px 10px;width:15em;max-width:52vw"></label><a class="info" href="keys.html" target="_blank" rel="noopener" title="Which free AI keys work?" aria-label="Which free AI keys work? Opens in a new tab">i</a></span>
     <div class="go">
       <span class="hint" id="keymsg" style="color:var(--bad)"></span><span class="hint" id="count">Choose at least one topic</span>
       <button class="btn" id="startbtn" disabled>Start practice</button>
@@ -1195,6 +1217,7 @@ function buildStart(){
   const m0=document.querySelector(`input[name=mode][value=${store.get('mode','e2l')}]`);if(m0)m0.checked=true;
   $('pickTaught').addEventListener('click',()=>{document.querySelectorAll('#levels input').forEach(b=>{if(TAUGHT.has(b.value)){b.checked=true;selected.add(b.value)}});sync()});
   $('limit').checked=store.get('limit',true);
+  $('prov').value=store.get('prov','auto');
   store.get('bFrames',[]).forEach(x=>FRAMES.some(f=>f[0]===x)&&bFrames.add(x));store.get('bIngs',[]).forEach(x=>ING_ALL.some(f=>f[0]===x)&&bIngs.add(x));
   $('per').value=store.get('per','2');
   $('frames').innerHTML=FRAMES.map(([id,name])=>`<label class="taught"><input type="checkbox" value="${id}" ${bFrames.has(id)?'checked':''}><span>${esc(name)}</span></label>`).join('');
@@ -1223,24 +1246,71 @@ function sync(){
 }
 const mixed=()=>document.querySelector('input[name=style]:checked').value==='mixed';
 const modeSel=()=>document.querySelector('input[name=mode]:checked').value;
-let groqKey='',groqModel='';
-async function groqInit(key){
-  const r=await fetch('https://api.groq.com/openai/v1/models',{headers:{Authorization:'Bearer '+key}});
-  if(!r.ok)throw new Error(r.status===401?'Groq did not accept that key.':'Groq returned error '+r.status+'.');
-  const ids=((await r.json()).data||[]).map(m=>m.id).filter(id=>!/whisper|guard|tts|embed|speech|orpheus|compound/i.test(id));
-  groqModel=['llama-3.3-70b','gpt-oss-120b','70b','llama'].map(p=>ids.find(i=>i.includes(p))).find(Boolean)||ids[0];
-  if(!groqModel)throw new Error('No usable Groq model found for this key.');
-  groqKey=key;
+/* ---------- AI provider layer (any of these free keys works) ---------- */
+const PROVIDERS={
+  groq:{name:'Groq',base:'https://api.groq.com/openai/v1',re:/^gsk_/,prefer:['llama-3.3-70b','gpt-oss-120b','70b','llama'],skip:/whisper|guard|tts|embed|speech|orpheus|compound|playai/i,fallback:'llama-3.3-70b-versatile'},
+  gemini:{name:'Google Gemini',base:'https://generativelanguage.googleapis.com/v1beta/openai',re:/^AIza/,prefer:['gemini-2.5-flash','gemini-flash-latest','flash'],skip:/image|tts|audio|live|embed|imagen|veo|pro|aqa|gemma|learnlm|thinking|lite/i,fallback:'gemini-2.5-flash'},
+  openrouter:{name:'OpenRouter',base:'https://openrouter.ai/api/v1',re:/^sk-or-/,prefer:['llama-3.3-70b','gpt-oss-120b','deepseek','qwen','gemma','mistral'],skip:/vision|image|audio|embed/i,fallback:'openrouter/free',check:'/key',freeOnly:true},
+  cerebras:{name:'Cerebras',base:'https://api.cerebras.ai/v1',re:/^csk-/,prefer:['gpt-oss-120b','llama-3.3-70b','llama','qwen'],skip:/embed/i,fallback:'gpt-oss-120b'},
+  mistral:{name:'Mistral',base:'https://api.mistral.ai/v1',re:/^[A-Za-z0-9]{32}$/,prefer:['mistral-small-latest','mistral-medium-latest','mistral-large-latest'],skip:/embed|ocr|moderation|codestral|pixtral|voxtral|devstral/i,fallback:'mistral-small-latest'}
+};
+let ai={key:'',prov:null,model:''};
+async function tryProvider(id,key){
+  const P=PROVIDERS[id],h={Authorization:'Bearer '+key};
+  let r;try{r=await fetch(P.base+(P.check||'/models'),{headers:h})}catch(e){throw new Error(`Couldn't reach ${P.name} from this page.`)}
+  if(r.status===401||r.status===403||r.status===400)throw new Error(`${P.name} did not accept that key.`);
+  if(!r.ok)throw new Error(`${P.name} returned error ${r.status}.`);
+  let ids=[];
+  try{const lr=P.check?await fetch(P.base+'/models'):r;ids=((await lr.json()).data||[]).map(m=>String(m.id).replace(/^models\//,''));}catch(e){}
+  if(P.freeOnly)ids=ids.filter(i=>i.endsWith(':free'));
+  ids=ids.filter(i=>!P.skip.test(i));
+  const model=(id==='gemini'&&ids.includes('gemini-2.5-flash'))?'gemini-2.5-flash':P.prefer.map(x=>ids.find(i=>i.includes(x))).find(Boolean)||ids[0]||P.fallback;
+  ai={key,prov:id,model};
 }
-async function groqGrade(q,answer){
-  const e2l=q.mode==='e2l',src=e2l?cap(q.en)+q.end:q.latin,model=e2l?q.latin:cap(q.en)+q.end;
-  const vocab=[...new Set(q.tokens.map(t=>t.vocab).filter(Boolean))].join('; ');
-  const r=await fetch('https://api.groq.com/openai/v1/chat/completions',{method:'POST',headers:{Authorization:'Bearer '+groqKey,'Content-Type':'application/json'},body:JSON.stringify({model:groqModel,temperature:0,response_format:{type:'json_object'},messages:[
-    {role:'system',content:'You grade Latin translation exercises for a high school student. The reference answer is known to be correct. Mark the student correct only if their sentence means the same as the reference: same case roles, number, tense, voice, mood and person. Accept any valid phrasing or synonym, either English article, and any Latin word order. Ignore macrons, capitalization and punctuation. Forgive obvious spelling typos (swapped, missing, doubled or extra letters, such as posion for poison) when the intended word is clear and the slip does not turn it into a different real word or a different grammatical form; still mark the answer correct and name the typo in the reason. A difference that changes number, tense, person, voice or case is never a typo: field for fields is incorrect, and in Latin a typo is only forgivable in the stem of a word, never in its ending. If the student sentence contains a wrong ending or a wrong word, it is incorrect. Reply only with JSON: {"correct": true or false, "reason": "one short sentence for the student"}.'},
-    {role:'user',content:`Direction: ${e2l?'English to Latin':'Latin to English'}\nSentence to translate: ${src}\nReference answer: ${model}\nVocabulary: ${vocab}\nStudent answer: ${answer}`}]})});
-  if(!r.ok)throw new Error('Groq error '+r.status);
-  const j=JSON.parse((await r.json()).choices[0].message.content);
-  return{ok:j.correct===true,reason:String(j.reason||'')};
+async function aiInit(key,choice){
+  if(choice&&choice!=='auto')return tryProvider(choice,key);
+  const order=Object.keys(PROVIDERS).filter(id=>PROVIDERS[id].re.test(key));
+  if(!order.length)throw new Error("That doesn't look like a key from a provider this site knows. Pick the provider from the list, or tap ⓘ to see which keys work.");
+  let last;for(const id of order){try{return await tryProvider(id,key)}catch(e){last=e}}throw last;
+}
+async function aiChat(messages,retry=true){
+  const P=PROVIDERS[ai.prov];
+  let r;try{r=await fetch(P.base+'/chat/completions',{method:'POST',headers:{Authorization:'Bearer '+ai.key,'Content-Type':'application/json'},body:JSON.stringify({model:ai.model,temperature:0,messages})})}
+  catch(e){throw new Error(P.name+' could not be reached')}
+  if(r.status===429)throw new Error(P.name+' rate limit reached; wait a minute');
+  if(!r.ok){if(retry&&ai.model!==P.fallback&&(r.status===404||r.status===400)){ai.model=P.fallback;return aiChat(messages,false)}throw new Error(P.name+' error '+r.status)}
+  const j=await r.json();return String(((j.choices||[])[0]||{}).message?.content||'');
+}
+const parseJ=t=>{const m=String(t).replace(/```(json)?/g,'').match(/\{[\s\S]*\}/);if(!m)throw new Error('the AI gave an unreadable reply');return JSON.parse(m[0])};
+const ctxOf=q=>{const e2l=q.mode==='e2l',vocab=[...new Set(q.tokens.map(t=>t.vocab).filter(Boolean))].join('; ');
+  return{e2l,src:q.choice?q.line+' ('+q.cite+')':e2l?cap(q.en)+q.end:q.latin,model:q.choice?q.answer:e2l?q.latin:cap(q.en)+q.end,vocab}};
+async function aiGrade(q,answer){
+  const c=ctxOf(q);
+  const t=await aiChat([{role:'system',content:'You grade Latin translation exercises for a high school student. The reference answer is known to be correct. Mark the student correct only if their sentence means the same as the reference: same case roles, number, tense, voice, mood and person. Accept any valid phrasing or synonym, either English article, and any Latin word order. Ignore macrons, capitalization and punctuation. Forgive obvious spelling typos (swapped, missing, doubled or extra letters, such as posion for poison) when the intended word is clear and the slip does not turn it into a different real word or a different grammatical form; still mark the answer correct and name the typo in the reason. A difference that changes number, tense, person, voice or case is never a typo: field for fields is incorrect, and in Latin a typo is only forgivable in the stem of a word, never in its ending. If the student sentence contains a wrong ending or a wrong word, it is incorrect. Reply only with JSON: {"correct": true or false, "reason": "one short sentence for the student"}.'},
+    {role:'user',content:`Direction: ${c.e2l?'English to Latin':'Latin to English'}\nSentence to translate: ${c.src}\nReference answer: ${c.model}\nVocabulary: ${c.vocab}\nStudent answer: ${answer}`}]);
+  const j=parseJ(t);return{ok:j.correct===true,reason:String(j.reason||'')};
+}
+const ASK_BEFORE="You are a Latin tutor helping a high school Latin I student with one practice exercise. The student has NOT answered yet and is asking you a question first. Two jobs. 1) Decide whether the question is too leading. Too leading means it gets you to do part of the exercise for them: asking for the answer or any part of the translation, asking which form, case, ending, tense or person a specific word in THIS sentence should have or has, asking what a specific word in this sentence is doing in it, asking you to translate a word or phrase from the sentence in context, or asking you to check, correct or confirm a draft answer. Not too leading means it is about the language in general and the student must still apply it themselves: how a case, construction or tense works, what endings a declension or conjugation uses, what a grammar term means, what a vocabulary word means in general (the vocabulary list is already shown to the student), or how to start or approach the sentence. Judge only the newest question, but use the earlier questions as context: a question that only becomes a giveaway when combined with earlier ones counts as too leading. 2) Answer the newest question helpfully in 2 to 4 short sentences. If it is too leading, still answer it, but never write out the whole translated sentence. Reply only with JSON: {\"leading\": true or false, \"why\": \"one short sentence explaining the judgment\", \"reply\": \"your answer to the student\"}.";
+const ASK_AFTER="You are a Latin tutor helping a high school Latin I student. The student has already submitted an answer to this exercise, so you may explain everything openly, including the full answer, why their answer was right or wrong, and the grammar involved. Use the earlier questions as context. Answer the newest question clearly in 2 to 5 short sentences. Reply with plain text only.";
+async function aiAsk(q,question){
+  const c=ctxOf(q),after=checked;
+  const hist=q.chat.map((x,i)=>`Q${i+1}${x.after?' (after answering)':''}: ${x.q}\nA${i+1}: ${x.a}${x.after?'':x.leading?' [judged too leading]':' [judged fine]'}`).join('\n')||'(none)';
+  const user=`Exercise type: ${q.choice?'identify the literary device in a line of Latin poetry':c.e2l?'translate English into Latin':'translate Latin into English'}\nSentence: ${c.src}\nCorrect answer: ${c.model}\nVocabulary shown to the student: ${c.vocab||'(none)'}\n${after?`Student's submitted answer: ${q.submitted||'(none)'}\nResult: ${q.result||''}\n`:''}Earlier questions about this sentence:\n${hist}\nNewest question: ${question}`;
+  const t=await aiChat([{role:'system',content:after?ASK_AFTER:ASK_BEFORE},{role:'user',content:user}]);
+  if(after)return{a:t.trim(),after:true};
+  const j=parseJ(t);return{a:String(j.reply||''),leading:j.leading===true,why:String(j.why||'')};
+}
+function renderChat(){
+  $('chat').innerHTML=q.chat.map(x=>`<li><p class="cq"><b>You${x.after?' (after answering)':''}:</b> ${esc(x.q)}</p>${x.pending?'<p class="ca">Thinking…</p>':`<p class="ca">${x.err?`<span class="tag bad">Couldn't ask</span> ${esc(x.err)}`:`${x.after?'':x.leading?`<span class="tag bad">Too leading</span> `:`<span class="tag ok">Fine to ask</span> `}${esc(x.a)}${x.why&&!x.after?`<br><small>${esc(x.why)}</small>`:''}`}</p>`}</li>`).join('');
+  $('askhint').textContent=checked?'Ask anything now; questions after answering never affect your score.':q.leaked?'A question was too leading, so this sentence will count as wrong. You can still answer it.':'Before you answer: a question that gives away part of the answer makes this sentence count as wrong.';
+  $('askhint').className='hint'+(q.leaked&&!checked?' warn':'');
+}
+async function ask(){
+  const inp=$('askq'),text=inp.value.trim();if(!text||!q)return;
+  const cur=q,item={q:text,pending:true,after:checked};q.chat.push(item);inp.value='';renderChat();
+  try{Object.assign(item,await aiAsk(cur,text))}catch(e){item.err=e.message||'The AI could not be reached'}
+  item.pending=false;if(!item.after&&item.leading)cur.leaked=true;
+  if(cur===q)renderChat();
 }
 function buildCharts(){
   const PN=['1st (I)','2nd (you)','3rd (he/she/it)'],PL=['(we)','(you)','(they)'],re=x=>x.replace(/^(\S*)ris$/,'$1ris / -$1re');
@@ -1257,10 +1327,10 @@ function buildCharts(){
 }
 
 async function tryStart(){
-  const k=$('key').value.trim();$('keymsg').textContent='';
-  if(!k){$('keymsg').textContent='Paste your Groq API key first.';$('key').focus();return;}
-  if(k!==groqKey){$('startbtn').disabled=true;$('startbtn').textContent='Checking key…';
-    try{await groqInit(k)}catch(e){$('keymsg').textContent=e.message||'Could not reach Groq.';return}finally{$('startbtn').textContent='Start practice';sync()}}
+  const k=$('key').value.trim(),pv=$('prov').value;$('keymsg').textContent='';store.set('prov',pv);
+  if(!k){$('keymsg').textContent='Paste an AI API key first. Tap ⓘ for free ones.';$('key').focus();return;}
+  if(k!==ai.key||(pv!=='auto'&&pv!==ai.prov)){$('startbtn').disabled=true;$('startbtn').textContent='Checking key…';
+    try{await aiInit(k,pv)}catch(e){$('keymsg').textContent=e.message||'Could not reach the AI provider.';return}finally{$('startbtn').textContent='Start practice';sync()}}
   start();
 }
 function start(){
@@ -1269,7 +1339,7 @@ function start(){
   $('start').hidden=true;$('bar').hidden=true;$('drill').hidden=false;window.scrollTo(0,0);next();
 }
 function next(){
-  q=tab==='build'?makeBuilt(bFrames,bIngs,$('per').value):makeQuestion(selected,false);checked=false;
+  q=tab==='build'?makeBuilt(bFrames,bIngs,$('per').value):makeQuestion(selected,false);checked=false;q.chat=[];q.leaked=false;$('askq').value='';
   $('feedback').innerHTML='';$('check').textContent='Check answer';
   const blanks=q.choice?[]:q.tokens.filter(t=>t.blank);
   $('concept').textContent=blanks.length>1?'Mixed: '+[...new Set(blanks.map(b=>TOPICS.find(t=>b.cids.includes(t.id)&&selected.has(t.id))||q.topic).map(t=>t.name))].join(' + '):q.topic.name;
@@ -1298,7 +1368,7 @@ function next(){
     $('vlist').innerHTML=q.tokens.filter(t=>t.vocab&&!seen.has(t.vocab)&&seen.add(t.vocab)).map(t=>`<li>${esc(t.vocab)}</li>`).join('');
     const f=$('qbody').querySelector('input');if(f){f.focus();lastInput=f;}
   }
-  score();
+  renderChat();score();
 }
 function score(){$('score').innerHTML=`<b>${stats.right}</b> of <b>${stats.total}</b> correct · streak <b>${stats.streak}</b>`}
 function check(){
@@ -1321,31 +1391,34 @@ let busy=false;
 async function checkT(){
   if(busy)return;
   const inp=$('qbody').querySelector('input.full'),e2l=q.mode==='e2l',prev=stats.streak,cur=q;
-  let r=e2l?gradeLatin(q,inp.value):gradeEnglish(q,inp.value),ai=null,aiErr='';
+  let r=e2l?gradeLatin(q,inp.value):gradeEnglish(q,inp.value),aiR=null,aiErr='';
   inp.disabled=true;
   if(!r.ok&&!r.empty&&!r.essential){
-    busy=true;$('check').disabled=true;$('feedback').innerHTML='<li>Checking with Groq…</li>';
-    try{ai=await groqGrade(q,inp.value.trim())}catch(e){aiErr=e.message||'Groq could not be reached'}
+    busy=true;$('check').disabled=true;$('feedback').innerHTML=`<li>Checking with ${esc(PROVIDERS[ai.prov].name)}…</li>`;
+    try{aiR=await aiGrade(q,inp.value.trim())}catch(e){aiErr=e.message||'the AI could not be reached'}
     busy=false;$('check').disabled=false;if(cur!==q)return;
-    if(ai&&ai.ok)r={ok:true,ai:true};
+    if(aiR&&aiR.ok)r={ok:true,ai:true};
   }
-  inp.classList.add(r.ok?'ok':'bad');stats.total++;if(r.ok)stats.right++;stats.streak=r.ok?prev+1:0;
+  const counts=r.ok&&!q.leaked;
+  inp.classList.add(counts?'ok':'bad');stats.total++;if(counts)stats.right++;stats.streak=counts?prev+1:0;
+  q.submitted=inp.value.trim();q.result=r.ok?'correct':'incorrect';
   const model=`<span class="la">${esc(e2l?q.latin:cap(q.en)+q.end)}</span>`,order=e2l?' Any word order is accepted.':'';
-  const why=ai&&ai.reason?`<br>${esc(ai.reason)}`:aiErr?`<br>Groq check failed (${esc(aiErr)}), so only the built-in checker ran.`:'';
+  const why=aiR&&aiR.reason?`<br>${esc(aiR.reason)}`:aiErr?`<br>The AI check failed (${esc(aiErr)}), so only the built-in checker ran.`:'';
   let li;
   if(r.ai)li=`<li class="ok"><b class="ok">Correct.</b>${why} The site's version: ${model}</li>`;
   else if(r.ok&&!r.macron)li=`<li class="ok"><b class="ok">Correct.</b> ${model}</li>`;
   else if(r.ok)li=`<li class="mac"><b class="ok">Correct</b>, <b class="mac">but check the macrons.</b> With every macron: ${model}</li>`;
   else if(r.essential)li=`<li class="bad"><b class="bad">Incorrect: a macron matters here.</b> <span class="la">${esc(r.essential.join(', '))}</span> is a different form. The answer is ${model}</li>`;
   else li=`<li class="bad"><b class="bad">${r.empty?'No answer given.':'Incorrect.'}</b>${why}${why?'<br>':' '}One correct answer: ${model}${order}${r.empty?'':'<br><button class="btn quiet" id="override">Count my answer as correct</button>'}</li>`;
-  $('feedback').innerHTML=li;checked=true;$('check').textContent='Next sentence';$('check').focus();score();
+  if(q.leaked){li=li.replace('<b class="ok">Correct.</b>','<b class="ok">Right answer.</b>').replace('<b class="ok">Correct</b>','<b class="ok">Right answer</b>');li=li.replace(/<br><button class="btn quiet" id="override">[^<]*<\/button>/,'');li+=`<li class="bad"><b class="bad">${r.ok?'Your answer was right, but this sentence counts as wrong':'This sentence also counts as wrong'}</b> because one of your questions before answering was too leading.</li>`;}
+  $('feedback').innerHTML=li;checked=true;$('check').textContent='Next sentence';$('check').focus();score();renderChat();
   const o=$('override');if(o)o.addEventListener('click',()=>{stats.right++;stats.streak=prev+1;o.remove();score()});
 }
 $('qbody').addEventListener('click',e=>{
   const o=e.target.dataset&&e.target.dataset.o;if(!o||checked)return;checked=true;
-  const ok=o===q.answer;stats.total++;if(ok)stats.right++;stats.streak=ok?stats.streak+1:0;
+  const right=o===q.answer,ok=right&&!q.leaked;stats.total++;if(ok)stats.right++;stats.streak=ok?stats.streak+1:0;q.submitted=o;q.result=right?'correct':'incorrect';
   $('qbody').querySelectorAll('.choices button').forEach(b=>{b.disabled=true;if(b.dataset.o===q.answer)b.classList.add('ok');else if(b===e.target)b.classList.add('bad')});
-  $('feedback').innerHTML=`<li class="${ok?'ok':'bad'}"><b class="${ok?'ok':'bad'}">${ok?'Correct.':'Incorrect.'}</b> ${cap(q.answer)}: ${esc(q.explain)}</li>`;
+  $('feedback').innerHTML=`<li class="${ok?'ok':'bad'}"><b class="${ok?'ok':'bad'}">${ok?'Correct.':right?'Right answer, but it counts as wrong because a question before answering was too leading.':'Incorrect.'}</b> ${cap(q.answer)}: ${esc(q.explain)}</li>`;renderChat();
   $('check').hidden=false;$('check').textContent='Next line';$('check').focus();score();
 });
 $('qbody').addEventListener('focusin',e=>{if(e.target.tagName==='INPUT')lastInput=e.target});
@@ -1358,6 +1431,8 @@ $('macrons').innerHTML=['ā','ē','ī','ō','ū'].map(c=>`<button type="button" 
 $('macrons').addEventListener('click',e=>{if(e.target.tagName!=='BUTTON'||!lastInput||lastInput.disabled)return;
   const t=lastInput,p=t.selectionStart??t.value.length;t.value=t.value.slice(0,p)+e.target.textContent+t.value.slice(t.selectionEnd??p);t.focus();t.setSelectionRange(p+1,p+1);});
 $('check').addEventListener('click',check);
+$('askbtn').addEventListener('click',ask);
+$('askq').addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();ask()}});
 $('startbtn').addEventListener('click',tryStart);
 $('back').addEventListener('click',()=>{$('drill').hidden=true;$('start').hidden=false;$('bar').hidden=false;window.scrollTo(0,0)});
 $('vtoggle').addEventListener('click',()=>{const l=$('vlist');l.hidden=!l.hidden;$('vtoggle').textContent=l.hidden?'Show':'Hide'});
