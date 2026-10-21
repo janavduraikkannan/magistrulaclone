@@ -3,155 +3,262 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>Verba: Latin sentence practice</title>
+<title>Verba · Latin practice with Fēlix</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Gentium+Book+Plus:ital,wght@0,400;0,700;1,400&family=Alegreya+Sans:wght@400;500;700&display=swap" rel="stylesheet">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600&family=Nunito:wght@400;600;700;800&family=Gentium+Book+Plus:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
+<link rel="icon" href="img/felix-happy.png">
+<script>try{var t=localStorage.getItem('verba.theme');document.documentElement.dataset.theme=t?JSON.parse(t):(matchMedia('(prefers-color-scheme: light)').matches?'light':'dark')}catch(e){document.documentElement.dataset.theme='dark'}</script>
+<script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.3/dist/confetti.browser.min.js" defer></script>
 <style>
 :root{
-  --bg:#E9ECE6; --surface:#F8FAF5; --ink:#1F2430; --muted:#59606C; --line:#C9CEC3;
-  --accent:#6A1E55; --accent-ink:#fff; --ok:#1B6F62; --bad:#AE3527; --gold:#8A6516; --wash:#EFE6EC;
   --latin:"Gentium Book Plus","Gentium Plus",Georgia,"Times New Roman",serif;
-  --ui:"Alegreya Sans","Segoe UI",system-ui,sans-serif;
+  --ui:"Nunito","Segoe UI",system-ui,-apple-system,sans-serif;
+  --display:"Fredoka","Nunito","Segoe UI",system-ui,sans-serif;
+  --r:16px;
   box-sizing:border-box;
   padding-top:env(safe-area-inset-top,0px); padding-bottom:env(safe-area-inset-bottom,0px);
+  /* dark (default) */
+  --bg:#0D0F24; --surface:#171A3A; --surface2:#20244D; --ink:#EEF0FF; --muted:#A4A9D8; --line:#2C3168;
+  --accent:#FFC53D; --accent-ink:#231800; --accent-shadow:#B9851A; --accent2:#8F82FF; --accent2-ink:#fff;
+  --ok:#3DDC97; --bad:#FF6B81; --gold:#FFB020; --wash:#1F2350;
+  --glow1:rgba(143,130,255,.22); --glow2:rgba(255,197,61,.12); --shadow:0 10px 30px rgba(0,0,0,.35);
+  --lv1:#FFC53D; --lv2:#8F82FF; --lv3:#3DD6D0; --lv4:#FF7AB6;
+  color-scheme:dark;
 }
-@media (prefers-color-scheme:dark){
-  :root:not([data-theme="light"]){
-    --bg:#17161C; --surface:#211F28; --ink:#ECE9E1; --muted:#A7A3AE; --line:#3A3643;
-    --accent:#D79CCB; --accent-ink:#1B1220; --ok:#62C7B3; --bad:#F28A7B; --gold:#D9B45C; --wash:#2C2431;
-  }
-}
-:root[data-theme="dark"]{
-  --bg:#17161C; --surface:#211F28; --ink:#ECE9E1; --muted:#A7A3AE; --line:#3A3643;
-  --accent:#D79CCB; --accent-ink:#1B1220; --ok:#62C7B3; --bad:#F28A7B; --gold:#D9B45C; --wash:#2C2431;
+:root[data-theme="light"]{
+  --bg:#F8F5EC; --surface:#FFFFFF; --surface2:#F2EEFF; --ink:#1E1B3A; --muted:#5F5B7E; --line:#E4DECF;
+  --accent:#5B3FE0; --accent-ink:#fff; --accent-shadow:#3B26A6; --accent2:#5B3FE0; --accent2-ink:#fff;
+  --ok:#11885A; --bad:#D52F4C; --gold:#B26A00; --wash:#F3EFFF;
+  --glow1:rgba(91,63,224,.10); --glow2:rgba(255,176,32,.14); --shadow:0 10px 26px rgba(40,30,90,.10);
+  --lv1:#C98A00; --lv2:#5B3FE0; --lv3:#0E8F8A; --lv4:#C93A86;
+  color-scheme:light;
 }
 *,*::before,*::after{box-sizing:inherit}
-html{scroll-padding-top:env(safe-area-inset-top,0px)}
-body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--ui);font-size:18px;line-height:1.45}
-button,input{font:inherit;color:inherit}
-:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
-.wrap{max-width:1180px;margin:0 auto;padding:0 20px}
-header.top{padding:28px 0 18px;border-bottom:1px solid var(--line)}
-header.top h1{font-family:var(--latin);font-weight:400;font-size:clamp(2.4rem,6vw,3.6rem);margin:0;letter-spacing:.01em;line-height:1}
-header.top p{margin:8px 0 0;color:var(--muted);max-width:60ch}
+html{scroll-padding-top:calc(76px + env(safe-area-inset-top,0px))}
+body{margin:0;color:var(--ink);font-family:var(--ui);font-size:17px;line-height:1.5;
+  background:radial-gradient(1100px 600px at 0% -10%,var(--glow1),transparent 60%),radial-gradient(900px 520px at 100% 0%,var(--glow2),transparent 60%),var(--bg);
+  background-attachment:fixed;transition:background-color .3s,color .3s}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:30;background:var(--bg)}
+button,input,select{font:inherit;color:inherit}
+:focus-visible{outline:3px solid var(--accent2);outline-offset:2px;border-radius:6px}
 [hidden]{display:none!important}
+.wrap{max-width:1180px;margin:0 auto;padding:0 20px}
+img{max-width:100%}
+
+/* top bar */
+.topbar{position:sticky;top:env(safe-area-inset-top,0px);z-index:25;background:color-mix(in srgb,var(--bg) 82%,transparent);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border-bottom:1px solid var(--line)}
+.topbar .wrap{display:flex;align-items:center;gap:14px 22px;min-height:64px;flex-wrap:wrap}
+.brand{display:flex;align-items:center;gap:10px;text-decoration:none;color:var(--ink)}
+.brand img{width:38px;height:38px}
+.brand b{font-family:var(--display);font-weight:600;font-size:1.65rem;letter-spacing:.01em}
+.brand span{font-size:.75rem;font-weight:800;text-transform:uppercase;letter-spacing:.08em;color:var(--accent-ink);background:var(--accent);padding:2px 8px;border-radius:999px}
+.hud{margin-left:auto;display:flex;align-items:center;gap:10px 16px;flex-wrap:wrap}
+.chip{flex:none;display:inline-flex;align-items:center;gap:6px;background:var(--surface);border:1px solid var(--line);border-radius:999px;padding:4px 12px 4px 6px;font-weight:800;white-space:nowrap}
+.chip img{width:24px;height:24px}
+.xp{display:flex;align-items:center;gap:10px;min-width:220px}
+.xp .rank{font-family:var(--display);font-weight:600;white-space:nowrap}
+.xp .rank small{color:var(--muted);font-family:var(--ui);font-weight:700;margin-left:4px}
+.xpbar{flex:1;min-width:90px;height:12px;background:var(--surface2);border:1px solid var(--line);border-radius:999px;overflow:hidden}
+.xpbar i{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--accent2),var(--accent));border-radius:999px;transition:width .6s cubic-bezier(.2,.9,.3,1.2)}
+.themebtn{width:42px;height:42px;border-radius:12px;border:1px solid var(--line);background:var(--surface);cursor:pointer;display:grid;place-items:center;padding:0;transition:transform .2s}
+.themebtn:hover{transform:rotate(-12deg) scale(1.06)}
+.themebtn img{width:26px;height:26px}
+
+/* hero */
+.hero{display:grid;grid-template-columns:auto 1fr;gap:18px 26px;align-items:center;padding:34px 0 8px}
+.hero .felixbig{width:clamp(96px,14vw,150px);filter:drop-shadow(0 12px 18px rgba(0,0,0,.25));animation:bob 3.2s ease-in-out infinite}
+@keyframes bob{0%,100%{transform:translateY(0) rotate(-2deg)}50%{transform:translateY(-8px) rotate(2deg)}}
+.hero h1{font-family:var(--display);font-weight:600;font-size:clamp(2rem,5vw,3.3rem);line-height:1.05;margin:0}
+.hero h1 em{font-style:normal;color:var(--accent)}
+.hero p{margin:10px 0 0;color:var(--muted);max-width:62ch}
+.bubble{position:relative;display:inline-block;background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:8px 14px;margin-top:12px;font-weight:700;box-shadow:var(--shadow)}
+.bubble::before{content:"";position:absolute;left:-8px;top:14px;width:14px;height:14px;background:var(--surface);border-left:1px solid var(--line);border-bottom:1px solid var(--line);transform:rotate(45deg)}
+@media (max-width:560px){.hero{grid-template-columns:1fr;text-align:left}.hero .felixbig{width:96px}}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
 
 /* start screen */
-.levels{display:grid;grid-template-columns:repeat(auto-fit,minmax(255px,1fr));gap:0;margin:12px 0 260px;border-left:1px solid var(--line)}
-.level{padding:4px 18px 20px;border-right:1px solid var(--line);border-bottom:1px solid var(--line)}
-.level h2{font-family:var(--latin);font-weight:400;font-size:1.45rem;margin:12px 0 2px;display:flex;align-items:baseline;gap:10px}
-.level h2 .num{font-size:2.3rem;color:var(--accent);min-width:1.6em}
-.level .all{background:none;border:0;padding:2px 0;color:var(--accent);cursor:pointer;text-decoration:underline;text-underline-offset:3px;font-size:.95rem}
-.level h3{font-size:1rem;font-weight:700;margin:16px 0 4px;color:var(--muted)}
-.level label{display:flex;gap:9px;align-items:flex-start;padding:4px 0;cursor:pointer}
-.level input{margin-top:.28em;width:1.05em;height:1.05em;accent-color:var(--accent);flex:none}
-.level label.taught{background:var(--wash);box-shadow:inset 3px 0 var(--accent);padding-left:9px;padding-right:6px;border-radius:2px;margin:2px 0}
-.tabs{display:flex;gap:0;margin:22px 0 0;border-bottom:1px solid var(--line)}
-.tabs button{background:none;border:0;border-bottom:3px solid transparent;padding:10px 18px;font-weight:700;color:var(--muted);cursor:pointer;margin-bottom:-1px}
-.tabs button[aria-selected=true]{color:var(--accent);border-bottom-color:var(--accent)}
-.builder{margin:18px 0 260px;display:grid;grid-template-columns:minmax(240px,1fr) minmax(260px,2fr);gap:0;border-left:1px solid var(--line)}
-.builder>section{padding:4px 18px 20px;border-right:1px solid var(--line);border-bottom:1px solid var(--line)}
-.builder h2{font-family:var(--latin);font-weight:400;font-size:1.45rem;margin:12px 0 2px}
-.builder h3{font-size:1rem;font-weight:700;margin:16px 0 4px;color:var(--muted)}
-.builder label{display:flex;gap:9px;align-items:flex-start;padding:4px 0;cursor:pointer}
-.builder input{margin-top:.28em;width:1.05em;height:1.05em;accent-color:var(--accent);flex:none}
+.tabs{display:inline-flex;gap:4px;margin:22px 0 0;background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:4px}
+.tabs button{background:none;border:0;padding:9px 18px;font-weight:800;color:var(--muted);cursor:pointer;border-radius:10px}
+.tabs button[aria-selected=true]{background:var(--accent2);color:var(--accent2-ink)}
+.legend{margin:16px 0 0;display:flex;flex-wrap:wrap;gap:6px 16px;align-items:center;color:var(--muted)}
+.legend .sw{display:inline-block;width:1.6em;height:1em;background:var(--wash);box-shadow:inset 3px 0 var(--accent2);border-radius:3px;vertical-align:-2px;margin-right:6px}
+.legend button,.level .all{background:none;border:0;padding:0;color:var(--accent2);cursor:pointer;font-weight:800;text-decoration:underline;text-underline-offset:3px}
+.levels{display:grid;grid-template-columns:repeat(auto-fit,minmax(255px,1fr));gap:16px;margin:16px 0 270px}
+.level,.builder>section{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:8px 18px 18px;box-shadow:var(--shadow)}
+.level h2,.builder h2{font-family:var(--display);font-weight:600;font-size:1.3rem;margin:12px 0 4px;display:flex;align-items:center;gap:10px}
+.level h2 .num{font-size:1rem;min-width:2.4em;height:2.4em;border-radius:12px;display:grid;place-items:center;background:var(--lv1);color:#1A1300;font-weight:700}
+.level:nth-child(2) h2 .num{background:var(--lv2);color:#fff}
+.level:nth-child(3) h2 .num{background:var(--lv3);color:#05201F}
+.level:nth-child(4) h2 .num{background:var(--lv4);color:#2A0717}
+.level h3,.builder h3{font-size:.78rem;font-weight:800;text-transform:uppercase;letter-spacing:.07em;margin:18px 0 4px;color:var(--muted)}
+.level label,.builder label{display:flex;gap:10px;align-items:flex-start;padding:5px 8px;margin:1px -8px;cursor:pointer;border-radius:8px;transition:background .15s}
+.level label:hover,.builder label:hover{background:var(--surface2)}
+.level input,.builder input{margin-top:.25em;width:1.1em;height:1.1em;accent-color:var(--accent2);flex:none}
+.level label.taught,.builder label.taught{background:var(--wash);box-shadow:inset 3px 0 var(--accent2)}
+.builder{margin:16px 0 270px;display:grid;grid-template-columns:minmax(240px,1fr) minmax(260px,2fr);gap:16px}
 .builder .ings{columns:2 230px;column-gap:24px}
 .builder .ings>div{break-inside:avoid}
 .builder p{color:var(--muted);margin:6px 0 0;font-size:.95rem}
-.builder select{font:inherit;background:var(--wash);color:var(--ink);border:1px solid var(--line);border-radius:4px;padding:4px 8px}
+.builder select{background:var(--surface2);border:1px solid var(--line);border-radius:8px;padding:4px 8px}
 @media (max-width:640px){.builder{grid-template-columns:1fr}}
-.legend{margin:18px 0 0;display:flex;flex-wrap:wrap;gap:6px 16px;align-items:center}
-.legend .sw{display:inline-block;width:1.6em;height:1em;background:var(--wash);box-shadow:inset 3px 0 var(--accent);vertical-align:-2px;margin-right:6px}
-.legend button{background:none;border:0;padding:0;color:var(--accent);cursor:pointer;text-decoration:underline;text-underline-offset:3px}
-.charts tr.sub th{background:var(--wash);color:var(--ink);font-weight:700}
-.bar{position:fixed;left:0;right:0;bottom:0;background:var(--surface);border-top:1px solid var(--line);padding:12px 0 calc(12px + env(safe-area-inset-bottom,0px))}
-.bar .wrap{display:flex;flex-wrap:wrap;gap:10px 26px;align-items:center}
-.bar fieldset{border:0;margin:0;padding:0;display:flex;flex-wrap:wrap;gap:4px 18px;align-items:center}
-.bar legend{float:left;font-weight:700;margin-right:12px;padding:0}
+
+/* bottom bar */
+.bar{position:fixed;left:0;right:0;bottom:0;z-index:20;background:color-mix(in srgb,var(--surface) 92%,transparent);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border-top:1px solid var(--line);padding:12px 0 calc(12px + env(safe-area-inset-bottom,0px));box-shadow:0 -10px 30px rgba(0,0,0,.18)}
+.bar .wrap{display:flex;flex-wrap:wrap;gap:10px 22px;align-items:center}
+.bar fieldset{border:0;margin:0;padding:0;display:flex;flex-wrap:wrap;gap:4px 16px;align-items:center}
+.bar legend{float:left;font-weight:800;margin-right:10px;padding:0}
 .bar label{display:inline-flex;gap:7px;align-items:center;cursor:pointer}
-.bar input{accent-color:var(--accent)}
+.bar input[type=radio],.bar input[type=checkbox]{accent-color:var(--accent2)}
+.bar select,.bar input[type=password]{background:var(--surface2)!important;border:1px solid var(--line)!important;border-radius:10px!important;color:var(--ink)!important}
 .bar .go{margin-left:auto;display:flex;gap:14px;align-items:center}
-.btn{background:var(--accent);color:var(--accent-ink);border:0;border-radius:4px;padding:10px 20px;font-weight:700;cursor:pointer}
-.btn:disabled{opacity:.4;cursor:not-allowed}
-.btn.quiet{background:none;color:var(--accent);border:1px solid var(--accent)}
+@media (max-width:560px){.bar .go{margin-left:0;width:100%;justify-content:space-between}.levels{margin-bottom:430px}}
+
+/* buttons */
+.btn{background:var(--accent);color:var(--accent-ink);border:0;border-radius:12px;padding:11px 22px;font-family:var(--display);font-weight:600;font-size:1.05rem;cursor:pointer;box-shadow:0 4px 0 var(--accent-shadow);transition:transform .08s,box-shadow .08s,filter .15s}
+.btn:hover{filter:brightness(1.07)}
+.btn:active{transform:translateY(3px);box-shadow:0 1px 0 var(--accent-shadow)}
+.btn:disabled{opacity:.45;cursor:not-allowed;transform:none}
+.btn.quiet{background:var(--surface2);color:var(--ink);box-shadow:0 4px 0 var(--line);border:1px solid var(--line)}
+.btn.quiet:active{box-shadow:0 1px 0 var(--line)}
 .hint{color:var(--muted);font-size:.95rem}
+.info{display:inline-flex;align-items:center;justify-content:center;width:1.7em;height:1.7em;border-radius:50%;background:var(--surface2);border:2px solid var(--accent2);color:var(--accent2);font-family:var(--latin);font-style:italic;font-weight:700;text-decoration:none;transition:transform .15s}
+.info:hover{transform:scale(1.12);background:var(--accent2);color:var(--accent2-ink)}
+.keyfield{display:inline-flex;align-items:center;gap:6px}
 
 /* drill */
-.askai{margin:-30px 0 70px;border-top:1px solid var(--line);padding-top:14px}
-.askai h3{font-size:1.05rem;margin:0 0 8px}
-.chat{list-style:none;margin:0 0 10px;padding:0}
-.chat li{margin-bottom:12px}
-.chat p,.chat .ca{margin:2px 0}
-.chat .ca ul,.chat .ca ol{margin:4px 0;padding-left:1.4em}
-.chat .ca code{font-family:ui-monospace,Menlo,Consolas,monospace;background:var(--wash);padding:0 4px;border-radius:3px;font-size:.9em}
-.chat .ca{padding-left:14px;border-left:3px solid var(--line)}
-.chat small{color:var(--muted)}
-.tag{display:inline-block;font-size:.8rem;font-weight:700;padding:1px 7px;border-radius:3px;margin-right:4px;border:1px solid currentColor}
-.tag.ok{color:var(--ok)} .tag.bad{color:var(--bad)} .tag.edit{color:var(--gold)}
-.chat{max-height:26em;overflow-y:auto}
-.askrow{display:flex;gap:10px;flex-wrap:wrap}
-.askrow input{flex:1 1 16em;font:inherit;background:var(--wash);border:0;border-bottom:2px solid var(--accent);padding:.4em .5em;border-radius:3px 3px 0 0;color:var(--ink)}
-.hint.warn{color:var(--bad);font-weight:700}
-.keyfield{display:inline-flex;align-items:center;gap:6px}
-.info{display:inline-flex;align-items:center;justify-content:center;width:1.6em;height:1.6em;border-radius:50%;border:2px solid var(--accent);color:var(--accent);font-family:var(--latin);font-style:italic;font-weight:700;text-decoration:none}
-.info:hover{background:var(--accent);color:var(--accent-ink)}
-.charts{margin:0 0 20px}
-.charts h2,.charts h2 button{background:none;border:0;color:var(--accent);text-decoration:underline;text-underline-offset:3px;cursor:pointer;padding:0;font-weight:400}
-.cgrid{display:flex;flex-wrap:wrap;gap:16px 36px;margin-top:10px}
-.cwrap{overflow-x:auto;max-width:100%}
-.charts table{border-collapse:collapse;background:var(--surface)}
-.charts caption{text-align:left;font-weight:700;padding-bottom:6px;white-space:nowrap}
-.charts th,.charts td{border:1px solid var(--line);padding:4px 12px;text-align:left;white-space:nowrap}
-.charts th{font-weight:500;color:var(--muted);font-size:.95rem}
+.drillhead{display:flex;flex-wrap:wrap;gap:10px 20px;align-items:center;justify-content:space-between;padding:20px 0 14px}
+.score{color:var(--muted);font-weight:700} .score b{color:var(--ink)}
+.charts{margin:0 0 18px}
+.charts h2,.vocab h2{font-family:var(--display);font-weight:600;font-size:1.15rem;margin:0;display:flex;gap:14px;align-items:baseline}
+.charts h2 button,.vocab h2 button{background:none;border:0;color:var(--accent2);text-decoration:underline;text-underline-offset:3px;cursor:pointer;padding:0;font-weight:800;font-family:var(--ui);font-size:.95rem}
+.cgrid{display:flex;flex-wrap:wrap;gap:16px;margin-top:12px}
+.cwrap{overflow-x:auto;max-width:100%;background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:12px 14px}
+.charts table{border-collapse:separate;border-spacing:0}
+.charts caption{text-align:left;font-weight:800;padding-bottom:8px;white-space:nowrap}
+.charts th,.charts td{border-bottom:1px solid var(--line);padding:5px 12px;text-align:left;white-space:nowrap}
+.charts th{font-weight:700;color:var(--muted);font-size:.9rem}
 .charts td{font-family:var(--latin);font-size:1.1rem}
-.charts p{margin:6px 0 0;color:var(--muted);font-size:.95rem}
-input.full{display:block;width:100%;margin-top:18px;font-family:var(--latin);font-size:1.35rem;background:var(--wash);border:0;border-bottom:2px solid var(--accent);padding:.35em .5em;border-radius:3px 3px 0 0}
-input.full.ok{border-color:var(--ok)} input.full.leak{border-color:var(--gold);color:var(--gold)}
-.choices button.leak{border-color:var(--gold);color:var(--gold);font-weight:700} input.full.bad{border-color:var(--bad)}
-.feedback button{margin-top:8px}
-.drillhead{display:flex;flex-wrap:wrap;gap:10px 20px;align-items:center;justify-content:space-between;padding:16px 0}
-.score{color:var(--muted)} .score b{color:var(--ink)}
-.tablet{background:var(--surface);border:1px solid var(--line);border-top:5px solid var(--accent);padding:26px clamp(16px,4vw,44px) 30px;margin-bottom:22px}
-.concept{color:var(--accent);font-weight:700;margin:0 0 18px}
+.charts tr.sub th{background:var(--surface2);color:var(--ink);font-weight:800}
+.charts p{margin:8px 0 0;color:var(--muted);font-size:.9rem}
+.tablet{position:relative;background:var(--surface);border:1px solid var(--line);border-radius:22px;padding:28px clamp(16px,4vw,44px) 28px;margin-bottom:22px;box-shadow:var(--shadow);overflow:hidden}
+.tablet::before{content:"";position:absolute;inset:0 0 auto;height:6px;background:linear-gradient(90deg,var(--accent2),var(--accent),var(--ok))}
+.concept{display:inline-block;color:var(--accent2);background:var(--wash);border:1px solid var(--line);border-radius:999px;padding:3px 12px;font-weight:800;font-size:.9rem;margin:0 0 18px}
 .sentence{font-family:var(--latin);font-size:clamp(1.5rem,3.6vw,2.15rem);line-height:2.5;margin:0;display:flex;flex-wrap:wrap;align-items:flex-start;gap:0 .38em}
 .sentence .w{white-space:nowrap}
-.blank{display:inline-flex;flex-direction:column;line-height:1.2;margin-top:.52em}
-.blank input{font-family:var(--latin);font-size:inherit;background:var(--wash);border:0;border-bottom:2px solid var(--accent);padding:.05em .25em;border-radius:3px 3px 0 0;min-width:0}
-.blank small{font-family:var(--ui);font-size:.9rem;color:var(--muted);margin-top:4px;max-width:16em;white-space:normal}
-.blank small i{font-family:var(--latin)}
-.blank.ok input{border-color:var(--ok);color:var(--ok)}
-.blank.bad input{border-color:var(--bad);color:var(--bad);text-decoration:line-through}
-.english{font-size:1.2rem;margin:20px 0 0;max-width:68ch}
-.line{font-family:var(--latin);font-size:clamp(1.4rem,3.4vw,2rem);margin:0}
+.english{font-size:1.3rem;font-weight:700;margin:4px 0 0;max-width:68ch}
+.line{font-family:var(--latin);font-size:clamp(1.5rem,3.6vw,2.15rem);margin:0}
 .cite{color:var(--muted);margin:4px 0 16px}
+input.full{display:block;width:100%;margin-top:18px;font-family:var(--latin);font-size:1.4rem;color:var(--ink);background:var(--bg);border:2px solid var(--line);padding:.45em .7em;border-radius:14px;transition:border-color .15s,box-shadow .15s}
+input.full:focus{outline:none;border-color:var(--accent2);box-shadow:0 0 0 4px color-mix(in srgb,var(--accent2) 25%,transparent)}
+input.full.ok{border-color:var(--ok)} input.full.bad{border-color:var(--bad)} input.full.leak{border-color:var(--gold);color:var(--gold)}
 .choices{display:flex;flex-wrap:wrap;gap:8px}
-.choices button{background:var(--wash);border:1px solid var(--line);border-radius:4px;padding:8px 14px;cursor:pointer}
-.choices button.ok{border-color:var(--ok);color:var(--ok);font-weight:700}
+.choices button{background:var(--surface2);border:2px solid var(--line);border-radius:12px;padding:8px 14px;cursor:pointer;font-weight:700}
+.choices button.ok{border-color:var(--ok);color:var(--ok)}
 .choices button.bad{border-color:var(--bad);color:var(--bad);text-decoration:line-through}
-.controls{display:flex;flex-wrap:wrap;gap:12px 18px;align-items:center;margin-top:24px}
+.choices button.leak{border-color:var(--gold);color:var(--gold)}
+.controls{display:flex;flex-wrap:wrap;gap:12px 18px;align-items:center;margin-top:20px;position:relative}
 .macrons{display:flex;gap:6px;align-items:center}
-.macrons button{font-family:var(--latin);font-size:1.2rem;width:2.2em;height:2.2em;background:var(--bg);border:1px solid var(--line);border-radius:4px;cursor:pointer}
+.macrons button{font-family:var(--latin);font-size:1.2rem;width:2.2em;height:2.2em;background:var(--surface2);border:1px solid var(--line);border-radius:10px;cursor:pointer;box-shadow:0 3px 0 var(--line);transition:transform .08s}
+.macrons button:active{transform:translateY(2px);box-shadow:0 1px 0 var(--line)}
 .feedback{margin:20px 0 0;padding:0;list-style:none}
-.feedback li{padding:8px 0 8px 14px;border-left:4px solid var(--line);margin-bottom:8px}
-.feedback li.ok{border-color:var(--ok)} .feedback li.bad{border-color:var(--bad)} .feedback li.mac{border-color:var(--gold)}
+.feedback li{padding:12px 16px;border-radius:14px;margin-bottom:8px;border:1px solid var(--line);background:var(--surface2);animation:pop .35s cubic-bezier(.2,.9,.3,1.3)}
+.feedback li.ok{border-color:color-mix(in srgb,var(--ok) 55%,transparent);background:color-mix(in srgb,var(--ok) 12%,var(--surface))}
+.feedback li.bad{border-color:color-mix(in srgb,var(--bad) 55%,transparent);background:color-mix(in srgb,var(--bad) 10%,var(--surface))}
+.feedback li.mac{border-color:color-mix(in srgb,var(--gold) 60%,transparent);background:color-mix(in srgb,var(--gold) 12%,var(--surface))}
 .feedback b.ok{color:var(--ok)} .feedback b.bad{color:var(--bad)} .feedback b.mac{color:var(--gold)}
 .feedback .la{font-family:var(--latin);font-size:1.15em}
-.vocab{margin-bottom:60px}
-.vocab h2{font-size:1.05rem;margin:0;display:flex;gap:14px;align-items:baseline}
-.vocab h2 button{background:none;border:0;color:var(--accent);text-decoration:underline;text-underline-offset:3px;cursor:pointer;padding:0;font-weight:400}
-.vocab ul{list-style:none;padding:0;margin:10px 0 0;columns:2 300px;column-gap:40px}
-.vocab li{font-family:var(--latin);font-size:1.15rem;padding:3px 0;break-inside:avoid}
-@media (max-width:560px){.bar .go{margin-left:0;width:100%;justify-content:space-between}.levels{margin-bottom:400px}}
+.feedback button{margin-top:10px}
+@keyframes pop{from{transform:scale(.96);opacity:0}to{transform:none;opacity:1}}
+.xpfloat{position:absolute;left:0;top:-6px;font-family:var(--display);font-weight:600;color:var(--accent);pointer-events:none;animation:floatup 1.3s ease-out forwards;text-shadow:0 2px 8px rgba(0,0,0,.25)}
+@keyframes floatup{0%{transform:translateY(0);opacity:0}15%{opacity:1}100%{transform:translateY(-46px);opacity:0}}
+.vocab{margin-bottom:26px}
+.vocab ul{list-style:none;padding:0;margin:12px 0 0;display:flex;flex-wrap:wrap;gap:8px}
+.vocab li{font-family:var(--latin);font-size:1.1rem;padding:6px 14px;background:var(--surface);border:1px solid var(--line);border-radius:12px}
+
+/* ask Felix */
+.askai{display:grid;grid-template-columns:auto 1fr;gap:6px 20px;align-items:start;margin:0 0 50px;background:var(--surface);border:1px solid var(--line);border-radius:22px;padding:20px clamp(14px,3vw,28px);box-shadow:var(--shadow)}
+.felixcol{display:flex;flex-direction:column;align-items:center;gap:6px;width:clamp(84px,12vw,120px);position:sticky;top:90px}
+.felixcol img{width:100%;filter:drop-shadow(0 10px 14px rgba(0,0,0,.25));transition:transform .25s}
+.felixcol img.react{animation:wiggle .5s ease}
+@keyframes wiggle{0%{transform:rotate(0) scale(1)}30%{transform:rotate(-8deg) scale(1.08)}60%{transform:rotate(6deg) scale(1.04)}100%{transform:none}}
+.felixcol b{font-family:var(--display);font-weight:600}
+.felixcol small{color:var(--muted);font-size:.8rem;text-align:center;line-height:1.2}
+.askmain{min-width:0}
+.askai h3{font-family:var(--display);font-weight:600;font-size:1.25rem;margin:2px 0 10px}
+.chat{list-style:none;margin:0 0 12px;padding:0;max-height:30em;overflow-y:auto;display:flex;flex-direction:column;gap:10px}
+.chat>li{display:flex;flex-direction:column;gap:6px}
+.chat .cq{align-self:flex-end;max-width:85%;background:var(--accent2);color:var(--accent2-ink);padding:8px 14px;border-radius:16px 16px 4px 16px;margin:0;font-weight:600}
+.chat .cq b{font-weight:800;opacity:.85}
+.chat .arow{display:flex;gap:8px;align-items:flex-end;max-width:92%}
+.chat .arow img{width:30px;height:30px;flex:none}
+.chat .ca{background:var(--surface2);border:1px solid var(--line);padding:9px 14px;border-radius:16px 16px 16px 4px;margin:0}
+.chat .ca ul,.chat .ca ol{margin:4px 0;padding-left:1.4em}
+.chat .ca code{font-family:ui-monospace,Menlo,Consolas,monospace;background:var(--bg);padding:0 4px;border-radius:4px;font-size:.9em}
+.chat small{color:var(--muted)}
+.chat .greet .ca{font-weight:600}
+.tag{display:inline-block;font-size:.75rem;font-weight:800;padding:1px 8px;border-radius:999px;margin-right:4px;border:1.5px solid currentColor;vertical-align:1px}
+.tag.ok{color:var(--ok)} .tag.bad{color:var(--bad)} .tag.edit{color:var(--gold)}
+.askrow{display:flex;gap:10px;flex-wrap:wrap}
+.askrow input{flex:1 1 16em;background:var(--bg);border:2px solid var(--line);padding:.55em .8em;border-radius:14px;color:var(--ink)}
+.askrow input:focus{outline:none;border-color:var(--accent2);box-shadow:0 0 0 4px color-mix(in srgb,var(--accent2) 25%,transparent)}
+.hint.warn{color:var(--bad);font-weight:800}
+.typing{display:inline-flex;gap:4px;vertical-align:middle;margin-left:6px}
+.typing i{width:6px;height:6px;border-radius:50%;background:var(--muted);animation:blink 1s infinite}
+.typing i:nth-child(2){animation-delay:.15s}.typing i:nth-child(3){animation-delay:.3s}
+@keyframes blink{0%,100%{opacity:.25}50%{opacity:1}}
+@media (max-width:560px){.askai{grid-template-columns:1fr}.felixcol{position:static;flex-direction:row;width:auto}.felixcol img{width:64px}}
+
+/* toast + footer */
+.toast{position:fixed;left:50%;top:calc(80px + env(safe-area-inset-top,0px));transform:translateX(-50%);z-index:40;display:flex;align-items:center;gap:12px;background:var(--surface);border:2px solid var(--accent);border-radius:18px;padding:10px 18px 10px 10px;box-shadow:var(--shadow);font-weight:800;animation:toast 3.2s ease forwards}
+.toast img{width:52px;height:52px}
+.toast span{font-family:var(--display);font-weight:600;font-size:1.1rem}
+@keyframes toast{0%{opacity:0;transform:translate(-50%,-14px)}10%,85%{opacity:1;transform:translate(-50%,0)}100%{opacity:0;transform:translate(-50%,-14px)}}
+@media (max-width:700px){
+  .topbar .wrap{padding-top:8px;padding-bottom:8px;gap:8px}
+  .hud{width:100%;margin-left:0;justify-content:space-between;gap:8px;flex-wrap:nowrap}
+  .xp{min-width:0;flex:1;gap:8px}
+  .xp .rank,.chip small,.xpw{display:none}
+  .chip{padding:3px 10px 3px 4px;flex:none}
+  .xpbar{min-width:40px}
+  .brand b{font-size:1.4rem}
+  .themebtn{width:38px;height:38px;flex:none}
+}
+.toast{max-width:calc(100vw - 32px);width:max-content}
+html{scroll-padding-top:calc(110px + env(safe-area-inset-top,0px))}
+footer.credits{color:var(--muted);font-size:.85rem;padding:0 0 30px}
+footer.credits a{color:var(--muted)}
+#drill footer.credits{padding-bottom:30px}
+
 </style>
 </head>
 <body>
+<header class="topbar">
+  <div class="wrap">
+    <a class="brand" href="./" aria-label="Verba home"><img src="img/logo.png" alt=""><b>Verba</b><span>Latin</span></a>
+    <div class="hud" aria-label="Your progress">
+      <span class="chip" title="Days in a row with at least one correct answer"><img src="img/fire.png" alt=""><span id="hudDays">0</span><small style="font-weight:700;color:var(--muted)">day streak</small></span>
+      <div class="xp" title="Earn XP for every correct answer; streaks give bonus XP">
+        <span class="chip"><img src="img/crown.png" alt=""><span id="hudLv">Lv 1</span></span>
+        <span class="rank" id="hudRank">Discipulus</span>
+        <div class="xpbar" role="progressbar" aria-label="XP toward next level" aria-valuemin="0" aria-valuemax="100" id="hudBarWrap"><i id="hudBar"></i></div>
+        <span class="chip"><img src="img/star.png" alt=""><span id="hudXP">0</span><span class="xpw">&nbsp;XP</span></span>
+      </div>
+      <button class="themebtn" id="themebtn" type="button" aria-label="Switch theme"><img id="themeimg" src="img/sun.png" alt=""></button>
+    </div>
+  </div>
+</header>
 <div class="wrap">
-  <header class="top">
-    <h1>Verba</h1>
-    <p>Latin sentence practice from Latin I Honors through AP Latin. Every sentence is built fresh. Your AI key is used only in this tab, to double-check answers and answer your questions, and is never saved.</p>
-  </header>
 
   <main id="start">
+    <section class="hero">
+      <img class="felixbig" src="img/felix-delighted.png" alt="Fēlix, the Verba cat">
+      <div>
+        <h1>Learn Latin by <em>writing</em> it.</h1>
+        <p>Sentences built fresh from Latin I Honors through AP Latin. Earn XP, keep your streak alive, and ask Fēlix when you're stuck.</p>
+        <div class="bubble" id="heroBubble">Salvē! I'm Fēlix. Pick some topics and let's go.</div>
+      </div>
+    </section>
     <div class="tabs" role="tablist"><button role="tab" id="tabTopics" aria-selected="true">Practice by topic</button><button role="tab" id="tabBuild" aria-selected="false">Build your own sentence type</button></div>
     <div id="paneTopics">
     <p class="legend"><span><span class="sw"></span>Shaded topics are already covered in your class notes.</span><button id="pickTaught">Select the shaded topics</button></p>
@@ -188,11 +295,15 @@ input.full.ok{border-color:var(--ok)} input.full.leak{border-color:var(--gold);c
       <ul id="vlist"></ul>
     </section>
     <section class="askai" id="askai">
-        <h3>Ask the AI</h3>
+      <div class="felixcol"><img id="felix" src="img/felix-happy.png" alt="Fēlix looking happy"><b>Fēlix</b><small>AI tutor cat</small></div>
+      <div class="askmain">
+        <h3>Ask Fēlix</h3>
         <ul class="chat" id="chat" aria-live="polite"></ul>
-        <div class="askrow"><input type="text" id="askq" autocomplete="off" placeholder="Ask a question (you can ask as many as you like)" aria-label="Your question for the AI"><button class="btn quiet" id="askbtn">Ask</button></div>
+        <div class="askrow"><input type="text" id="askq" autocomplete="off" placeholder="Ask a question (as many as you like)" aria-label="Your question for Fēlix"><button class="btn quiet" id="askbtn">Ask</button></div>
         <p class="hint" id="askhint"></p>
+      </div>
     </section>
+    <footer class="credits">Fēlix and the icons are <a href="https://github.com/microsoft/fluentui-emoji" target="_blank" rel="noopener">Microsoft Fluent Emoji</a> (MIT License). Confetti by <a href="https://github.com/catdad/canvas-confetti" target="_blank" rel="noopener">canvas-confetti</a>.</footer>
   </main>
 </div>
 
@@ -1297,24 +1408,29 @@ async function aiGrade(q,answer){
     {role:'user',content:`Direction: ${c.e2l?'English to Latin':'Latin to English'}\nSentence to translate: ${c.src}\nReference answer: ${c.model}\nVocabulary: ${c.vocab}\nStudent answer: ${answer}`}]);
   const j=parseJ(t);return{ok:j.correct===true,reason:String(j.reason||'')};
 }
+const MOODS={happy:'friendly default',delighted:'excited: a great question, or the student is on the right track',laughing:'something funny, or a silly mix-up',adoring:'the student did something impressive or thanked you',sly:'a teasing hint or playful nudge, or you caught a question fishing for the answer',cheeky:'warm and encouraging, a little affectionate',shocked:'surprised: a big mistake or a tricky exception',sad:'sympathetic: the student is struggling or got it wrong',grumpy:'mock-grumpy about Latin irregularities or about being asked for the answer outright'};
+const PERSONA="You are Fēlix, the cheerful cat mascot of Verba, a Latin practice site (fēlēs means cat and fēlīx means lucky). Be warm, encouraging and a little playful, with the occasional light cat pun, but keep every explanation accurate, clear and short. Also choose the facial expression that best fits your reply from this list, as \"mood\": "+Object.entries(MOODS).map(([k,v])=>k+' ('+v+')').join(', ')+". ";
+const GREETINGS=["Salvē! I'm Fēlix. Stuck on an ending? Ask me anything about the grammar.","Avē, discipule! Curiosity never hurt this cat. What would you like to know?","Nine lives, and I've spent every one of them on Latin. Ask away!","Purr-haps a question about endings? I'm all ears (both of them).","Fēlēs means cat and fēlīx means lucky, so you're lucky to have a cat tutor. Ask me anything!","Tip from a wise cat: ask about the rules, not the answer, and your score stays safe.","Need a paw with this one? General grammar questions are always free.","I knocked a scroll off the table for you. Shall we read it together?"];
+const THINKING=["Fēlix is consulting the scrolls","Sharpening claws on the grammar","Checking with Cicero","Chasing the ablative around the room","Unrolling a very long scroll","Asking the other cats in the Forum","Pawing through the dictionary","Napping on it for a second"];
 const COURSE={I:'Latin I Honors',II:'Latin II Honors',III:'Latin III Honors',AP:'AP Latin'};
 const LEAD_RULES={
  I:"This is a Latin I exercise, so be LIGHT about what counts as leading; beginners are expected to ask lots of questions about forms. NOT leading (judge as fine): any question about how a word declines or conjugates, including a word from this sentence, when the student names the form they want or proposes it themselves (for example 'is the ablative plural of vir virīs?' or 'pelagus is neuter, so is the ablative singular still pelagō?'); confirming the student's own reasoning about a paradigm, gender, ending or macron; general grammar; what a case or construction does; vocabulary meanings; how to approach the sentence. TOO leading only if the student asks you to: give the answer or translate any part of the sentence; decide which case, number, tense, person or voice a word needs in THIS sentence (the choice itself, not the form once chosen); parse or identify a word as it appears in the sentence; or check, correct, confirm or fill in their draft.",
  II:"This is a Latin II exercise, so be MODERATE about what counts as leading. NOT leading: questions about how a word declines or conjugates when the student names the form or proposes it themselves; confirming the student's own reasoning about a paradigm; general grammar; vocabulary meanings; how to approach the sentence. TOO leading: asking for the answer or any part of the translation; asking which case, number, tense, person, voice or construction a word or clause needs in THIS sentence; asking you to parse or identify a word or construction as it appears in the sentence; asking for a form of a word in the sentence without naming which form; or asking you to check, correct, confirm or fill in their draft.",
  III:"This is a Latin III exercise, so be FIRM about what counts as leading; students should know their forms. NOT leading: general grammar, how a construction works in general, vocabulary meanings, how to approach the sentence. TOO leading: asking for the answer or any part of the translation; asking for or confirming any specific form of a word from this sentence; asking which case, mood, tense or construction anything in this sentence needs; asking you to parse anything in the sentence; or asking you to check, correct, confirm or fill in their draft.",
  AP:"This is an AP Latin exercise, so be STRICT about what counts as leading. NOT leading: general grammar, general questions about poetic devices or meter, vocabulary meanings. TOO leading: anything that resolves part of this specific exercise, including any form, parsing, construction, device or translation of something in it, or checking, correcting, confirming or filling in their draft."};
-const askBefore=lv=>"You are a Latin tutor helping a high school student with one practice exercise from "+COURSE[lv]+". The student has NOT submitted yet and is asking you a question. You are shown the exercise, the correct answer, the student's current draft (whatever is typed in the answer box right now), and every earlier question and reply about this exercise, each with the draft as it was at that moment. Treat the whole conversation as context. Use the draft only as a reference to understand what the student is thinking. Do NOT correct the draft, point out mistakes in it, or say whether it is right or wrong, unless the student specifically asks you to check, correct, fix or fill in their answer. Jobs: 1) Decide whether the newest question is too leading, using these rules for this course. "+LEAD_RULES[lv]+" Judge the question by what it asks, not by whether your honest reply happens to touch the sentence. A question that only becomes a giveaway combined with earlier ones counts as too leading. When it is a close call, decide in the student's favor. 2) Answer the newest question helpfully in 2 to 4 short sentences. If it is too leading, still answer it, but do not write out the whole translated sentence unless the student asked you to correct or fill in their answer. 3) Only if the student explicitly asks you to correct, fix, change, rewrite or fill in their answer, put the full corrected answer in \"edit\" (it will replace the text in their answer box; keep everything in their draft that was already right and fix only what is wrong). Otherwise \"edit\" must be null. Reply only with JSON: {\"leading\": true or false, \"why\": \"one short sentence explaining the judgment\", \"reply\": \"your answer to the student\", \"edit\": null or \"the full corrected answer\"}.";
+const askBefore=lv=>PERSONA+"You are tutoring a high school student with one practice exercise from "+COURSE[lv]+". The student has NOT submitted yet and is asking you a question. You are shown the exercise, the correct answer, the student's current draft (whatever is typed in the answer box right now), and every earlier question and reply about this exercise, each with the draft as it was at that moment. Treat the whole conversation as context. Use the draft only as a reference to understand what the student is thinking. Do NOT correct the draft, point out mistakes in it, or say whether it is right or wrong, unless the student specifically asks you to check, correct, fix or fill in their answer. Jobs: 1) Decide whether the newest question is too leading, using these rules for this course. "+LEAD_RULES[lv]+" Judge the question by what it asks, not by whether your honest reply happens to touch the sentence. A question that only becomes a giveaway combined with earlier ones counts as too leading. When it is a close call, decide in the student's favor. 2) Answer the newest question helpfully in 2 to 4 short sentences. If it is too leading, still answer it, but do not write out the whole translated sentence unless the student asked you to correct or fill in their answer. 3) Only if the student explicitly asks you to correct, fix, change, rewrite or fill in their answer, put the full corrected answer in \"edit\" (it will replace the text in their answer box; keep everything in their draft that was already right and fix only what is wrong). Otherwise \"edit\" must be null. Reply only with JSON: {\"leading\": true or false, \"why\": \"one short sentence explaining the judgment\", \"reply\": \"your answer to the student\", \"edit\": null or \"the full corrected answer\", \"mood\": \"one of the expressions\"}.";
 const levelOf=q=>{const order=['I','II','III','AP'];const lv=q.topic&&q.topic.level;return order.includes(lv)?lv:'I'};
-const ASK_AFTER="You are a Latin tutor helping a high school Latin I student. The student has already submitted an answer to this exercise, so you may explain everything openly, including the full answer, why their answer was right or wrong, and the grammar involved. Treat the whole conversation about this exercise as context. Answer the newest question clearly in 2 to 5 short sentences. Reply with plain text only.";
+const ASK_AFTER=()=>PERSONA+"You are tutoring a high school Latin student. The student has already submitted an answer to this exercise, so you may explain everything openly, including the full answer, why their answer was right or wrong, and the grammar involved. Treat the whole conversation about this exercise as context. Answer the newest question clearly in 2 to 5 short sentences. Reply only with JSON: {\"reply\": \"your answer\", \"mood\": \"one of the expressions\"}.";
 const draftOf=()=>{const f=$('qbody').querySelector('input.full');return f?f.value.trim():''};
 async function aiAsk(q,question,draft){
   const c=ctxOf(q),after=checked;
   const hist=q.chat.filter(x=>!x.pending&&!x.err).map((x,i)=>`Q${i+1}${x.after?' (after submitting)':''} [answer box said: ${x.draft||'(empty)'}]: ${x.q}\nA${i+1}: ${x.a}${x.after?'':x.leading?' [judged too leading]':' [judged fine]'}${x.edit?` [you edited their answer to: ${x.edit}]`:''}`).join('\n')||'(none)';
   const user=`Course: ${COURSE[levelOf(q)]}\nExercise type: ${q.choice?'identify the literary device in a line of Latin poetry':c.e2l?'translate English into Latin':'translate Latin into English'}\nSentence: ${c.src}\nCorrect answer: ${c.model}\nVocabulary shown to the student: ${c.vocab||'(none)'}\n${after?`Student's submitted answer: ${q.submitted||'(none)'}\nResult: ${q.result||''}\n`:`Student's current draft in the answer box: ${draft||'(empty)'}\n`}Earlier conversation about this exercise:\n${hist}\nNewest question: ${question}`;
-  const t=await aiChat([{role:'system',content:after?ASK_AFTER:askBefore(levelOf(q))},{role:'user',content:user}]);
-  if(after)return{a:t.trim(),after:true};
+  const t=await aiChat([{role:'system',content:after?ASK_AFTER():askBefore(levelOf(q))},{role:'user',content:user}]);
+  const moodOf=m=>MOODS[m]?m:'happy';
+  if(after){try{const j=parseJ(t);return{a:String(j.reply||''),mood:moodOf(j.mood),after:true}}catch(e){return{a:t.trim(),mood:'happy',after:true}}}
   const j=parseJ(t),edit=typeof j.edit==='string'&&j.edit.trim()&&!q.choice?j.edit.trim():null;
-  return{a:String(j.reply||''),leading:j.leading===true||!!edit,why:String(j.why||''),edit};
+  return{a:String(j.reply||''),leading:j.leading===true||!!edit,why:String(j.why||''),edit,mood:moodOf(j.mood)};
 }
 function md(s){
   const inl=t=>esc(t).replace(/`([^`]+)`/g,'<code>$1</code>').replace(/\*\*([^*]+?)\*\*/g,'<b>$1</b>').replace(/__([^_]+?)__/g,'<b>$1</b>')
@@ -1332,20 +1448,23 @@ function md(s){
   close();
   return out.join('\n').replace(/\n{2,}/g,'<br><br>').replace(/\n(?!<\/?[uo]l)/g,'<br>').replace(/\n/g,'').replace(/(<br>)+(<[uo]l>)/g,'$2').replace(/(<\/[uo]l>)(<br>)+/g,'$1');
 }
+const felixImg=m=>`img/felix-${MOODS[m]?m:'happy'}.png`;
+function setFelix(m){const f=$('felix');if(!f)return;f.src=felixImg(m);f.alt=`Fēlix looking ${m}`;f.classList.remove('react');void f.offsetWidth;f.classList.add('react');}
 function renderChat(){
-  $('chat').innerHTML=q.chat.map(x=>`<li><p class="cq"><b>You${x.after?' (after answering)':''}:</b> ${esc(x.q)}</p>${x.pending?'<div class="ca">Thinking…</div>':`<div class="ca">${x.err?`<span class="tag bad">Couldn't ask</span> ${esc(x.err)}`:`${x.after?'':x.leading?`<span class="tag bad">Too leading</span> `:`<span class="tag ok">Fine to ask</span> `}${md(x.a)}${x.why&&!x.after?`<br><small>${esc(x.why)}</small>`:''}${x.edit?`<br><span class="tag edit">Edited your answer</span> <span class="la">${esc(x.edit)}</span>`:''}`}</div>`}</li>`).join('');
+  const greet=`<li class="greet"><div class="arow"><img src="${felixImg('happy')}" alt=""><div class="ca">${esc(q.greeting||GREETINGS[0])}</div></div></li>`;
+  $('chat').innerHTML=greet+q.chat.map(x=>`<li><p class="cq"><b>You${x.after?' (after answering)':''}:</b> ${esc(x.q)}</p><div class="arow"><img src="${felixImg(x.pending?'sly':x.err?'sad':x.mood)}" alt=""><div class="ca">${x.pending?`<i>${esc(x.thinking)}</i><span class="typing"><i></i><i></i><i></i></span>`:x.err?`<span class="tag bad">Couldn't ask</span> ${esc(x.err)}`:`${x.after?'':x.leading?`<span class="tag bad">Too leading</span> `:`<span class="tag ok">Fine to ask</span> `}${md(x.a)}${x.why&&!x.after?`<br><small>${esc(x.why)}</small>`:''}${x.edit?`<br><span class="tag edit">Edited your answer</span> <span class="la">${esc(x.edit)}</span>`:''}`}</div></div></li>`).join('');
   const box=$('chat');box.scrollTop=box.scrollHeight;
   $('askhint').textContent=checked?'Ask anything now; questions after answering never affect your score.':q.leaked?'A question was too leading, so this sentence will count as wrong. You can still answer it.':'Before you answer: a question that gives away part of the answer makes this sentence count as wrong.';
   $('askhint').className='hint'+(q.leaked&&!checked?' warn':'');
 }
 async function ask(){
   const inp=$('askq'),text=inp.value.trim();if(!text||!q)return;
-  const draft=checked?(q.submitted||''):draftOf(),cur=q,item={q:text,pending:true,after:checked,draft};
+  const draft=checked?(q.submitted||''):draftOf(),cur=q,item={q:text,pending:true,after:checked,draft,thinking:R(THINKING)};
   q.chat.push(item);inp.value='';renderChat();
   try{Object.assign(item,await aiAsk(cur,text,draft))}catch(e){item.err=e.message||'The AI could not be reached'}
   item.pending=false;if(!item.after&&item.leading)cur.leaked=true;
   if(item.edit&&cur===q&&!checked){const f=$('qbody').querySelector('input.full');if(f&&!f.disabled){f.value=item.edit;}}
-  if(cur===q)renderChat();
+  if(cur===q){renderChat();setFelix(item.err?'sad':item.mood)}
 }
 function buildCharts(){
   const PN=['1st (I)','2nd (you)','3rd (he/she/it)'],PL=['(we)','(you)','(they)'],re=x=>x.replace(/^(\S*)ris$/,'$1ris / -$1re');
@@ -1374,7 +1493,7 @@ function start(){
   $('start').hidden=true;$('bar').hidden=true;$('drill').hidden=false;window.scrollTo(0,0);next();
 }
 function next(){
-  q=tab==='build'?makeBuilt(bFrames,bIngs,$('per').value):makeQuestion(selected,false);checked=false;q.chat=[];q.leaked=false;$('askq').value='';
+  q=tab==='build'?makeBuilt(bFrames,bIngs,$('per').value):makeQuestion(selected,false);checked=false;q.chat=[];q.leaked=false;q.greeting=R(GREETINGS);$('askq').value='';setFelix('happy');
   $('feedback').innerHTML='';$('check').textContent='Check answer';
   const blanks=q.choice?[]:q.tokens.filter(t=>t.blank);
   $('concept').textContent=blanks.length>1?'Mixed: '+[...new Set(blanks.map(b=>TOPICS.find(t=>b.cids.includes(t.id)&&selected.has(t.id))||q.topic).map(t=>t.name))].join(' + '):q.topic.name;
@@ -1405,6 +1524,34 @@ function next(){
   }
   renderChat();score();
 }
+const RANKS=[['Discipulus','student'],['Tīrō','recruit'],['Mīles','soldier'],['Decuriō','squad leader'],['Centuriō','centurion'],['Tribūnus','tribune'],['Lēgātus','general'],['Praetor','judge'],['Cōnsul','consul'],['Imperātor','emperor']];
+const lvlXP=n=>50*n*(n-1);
+const rankLv=xp=>{let n=1;while(xp>=lvlXP(n+1))n++;return n};
+const today=(d=new Date())=>d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
+function hud(){
+  const xp=store.get('xp',0),n=rankLv(xp),r=RANKS[Math.min(n,RANKS.length)-1],pct=Math.round(100*(xp-lvlXP(n))/(lvlXP(n+1)-lvlXP(n)));
+  const d=store.get('days',{last:'',count:0}),y=today(new Date(Date.now()-864e5));
+  $('hudDays').textContent=(d.last===today()||d.last===y)?d.count:0;
+  $('hudLv').textContent='Lv '+n;$('hudRank').innerHTML=`${r[0]}<small>${r[1]}</small>`;$('hudXP').textContent=xp;
+  $('hudBar').style.width=pct+'%';$('hudBarWrap').setAttribute('aria-valuenow',pct);
+}
+function toast(mood,text){const t=document.createElement('div');t.className='toast';t.innerHTML=`<img src="${felixImg(mood)}" alt=""><span>${text}</span>`;document.body.appendChild(t);setTimeout(()=>t.remove(),3300)}
+function boom(big){try{if(window.confetti)confetti({particleCount:big?160:60,spread:big?100:60,origin:{y:big?.35:.7},disableForReducedMotion:true,colors:['#FFC53D','#8F82FF','#3DDC97','#FF7AB6']})}catch(e){}}
+function award(){
+  const pts=10+2*(Math.min(stats.streak,6)-1),before=store.get('xp',0),after=before+pts;store.set('xp',after);
+  const d=store.get('days',{last:'',count:0}),t=today(),y=today(new Date(Date.now()-864e5));
+  if(d.last!==t){const c=d.last===y?d.count+1:1;store.set('days',{last:t,count:c});if(c>1)toast('delighted',`${c}-day streak! Keep it up!`);}
+  const f=document.createElement('span'),cb=$('check');f.className='xpfloat';f.textContent=`+${pts} XP`;f.style.left=(cb.offsetLeft+cb.offsetWidth+12)+'px';f.style.top=(cb.offsetTop+4)+'px';cb.parentNode.appendChild(f);setTimeout(()=>f.remove(),1400);
+  const n0=rankLv(before),n1=rankLv(after);
+  if(n1>n0){const r=RANKS[Math.min(n1,RANKS.length)-1];boom(true);toast('adoring',`Level ${n1}! You're now a ${r[0]} (${r[1]}).`);}
+  else if(stats.streak&&stats.streak%5===0){boom(false);toast('laughing',`${stats.streak} in a row! Ēheu, you're on fire!`);}
+  hud();
+}
+function react(kind){setFelix(kind==='ok'?R(['happy','delighted','adoring']):kind==='leak'?'sly':kind==='mac'?'cheeky':R(['sad','shocked']))}
+function setTheme(t){document.documentElement.dataset.theme=t;store.set('theme',t);$('themeimg').src=t==='dark'?'img/sun.png':'img/moon.png';$('themebtn').setAttribute('aria-label',t==='dark'?'Switch to light mode':'Switch to dark mode');}
+$('themebtn').addEventListener('click',()=>setTheme(document.documentElement.dataset.theme==='dark'?'light':'dark'));
+setTheme(document.documentElement.dataset.theme==='light'?'light':'dark');
+hud();
 function score(){$('score').innerHTML=`<b>${stats.right}</b> of <b>${stats.total}</b> correct · streak <b>${stats.streak}</b>`}
 function check(){
   if(checked){next();return;}
@@ -1435,7 +1582,7 @@ async function checkT(){
     if(aiR&&aiR.ok)r={ok:true,ai:true};
   }
   const counts=r.ok&&!q.leaked;
-  inp.classList.add(counts?'ok':r.ok&&q.leaked?'leak':'bad');stats.total++;if(counts)stats.right++;stats.streak=counts?prev+1:0;
+  inp.classList.add(counts?'ok':r.ok&&q.leaked?'leak':'bad');stats.total++;if(counts)stats.right++;stats.streak=counts?prev+1:0;if(counts)award();react(counts?(r.macron?'mac':'ok'):r.ok&&q.leaked?'leak':'bad');
   q.submitted=inp.value.trim();q.result=r.ok?'correct':'incorrect';
   const model=`<span class="la">${esc(e2l?q.latin:cap(q.en)+q.end)}</span>`,order=e2l?' Any word order is accepted.':'';
   const why=aiR&&aiR.reason?`<br>${esc(aiR.reason)}`:aiErr?`<br>The AI check failed (${esc(aiErr)}), so only the built-in checker ran.`:'';
@@ -1448,11 +1595,11 @@ async function checkT(){
   if(q.leaked&&r.ok)li=`<li class="mac"><b class="mac">Correct, but not counted.</b> Your answer was right, but a question you asked before answering was too leading, so this one doesn't count toward your score.${why} ${model}</li>`;
   else if(q.leaked){li=li.replace(/<br><button class="btn quiet" id="override">[^<]*<\/button>/,'');li+=`<li class="bad"><b class="bad">This sentence also counts as wrong</b> because one of your questions before answering was too leading.</li>`;}
   $('feedback').innerHTML=li;checked=true;$('check').textContent='Next sentence';$('check').focus();score();renderChat();
-  const o=$('override');if(o)o.addEventListener('click',()=>{stats.right++;stats.streak=prev+1;o.remove();score()});
+  const o=$('override');if(o)o.addEventListener('click',()=>{stats.right++;stats.streak=prev+1;o.remove();award();react('ok');score()});
 }
 $('qbody').addEventListener('click',e=>{
   const o=e.target.dataset&&e.target.dataset.o;if(!o||checked)return;checked=true;
-  const right=o===q.answer,ok=right&&!q.leaked;stats.total++;if(ok)stats.right++;stats.streak=ok?stats.streak+1:0;q.submitted=o;q.result=right?'correct':'incorrect';
+  const right=o===q.answer,ok=right&&!q.leaked;stats.total++;if(ok)stats.right++;stats.streak=ok?stats.streak+1:0;if(ok)award();react(ok?'ok':right?'leak':'bad');q.submitted=o;q.result=right?'correct':'incorrect';
   $('qbody').querySelectorAll('.choices button').forEach(b=>{b.disabled=true;if(b.dataset.o===q.answer)b.classList.add(q.leaked&&b===e.target?'leak':'ok');else if(b===e.target)b.classList.add('bad')});
   $('feedback').innerHTML=`<li class="${ok?'ok':right?'mac':'bad'}"><b class="${ok?'ok':right?'mac':'bad'}">${ok?'Correct.':right?'Correct, but not counted.':'Incorrect.'}</b>${right&&!ok?' A question you asked before answering was too leading, so this one doesn’t count toward your score.':''} ${cap(q.answer)}: ${esc(q.explain)}</li>`;renderChat();
   $('check').hidden=false;$('check').textContent='Next line';$('check').focus();score();
