@@ -132,6 +132,42 @@ POSE0={
 }
 GRUMPMARK='<g transform="translate(184 50)">'+''.join(line(d,3,'#C0392B') for d in ('M0,6 Q5,5 6,0','M10,0 Q11,5 16,6','M16,10 Q11,11 10,16','M6,16 Q5,11 0,10'))+'</g>'
 POSE=POSE0
+TUNIC='#E2CB9C'
+def raised(P,side): return any(end[1]<160 and (sh[0]<120)==(side<0) for sh,c1,c2,end,a in P['arms'])
+def body_path(P):
+    l=raised(P,-1);r=raised(P,1)
+    s='M54,240 C55,222 59,204 66,190 C72,176 86,166 100,164' if l else 'M22,240 C26,196 58,170 100,164'
+    s+=' L140,164 '+('C154,166 168,176 174,190 C181,204 185,222 186,240' if r else 'C182,170 214,196 218,240')
+    return s+' Z'
+def body_svg(P):
+    l=raised(P,-1);r=raised(P,1);bp=body_path(P)
+    s=f'<path d="{bp}" fill="{TUNIC}"/><g clip-path="url(#body)">'
+    if l and r:   # toga hangs off both shoulders and wraps the waist
+        edge='M30,214 C70,200 110,198 150,206 C180,212 200,220 230,230'
+        toga=edge+' L240,240 L0,240 Z'
+    elif r:       # drapes off his right shoulder (viewer right), stays on the other
+        edge='M122,168 C130,190 140,214 144,240'
+        toga='M0,140 L122,140 L122,168 C130,190 140,214 144,240 L0,240 Z'
+    elif l:
+        edge='M118,168 C110,190 100,214 96,240'
+        toga='M240,140 L118,140 L118,168 C110,190 100,214 96,240 L240,240 Z'
+    else: edge=None;toga='M0,140 L240,140 L240,240 L0,240 Z'
+    if l or r:
+        s+=line('M160,204 Q166,222 164,238',2,'#B99B66') if r and not l else ''
+        s+=line('M90,206 Q84,222 86,238',2,'#B99B66') if l and not r else ''
+        s+=line('M96,184 Q120,194 144,184',2,'#B99B66') if l and r else ''
+    s+=f'<path d="{toga}" fill="{TOGA}" {st(2.6)}/>'
+    if edge is None:
+        s+=f'<path d="M150,160 L190,166 L96,240 L52,240 Z" fill="{SASH}" {st(2.4)}/>'
+        s+=line('M60,206 Q78,214 84,236',2.4)+line('M178,200 Q170,218 176,240',2.4)+line('M200,214 Q196,228 200,240',2.4)
+    else:
+        s+=f'<path d="{edge}" fill="none" stroke="{O}" stroke-width="15" stroke-linecap="round"/><path d="{edge}" fill="none" stroke="{SASH}" stroke-width="9.5" stroke-linecap="round"/>'
+        if r and not l: s+=line('M60,206 Q78,214 84,236',2.4)+line('M106,196 Q116,214 118,238',2.2)
+        if l and not r: s+=line('M178,200 Q170,218 176,240',2.4)+line('M128,196 Q118,214 116,238',2.2)
+        if l and r: s+=line('M70,226 Q90,220 104,236',2.2)+line('M150,224 Q170,226 184,238',2.2)
+    s+=f'<path d="M120,164 L220,180 L220,240 L150,240 Z" fill="{TSH}" opacity=".3"/></g>'
+    s+=f'<path d="{bp}" fill="none" {st(3.6)}/>'
+    return s
 def head_svg(mood):
     h=f'<path d="M64,74 L66,18 L108,44 Z" fill="{FUR}" {st(3.6)}/><path d="M72,64 L73,30 L98,46 Z" fill="{PINK}"/>'
     h+=f'<path d="M176,74 L174,18 L132,44 Z" fill="{FUR}" {st(3.6)}/><path d="M168,64 L167,30 L142,46 Z" fill="{PINK}"/>'
@@ -145,16 +181,12 @@ def head_svg(mood):
     return h
 def build(mood):
     P=POSE[mood];dy=14+P.get('lift',0)+P.get('drop',0)
-    s=f'<path d="{BUST}" fill="{TOGA}" {st(3.6)}/><g clip-path="url(#body)"><path d="M150,160 L190,166 L96,240 L52,240 Z" fill="{SASH}" {st(2.4)}/>'
-    up=lambda side:any(end[1]<160 and (sh[0]<120)==(side<0) for sh,c1,c2,end,a in P['arms'])
-    if not up(-1): s+=line('M60,206 Q78,214 84,236',2.4)
-    if not up(1): s+=line('M178,200 Q170,218 176,240',2.4)+line('M200,214 Q196,228 200,240',2.4)
-    s+=f'<path d="M120,164 L220,180 L220,240 L150,240 Z" fill="{TSH}" opacity=".35"/></g>'
+    s=body_svg(P)
     s+=f'<path d="M98,160 Q120,176 142,160 L142,172 Q120,184 98,172 Z" fill="{MUZ}" {st(3)}/>'
     if P.get('tab'): s+=TAB()
     s+=f'<g transform="translate(0 {dy}) rotate({P["tilt"]} 120 150)">{head_svg(mood)}</g>'
     for sh,c1,c2,end,a in P['arms']:
-        if end[1]<160: k=-1 if sh[0]<120 else 1;sh=(120+k*66,186);c1=(c1[0],min(c1[1],178))
+        if end[1]<160: k=-1 if sh[0]<120 else 1;sh=(120+k*53,192);c1=(c1[0]+k*2,min(c1[1],180))
         s+=arm(sh,c1,c2,end,a)
     if 'fx' in P: s+=P['fx']()
     if mood=='grumpy': s+=GRUMPMARK
@@ -162,7 +194,7 @@ def build(mood):
 def svg(mood,face=False):
     vb='46 22 148 148' if face else '0 0 240 240';w=148 if face else 240
     defs=(f'<defs><filter id="rough" x="-5%" y="-5%" width="110%" height="110%"><feTurbulence type="fractalNoise" baseFrequency="0.035" numOctaves="2" seed="7" result="n"/><feDisplacementMap in="SourceGraphic" in2="n" scale="2.2"/></filter>'
-          f'<clipPath id="head"><path d="{HEAD}"/></clipPath><clipPath id="body"><path d="{BUST}"/></clipPath></defs>')
+          f'<clipPath id="head"><path d="{HEAD}"/></clipPath><clipPath id="body"><path d="{body_path(POSE[mood])}"/></clipPath></defs>')
     return f'<svg xmlns="http://www.w3.org/2000/svg" viewBox="{vb}" width="{w}" height="{w}">\n{defs}\n<g filter="url(#rough)">\n{build(mood)}\n</g>\n</svg>\n'
 if __name__=='__main__':
     import sys
