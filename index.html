@@ -1520,7 +1520,7 @@ async function aiGrade(q,answer){
     {role:'user',content:`Direction: ${c.e2l?'English to Latin':'Latin to English'}\nSentence to translate: ${c.src}\nReference answer: ${c.model}\nVocabulary: ${c.vocab}\nStudent answer: ${answer}`}]);
   const j=parseJ(t);return{ok:j.correct===true,reason:String(j.reason||'')};
 }
-const MOODS={happy:'friendly default',delighted:'excited: a great question, or the student is on the right track',laughing:'something funny, or a silly mix-up',adoring:'the student did something impressive or thanked you',sly:'a teasing hint or playful nudge, or you caught a question fishing for the answer',cheeky:'warm and encouraging, a little affectionate',shocked:'surprised: a big mistake or a tricky exception',sad:'sympathetic: the student is struggling or got it wrong',grumpy:'mock-grumpy about Latin irregularities or about being asked for the answer outright'};
+const MOODS={happy:'friendly default',delighted:'excited: a great question, or the student is on the right track',laughing:'something funny, or a silly mix-up',adoring:'the student did something impressive or thanked you',sly:'a teasing hint or playful nudge, or you caught a question fishing for the answer',cheeky:'warm and encouraging, a little affectionate',shocked:'surprised: a big mistake or a tricky exception',sad:'sympathetic: the student is struggling or got it wrong',grumpy:'mock-grumpy about Latin irregularities or about being asked for the answer outright',fish:'proud and triumphant: the student caught a tricky one, like a cat with its catch'};
 const PERSONA="You are Fēlix, the cheerful cat mascot of Verba, a Latin practice site (fēlēs means cat and fēlīx means lucky). Be warm, encouraging and a little playful, with the occasional light cat pun, but keep every explanation accurate, clear and short. Also choose the facial expression that best fits your reply from this list, as \"mood\": "+Object.entries(MOODS).map(([k,v])=>k+' ('+v+')').join(', ')+". ";
 const GREETINGS=["Salvē! I'm Fēlix. Stuck on an ending? Ask me anything about the grammar.","Avē, discipule! Curiosity never hurt this cat. What would you like to know?","Nine lives, and I've spent every one of them on Latin. Ask away!","Purr-haps a question about endings? I'm all ears (both of them).","Fēlēs means cat and fēlīx means lucky, so you're lucky to have a cat tutor. Ask me anything!","Tip from a wise cat: ask about the rules, not the answer, and your score stays safe.","Need a paw with this one? General grammar questions are always free.","I knocked a scroll off the table for you. Shall we read it together?"];
 const THINKING=["Fēlix is consulting the scrolls","Sharpening claws on the grammar","Checking with Cicero","Chasing the ablative around the room","Unrolling a very long scroll","Asking the other cats in the Forum","Pawing through the dictionary","Napping on it for a second"];
@@ -1659,7 +1659,7 @@ function award(){
   else if(stats.streak&&stats.streak%5===0){boom(false);toast('laughing',`${stats.streak} in a row! Ēheu, you're on fire!`);}
   hud();
 }
-function react(kind){setFelix(kind==='ok'?R(['happy','delighted','adoring']):kind==='leak'?'sly':kind==='mac'?'cheeky':R(['sad','shocked']))}
+function react(kind){setFelix(kind==='ok'?R(['happy','delighted','adoring','fish']):kind==='leak'?'sly':kind==='mac'?'cheeky':R(['sad','shocked']))}
 (function(){
   var root=document.documentElement, tt=document.getElementById("theme-toggle");
   tt.setAttribute("aria-label",root.getAttribute("data-theme")==="dark"?"dark":"light");
