@@ -12,7 +12,7 @@ document.documentElement.setAttribute("data-theme",t);})();
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600;9..144,700&family=Figtree:wght@400;600;700;800&family=Gentium+Book+Plus:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
-<link rel="icon" href="img/felix/happy.svg?v=6" type="image/svg+xml">
+<link rel="icon" href="img/felix/happy.svg?v=7" type="image/svg+xml">
 <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.3/dist/confetti.browser.min.js" defer></script>
 <style>
 :root{
@@ -367,7 +367,7 @@ dialog.acct .x{position:absolute;right:12px;top:10px;background:none;border:0;fo
 
   <main id="start">
     <section class="hero">
-      <img class="felixbig" src="img/felix/delighted.svg?v=6" alt="Fēlix, the Verba cat">
+      <img class="felixbig" src="img/felix/delighted.svg?v=7" alt="Fēlix, the Verba cat">
       <div>
         <h1>Learn Latin by <em>writing</em> it.</h1>
         <p>Sentences built fresh from Latin I Honors through AP Latin. Earn XP, keep your streak alive, and ask Fēlix when you're stuck.</p>
@@ -410,7 +410,7 @@ dialog.acct .x{position:absolute;right:12px;top:10px;background:none;border:0;fo
       <ul id="vlist"></ul>
     </section>
     <section class="askai" id="askai">
-      <div class="felixcol"><img id="felix" src="img/felix/happy.svg?v=6" alt="Fēlix looking happy"><b>Fēlix</b><small>AI tutor cat</small></div>
+      <div class="felixcol"><img id="felix" src="img/felix/happy.svg?v=7" alt="Fēlix looking happy"><b>Fēlix</b><small>AI tutor cat</small></div>
       <div class="askmain">
         <h3>Ask Fēlix</h3>
         <ul class="chat" id="chat" aria-live="polite"></ul>
@@ -1448,7 +1448,7 @@ function glossify(el,map){
     while((m=re.exec(t))){f.append(t.slice(i,m.index));const sp=document.createElement('span');sp.className='lw';sp.tabIndex=0;sp.textContent=m[0];sp.dataset.en=low[m[0].toLowerCase()]||'';f.append(sp);i=m.index+m[0].length}
     f.append(t.slice(i));n.replaceWith(f)});
 }
-let moodTok=0,upcoming=null;
+let moodTok=0;
 const cap=s=>s.charAt(0).toUpperCase()+s.slice(1);
 
 function buildStart(){
@@ -1537,13 +1537,16 @@ const ctxOf=q=>{const e2l=q.mode==='e2l',vocab=[...new Set(q.tokens.map(t=>t.voc
   return{e2l,src:q.choice?q.line+' ('+q.cite+')':e2l?cap(q.en)+q.end:q.latin,model:q.choice?q.answer:e2l?q.latin:cap(q.en)+q.end,vocab}};
 async function aiGrade(q,answer){
   const c=ctxOf(q);
-  const t=await aiChat([{role:'system',content:'You grade Latin translation exercises for a high school student. The reference answer is known to be correct. Mark the student correct only if their sentence means the same as the reference: same case roles, number, tense, voice, mood and person. Accept any valid phrasing or synonym, either English article, and any Latin word order. Ignore macrons, capitalization and punctuation. Forgive obvious spelling typos (swapped, missing, doubled or extra letters, such as posion for poison) when the intended word is clear and the slip does not turn it into a different real word or a different grammatical form; still mark the answer correct and name the typo in the reason. A difference that changes number, tense, person, voice or case is never a typo: field for fields is incorrect, and in Latin a typo is only forgivable in the stem of a word, never in its ending. If the student sentence contains a wrong ending or a wrong word, it is incorrect. Also pick how Fēlix, the site\'s cat mascot, reacts to this answer, as "mood", and the expression he greets the student with on the next exercise, as "next_mood", each one of: '+Object.entries(MOODS).map(([k,v])=>k+' ('+v+')').join(', ')+'. Reply only with JSON: {"correct": true or false, "reason": "one short sentence for the student", "mood": "one of the expressions", "next_mood": "one of the expressions"}.'},
-    {role:'user',content:`Direction: ${c.e2l?'English to Latin':'Latin to English'}\nSentence to translate: ${c.src}\nReference answer: ${c.model}\nVocabulary: ${c.vocab}\nStudent answer: ${answer}${q.leaked?'\nFor the mood only: a question the student asked beforehand was too leading, so even a correct answer will not count.':''}\n${nextDesc()}`}]);
-  const j=parseJ(t);return{ok:j.correct===true,reason:String(j.reason||''),mood:MOODS[j.mood]?j.mood:null,next:j.next_mood};
+  const t=await aiChat([{role:'system',content:'You grade Latin translation exercises for a high school student. The reference answer is known to be correct. Mark the student correct only if their sentence means the same as the reference: same case roles, number, tense, voice, mood and person. Accept any valid phrasing or synonym, either English article, and any Latin word order. Ignore macrons, capitalization and punctuation. Forgive obvious spelling typos (swapped, missing, doubled or extra letters, such as posion for poison) when the intended word is clear and the slip does not turn it into a different real word or a different grammatical form; still mark the answer correct and name the typo in the reason. A difference that changes number, tense, person, voice or case is never a typo: field for fields is incorrect, and in Latin a typo is only forgivable in the stem of a word, never in its ending. If the student sentence contains a wrong ending or a wrong word, it is incorrect. Reply only with JSON: {"correct": true or false, "reason": "one short sentence for the student"}.'},
+    {role:'user',content:`Direction: ${c.e2l?'English to Latin':'Latin to English'}\nSentence to translate: ${c.src}\nReference answer: ${c.model}\nVocabulary: ${c.vocab}\nStudent answer: ${answer}`}]);
+  const j=parseJ(t);return{ok:j.correct===true,reason:String(j.reason||'')};
 }
 const MOODS={happy:'friendly default',delighted:'excited: a great question, or the student is on the right track',laughing:'something funny, or a silly mix-up',adoring:'the student did something impressive or thanked you',sly:'a teasing hint or playful nudge, or you caught a question fishing for the answer',cheeky:'warm and encouraging, a little affectionate',shocked:'surprised: a big mistake or a tricky exception',sad:'sympathetic: the student is struggling or got it wrong',grumpy:'mock-grumpy about Latin irregularities or about being asked for the answer outright',fish:'proud and triumphant, like a cat with its catch: the student nailed a tricky one or is on a streak'};
 // thinking is never picked by the AI: the site shows it while waiting for an AI reply.
 const FACES={...MOODS,thinking:'waiting for the AI'};
+// Faces the site picks itself (no API call): greeting a new exercise, and reacting to an answer by its result.
+const GREET_MOODS=['happy','delighted','cheeky','sly','fish'];
+const REACT_MOODS={ok:['happy','delighted','adoring','fish','laughing'],mac:['cheeky','sly'],leak:['sly','grumpy'],bad:['sad','shocked','grumpy']};
 const PERSONA="You are Fēlix, the cheerful cat mascot of Verba, a Latin practice site (fēlēs means cat and fēlīx means lucky). Be warm, encouraging and a little playful, with the occasional light cat pun, but keep every explanation accurate, clear and short. You always choose the expression Fēlix shows, as \"mood\", from this list: "+Object.entries(MOODS).map(([k,v])=>k+' ('+v+')').join(', ')+". You may sprinkle in a Latin word or short phrase now and then, playfully or in context (for example salvē, euge, mīrābile, ēheu, discipule). Whenever your reply text contains any Latin word or phrase, including words quoted from the exercise, also return \"latin\": an object mapping each one exactly as written in your reply to a short English meaning, for example {\"euge\": \"well done!\"}; use {} if there is none. Before the student has submitted, give only a word's general dictionary meaning there, never its translation within the exercise or which form it takes in it. ";
 const GREETINGS=["{Salvē|hello!}! I'm {Fēlix|lucky (my name; fēlēs means cat)}. Stuck on an ending? Ask me anything about the grammar.","{Avē|hail! greetings!}, {discipule|student (said to you)}! Curiosity never hurt this cat. What would you like to know?","Nine lives, and I've spent every one of them on Latin. Ask away!","Purr-haps a question about endings? I'm all ears (both of them).","{Fēlēs|cat} means cat and {fēlīx|lucky} means lucky, so you're lucky to have a cat tutor. Ask me anything!","Tip from a wise cat: ask about the rules, not the answer, and your score stays safe.","Need a paw with this one? General grammar questions are always free.","I knocked a scroll off the table for you. Shall we read it together?","{Salvē|hello!}, {amīce|friend (said to you)}! Ready to {scrībere|to write} some Latin?","{Carpe diem|seize the day}! Questions about grammar are always welcome."];
 const THINKING=["{Fēlix|lucky (my name)} is consulting the scrolls","Sharpening claws on the grammar","Checking with Cicero","Chasing the ablative around the room","Unrolling a very long scroll","Asking the other cats in the {Forum|the public square of Rome}","Pawing through the dictionary","Napping on it for a second","{Cōgitō|I am thinking}… whiskers twitching","{Festīnā lentē|make haste slowly}: checking carefully","{Exspectā|wait!}, the answer is on the tip of my tongue"];
@@ -1583,10 +1586,10 @@ function md(s){
   close();
   return out.join('\n').replace(/\n{2,}/g,'<br><br>').replace(/\n(?!<\/?[uo]l)/g,'<br>').replace(/\n/g,'').replace(/(<br>)+(<[uo]l>)/g,'$2').replace(/(<\/[uo]l>)(<br>)+/g,'$1');
 }
-const FV='?v=6',felixImg=m=>`img/felix/${FACES[m]?m:'happy'}.svg${FV}`,faceImg=m=>`img/felix/face-${FACES[m]?m:'happy'}.svg${FV}`;
+const FV='?v=7',felixImg=m=>`img/felix/${FACES[m]?m:'happy'}.svg${FV}`,faceImg=m=>`img/felix/face-${FACES[m]?m:'happy'}.svg${FV}`;
 function setFelix(m){const f=$('felix');if(!f)return;f.src=felixImg(m);f.alt=`Fēlix looking ${m}`;f.classList.remove('react');void f.offsetWidth;f.classList.add('react');}
 function renderChat(){
-  const greet=`<li class="greet"><div class="arow"><img src="${faceImg(q.greetMood||(q.moodPending?'thinking':'happy'))}" alt=""><div class="ca">${latH(q.greeting||GREETINGS[0])}</div></div></li>`;
+  const greet=`<li class="greet"><div class="arow"><img src="${faceImg(q.greetMood||'happy')}" alt=""><div class="ca">${latH(q.greeting||GREETINGS[0])}</div></div></li>`;
   $('chat').innerHTML=greet+q.chat.map((x,k)=>`<li><p class="cq"><b>You${x.after?' (after answering)':''}:</b> ${esc(x.q)}</p><div class="arow"><img src="${faceImg(x.pending?'thinking':x.err?'sad':x.mood)}" alt=""><div class="ca" data-k="${k}">${x.pending?`<i>${latH(x.thinking)}</i><span class="typing"><i></i><i></i><i></i></span>`:x.err?`<span class="tag bad">Couldn't ask</span> ${esc(x.err)}`:`${x.after?'':x.leading?`<span class="tag bad">Too leading</span> `:`<span class="tag ok">Fine to ask</span> `}${md(x.a)}${x.why&&!x.after?`<br><small>${esc(x.why)}</small>`:''}${x.edit?`<br><span class="tag edit">Edited your answer</span> <span class="la">${esc(x.edit)}</span>`:''}`}</div></div></li>`).join('');
   const box=$('chat');box.querySelectorAll('.ca[data-k]').forEach(el=>{const x=q.chat[+el.dataset.k];if(x&&!x.pending&&x.latin)glossify(el,x.latin)});box.scrollTop=box.scrollHeight;
   $('askhint').textContent=checked?'Ask anything now; questions after answering never affect your score.':q.leaked?'A question was too leading, so this sentence will count as wrong. You can still answer it.':'Before you answer: a question that gives away part of the answer makes this sentence count as wrong.';
@@ -1625,10 +1628,10 @@ async function tryStart(){
 function start(){
   store.set('mode',modeSel());store.set('limit',$('limit').checked);setLimit($('limit').checked);
   stats.right=stats.total=stats.streak=0;
-  upcoming=null;$('start').hidden=true;$('bar').hidden=true;$('drill').hidden=false;window.scrollTo(0,0);next();
+  $('start').hidden=true;$('bar').hidden=true;$('drill').hidden=false;window.scrollTo(0,0);next();
 }
 function next(){
-  q=upcoming||prep(makeNext());upcoming=null;checked=false;q.chat=[];q.leaked=false;$('askq').value='';moodTok++;
+  q=prep(makeNext());q.greetMood=R(GREET_MOODS);checked=false;q.chat=[];q.leaked=false;$('askq').value='';moodTok++;
   $('feedback').innerHTML='';$('check').textContent='Check answer';
   const blanks=q.choice?[]:q.tokens.filter(t=>t.blank);
   $('concept').textContent=blanks.length>1?'Mixed: '+[...new Set(blanks.map(b=>TOPICS.find(t=>b.cids.includes(t.id)&&selected.has(t.id))||q.topic).map(t=>t.name))].join(' + '):q.topic.name;
@@ -1658,26 +1661,10 @@ function next(){
     const f=$('qbody').querySelector('input');if(f){f.focus();lastInput=f;}
   }
   renderChat();score();
-  // The greeting mood normally arrives with the previous answer's API call; only the first exercise of a session needs its own call.
-  const cur=q;
-  if(q.greetMood)setFelix(q.greetMood);
-  else if(q.moodPending)setFelix('thinking');
-  else{const e=exOf(q);q.moodPending=true;renderChat();
-    moodFor(`Moment: a new exercise just appeared and Fēlix greets the student.\nCourse: ${COURSE[levelOf(q)]}\nExercise type: ${e.type}\nExercise: ${e.src}\nFēlix's greeting: ${plain(q.greeting)}\nStudent's streak: ${stats.streak} correct in a row`,'happy').then(m=>{cur.moodPending=false;cur.greetMood=m;if(cur===q&&!q.chat.length)renderChat()});}
+  setFelix(q.greetMood);
 }
 const makeNext=()=>tab==='build'?makeBuilt(bFrames,bIngs,$('per').value):makeQuestion(selected,false);
 function prep(x){x.mode=(x.choice||x.form)?'blank':modeSel();if(!x.choice&&x.mode!=='blank')x.latin=cap(x.display||x.tokens.map(t=>t.la+(t.post||'')).join(' '))+x.end;x.greeting=R(GREETINGS);return x}
-function upNext(){if(!upcoming){upcoming=prep(makeNext());upcoming.moodPending=true}return upcoming}
-const nextDesc=()=>{const n=upNext(),e=exOf(n);return `Next exercise (Fēlix greets the student with it right after this): ${e.type}: ${e.src}. His greeting: ${plain(n.greeting)}`};
-function applyNext(n,m){if(!n.moodPending)return;n.moodPending=false;n.greetMood=MOODS[m]?m:'happy';if(q===n&&!q.chat.length){renderChat();moodTok++;setFelix(n.greetMood)}}
-const exOf=q=>{if(q.choice)return{type:'identify the literary device in a line of Latin poetry',src:q.line+' ('+q.cite+')',model:q.answer};
-  if(q.mode==='blank')return{type:'fill in the missing Latin word forms',src:q.tokens.map(t=>t.blank?'____ ('+t.lemma+')':t.la+(t.post||'')).join(' ')+(q.form?'':q.end||''),model:q.tokens.filter(t=>t.blank).map(t=>t.la).join(', ')};
-  const c=ctxOf(q);return{type:c.e2l?'translate English into Latin':'translate Latin into English',src:c.src,model:c.model}};
-async function moodFor(moment,fallback){
-  const t=++moodTok,cur=q;setFelix('thinking');let m=fallback;
-  try{if(ai.key){const j=parseJ(await aiChat([{role:'system',content:PERSONA+'Right now you are not writing a reply: only pick the expression Fēlix shows for the moment described. Reply only with JSON: {"mood": "one of the expressions"}.'},{role:'user',content:moment}]));if(MOODS[j.mood])m=j.mood}}catch(e){}
-  if(t===moodTok&&cur===q)setFelix(m);return m;
-}
 const RANKS=[['Discipulus','student'],['Tīrō','recruit'],['Mīles','soldier'],['Decuriō','squad leader'],['Centuriō','centurion'],['Tribūnus','tribune'],['Lēgātus','general'],['Praetor','judge'],['Cōnsul','consul'],['Imperātor','emperor']];
 const lvlXP=n=>50*n*(n-1);
 const rankLv=xp=>{let n=1;while(xp>=lvlXP(n+1))n++;return n};
@@ -1714,17 +1701,7 @@ function award(){
   else if(stats.streak&&stats.streak%5===0){boom(false);toast('laughing',`${stats.streak} in a row! {Iō|hooray!}, you're on fire!`);}
   hud();
 }
-function react(kind,got){
-  const fb=kind==='ok'?R(['happy','delighted','adoring','fish']):kind==='leak'?'sly':kind==='mac'?'cheeky':R(['sad','shocked']),nq=upNext();
-  if(got&&MOODS[got.mood]){moodTok++;setFelix(got.mood);applyNext(nq,got.next);return}
-  const e=exOf(q),res={ok:'correct',mac:'correct, but some macrons were missing',leak:'correct, but it does not count because a question asked beforehand was too leading',bad:'incorrect'}[kind];
-  const t=++moodTok,cur=q;setFelix('thinking');
-  (async()=>{let m=fb,nm='happy';
-    try{if(ai.key){const j=parseJ(await aiChat([{role:'system',content:PERSONA+'Right now you are not writing a reply: pick the expression Fēlix shows about this answer, as "mood", and the expression he greets the student with on the next exercise, as "next_mood". Reply only with JSON: {"mood": "one of the expressions", "next_mood": "one of the expressions"}.'},
-      {role:'user',content:`Moment: the student just submitted an answer.\nCourse: ${COURSE[levelOf(q)]}\nExercise type: ${e.type}\nExercise: ${e.src}\nCorrect answer: ${e.model}\nStudent's answer: ${cur.submitted||'(none)'}\nResult: ${res}\nStreak now: ${stats.streak} correct in a row\n${nextDesc()}`}]));
-      if(MOODS[j.mood])m=j.mood;if(MOODS[j.next_mood])nm=j.next_mood}}catch(e){}
-    if(t===moodTok&&cur===q)setFelix(m);applyNext(nq,nm)})();
-}
+function react(kind){moodTok++;setFelix(R(REACT_MOODS[kind]))}
 (function(){
   var root=document.documentElement, tt=document.getElementById("theme-toggle");
   tt.setAttribute("aria-label",root.getAttribute("data-theme")==="dark"?"dark":"light");
@@ -1841,7 +1818,7 @@ async function checkT(){
   }
   const counts=r.ok&&!q.leaked;
   inp.classList.add(counts?'ok':r.ok&&q.leaked?'leak':'bad');stats.total++;if(counts)stats.right++;stats.streak=counts?prev+1:0;if(counts)award();
-  q.submitted=inp.value.trim();q.result=r.ok?'correct':'incorrect';react(counts?(r.macron?'mac':'ok'):r.ok&&q.leaked?'leak':'bad',aiR);
+  q.submitted=inp.value.trim();q.result=r.ok?'correct':'incorrect';react(counts?(r.macron?'mac':'ok'):r.ok&&q.leaked?'leak':'bad');
   const model=`<span class="la">${esc(e2l?q.latin:cap(q.en)+q.end)}</span>`,order=e2l?' Any word order is accepted.':'';
   const why=aiR&&aiR.reason?`<br>${esc(aiR.reason)}`:aiErr?`<br>The AI check failed (${esc(aiErr)}), so only the built-in checker ran.`:'';
   let li;
@@ -1853,7 +1830,7 @@ async function checkT(){
   if(q.leaked&&r.ok)li=`<li class="mac"><b class="mac">Correct, but not counted.</b> Your answer was right, but a question you asked before answering was too leading, so this one doesn't count toward your score.${why} ${model}</li>`;
   else if(q.leaked){li=li.replace(/<br><button class="btn quiet" id="override">[^<]*<\/button>/,'');li+=`<li class="bad"><b class="bad">This sentence also counts as wrong</b> because one of your questions before answering was too leading.</li>`;}
   $('feedback').innerHTML=li;checked=true;$('check').textContent='Next sentence';$('check').focus();score();renderChat();
-  const o=$('override');if(o)o.addEventListener('click',()=>{stats.right++;stats.streak=prev+1;o.remove();award();moodTok++;setFelix(R(['delighted','adoring','fish']));score()});
+  const o=$('override');if(o)o.addEventListener('click',()=>{stats.right++;stats.streak=prev+1;o.remove();award();react('ok');score()});
 }
 $('qbody').addEventListener('click',e=>{
   const o=e.target.dataset&&e.target.dataset.o;if(!o||checked)return;checked=true;

@@ -146,12 +146,16 @@ def head_svg(mood):
 def build(mood):
     P=POSE[mood];dy=14+P.get('lift',0)+P.get('drop',0)
     s=f'<path d="{BUST}" fill="{TOGA}" {st(3.6)}/><g clip-path="url(#body)"><path d="M150,160 L190,166 L96,240 L52,240 Z" fill="{SASH}" {st(2.4)}/>'
-    s+=line('M60,206 Q78,214 84,236',2.4)+line('M178,200 Q170,218 176,240',2.4)+line('M200,214 Q196,228 200,240',2.4)+f'<path d="M120,164 L220,180 L220,240 L150,240 Z" fill="{TSH}" opacity=".35"/></g>'
+    up=lambda side:any(end[1]<160 and (sh[0]<120)==(side<0) for sh,c1,c2,end,a in P['arms'])
+    if not up(-1): s+=line('M60,206 Q78,214 84,236',2.4)
+    if not up(1): s+=line('M178,200 Q170,218 176,240',2.4)+line('M200,214 Q196,228 200,240',2.4)
+    s+=f'<path d="M120,164 L220,180 L220,240 L150,240 Z" fill="{TSH}" opacity=".35"/></g>'
     s+=f'<path d="M98,160 Q120,176 142,160 L142,172 Q120,184 98,172 Z" fill="{MUZ}" {st(3)}/>'
-    s+=tension(P['arms'])
     if P.get('tab'): s+=TAB()
     s+=f'<g transform="translate(0 {dy}) rotate({P["tilt"]} 120 150)">{head_svg(mood)}</g>'
-    for sh,c1,c2,end,a in P['arms']: s+=toga_arm(sh,c1,c2,end,a)
+    for sh,c1,c2,end,a in P['arms']:
+        if end[1]<160: k=-1 if sh[0]<120 else 1;sh=(120+k*66,186);c1=(c1[0],min(c1[1],178))
+        s+=arm(sh,c1,c2,end,a)
     if 'fx' in P: s+=P['fx']()
     if mood=='grumpy': s+=GRUMPMARK
     return s
