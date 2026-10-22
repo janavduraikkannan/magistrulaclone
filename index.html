@@ -89,7 +89,7 @@ img{max-width:100%}
 .legend{margin:16px 0 0;display:flex;flex-wrap:wrap;gap:6px 16px;align-items:center;color:var(--muted)}
 .legend .sw{display:inline-block;width:1.6em;height:1em;background:var(--wash);box-shadow:inset 3px 0 var(--accent2);border-radius:3px;vertical-align:-2px;margin-right:6px}
 .legend button,.level .all{background:none;border:0;padding:0;color:var(--accent2);cursor:pointer;font-weight:800;text-decoration:underline;text-underline-offset:3px}
-.levels{display:grid;grid-template-columns:repeat(auto-fit,minmax(255px,1fr));gap:16px;margin:16px 0 270px}
+.levels{display:grid;grid-template-columns:repeat(auto-fit,minmax(255px,1fr));gap:16px;margin:16px 0 320px}
 .level,.builder>section{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:8px 18px 18px;box-shadow:var(--shadow)}
 .level h2,.builder h2{font-family:var(--display);font-weight:600;font-size:1.3rem;margin:12px 0 4px;display:flex;align-items:center;gap:10px}
 .level h2 .num{font-size:1rem;min-width:2.4em;height:2.4em;border-radius:12px;display:grid;place-items:center;background:var(--lv1);color:#1A1300;font-weight:700}
@@ -101,7 +101,7 @@ img{max-width:100%}
 .level label:hover,.builder label:hover{background:var(--surface2)}
 .level input,.builder input{margin-top:.25em;width:1.1em;height:1.1em;accent-color:var(--accent2);flex:none}
 .level label.taught,.builder label.taught{background:var(--wash);box-shadow:inset 3px 0 var(--accent2)}
-.builder{margin:16px 0 270px;display:grid;grid-template-columns:minmax(240px,1fr) minmax(260px,2fr);gap:16px}
+.builder{margin:16px 0 320px;display:grid;grid-template-columns:minmax(240px,1fr) minmax(260px,2fr);gap:16px}
 .builder .ings{columns:2 230px;column-gap:24px}
 .builder .ings>div{break-inside:avoid}
 .builder p{color:var(--muted);margin:6px 0 0;font-size:.95rem}
@@ -117,7 +117,7 @@ img{max-width:100%}
 .bar input[type=radio],.bar input[type=checkbox]{accent-color:var(--accent2)}
 .bar select,.bar input[type=password]{background:var(--surface2)!important;border:1px solid var(--line)!important;border-radius:10px!important;color:var(--ink)!important}
 .bar .go{margin-left:auto;display:flex;gap:14px;align-items:center}
-@media (max-width:560px){.bar .go{margin-left:0;width:100%;justify-content:space-between}.levels{margin-bottom:430px}}
+@media (max-width:560px){.bar .go{margin-left:0;width:100%;justify-content:space-between}.levels,.builder{margin-bottom:500px}}
 
 /* buttons */
 .btn{background:var(--accent);color:var(--accent-ink);border:0;border-radius:12px;padding:11px 22px;font-family:var(--display);font-weight:600;font-size:1.05rem;cursor:pointer;box-shadow:0 4px 0 var(--accent-shadow);transition:transform .08s,box-shadow .08s,filter .15s}
@@ -130,6 +130,35 @@ img{max-width:100%}
 .info{display:inline-flex;align-items:center;justify-content:center;width:1.7em;height:1.7em;border-radius:50%;background:var(--surface2);border:2px solid var(--accent2);color:var(--accent2);font-family:var(--latin);font-style:italic;font-weight:700;text-decoration:none;transition:transform .15s}
 .info:hover{transform:scale(1.12);background:var(--accent2);color:var(--accent2-ink)}
 .keyfield{display:inline-flex;align-items:center;gap:6px}
+.aikeys{display:flex;flex-direction:column;gap:6px}
+.kline{display:flex;flex-wrap:wrap;gap:6px 18px;align-items:center}
+.kline[hidden]{display:none}
+.kopts{font-size:.92rem;color:var(--muted)}
+.kopts label.dis{opacity:.6;cursor:not-allowed}
+.kbtn{font:inherit;font-size:.92rem;font-weight:700;background:var(--surface2);color:var(--ink);border:2px solid var(--line2);border-radius:8px;padding:3px 10px;cursor:pointer}
+.kbtn:hover{border-color:var(--accent2)}
+dialog.keysdlg{max-width:min(640px,calc(100vw - 24px));width:100%}
+dialog.keysdlg .advsw{display:flex;gap:9px;align-items:center;font-weight:800;margin:6px 0 4px;cursor:pointer}
+dialog.keysdlg .advsw input,dialog.keysdlg .krow input[type=checkbox]{width:auto;accent-color:var(--accent2)}
+dialog.keysdlg ol{list-style:none;margin:12px 0;padding:0;display:flex;flex-direction:column;gap:10px}
+dialog.keysdlg.dim ol,dialog.keysdlg.dim #kadd{opacity:.55}
+.krow{display:grid;grid-template-columns:auto 1fr;gap:4px 10px;align-items:start;background:var(--surface2);border:2px solid var(--line);border-radius:10px;padding:10px 12px}
+.krow.off{border-style:dashed}
+.krow.off .kfields{opacity:.6}
+.krank{grid-row:span 2;font-family:var(--display);font-weight:700;font-size:1.5rem;line-height:1;color:var(--accent2);min-width:1.2em;text-align:center;padding-top:6px}
+.kfields{display:flex;gap:8px;flex-wrap:wrap}
+dialog.keysdlg .kfields select{font:inherit;font-size:.95rem;background:var(--surface);color:var(--ink);border:2px solid var(--line);border-radius:8px;padding:6px 8px}
+dialog.keysdlg .kfields input{flex:1;min-width:11em;width:auto;background:var(--surface)}
+.kctl{display:flex;flex-wrap:wrap;gap:6px 10px;align-items:center;font-size:.92rem}
+.kctl label{display:inline-flex;gap:6px;align-items:center;font-weight:700;cursor:pointer;margin-right:auto}
+.kctl button{font:inherit;font-size:.9rem;background:var(--surface);color:var(--ink);border:2px solid var(--line);border-radius:7px;padding:2px 9px;cursor:pointer}
+.kctl button:disabled{opacity:.4;cursor:default}
+.kstat{font-size:.88rem;color:var(--muted);min-height:1.2em}
+.kstat.bad{color:var(--bad);font-weight:700} .kstat.ok{color:var(--ok);font-weight:700}
+.knotes{position:fixed;right:16px;top:calc(76px + env(safe-area-inset-top,0px));z-index:45;display:flex;flex-direction:column;gap:10px;max-width:min(400px,calc(100vw - 32px))}
+.knote{display:flex;gap:10px;align-items:flex-start;background:var(--surface);background-image:var(--paper);border:2px solid var(--bad);border-radius:10px;padding:10px 12px;box-shadow:4px 4px 0 var(--line2);font-size:.95rem}
+.knote img{width:48px;height:48px;flex:none}
+.knote .row{display:flex;gap:8px;flex-wrap:wrap;margin-top:8px}
 
 /* drill */
 .drillhead{display:flex;flex-wrap:wrap;gap:10px 20px;align-items:center;justify-content:space-between;padding:20px 0 14px}
@@ -359,6 +388,16 @@ dialog.acct .x{position:absolute;right:12px;top:10px;background:none;border:0;fo
     </div>
   </div>
 </header>
+<dialog class="acct keysdlg" id="keysdlg" aria-labelledby="keysTitle">
+  <button class="x" type="button" id="keysClose" aria-label="Close">×</button>
+  <h2 id="keysTitle">AI keys</h2>
+  <label class="advsw"><input type="checkbox" id="advOn"> Advanced mode: use several keys, in ranked order</label>
+  <p class="hint" style="margin:0">Every time the site asks the AI something, it tries key 1 first. If a key fails, the site moves down the list until one works and tells you. Keys you turn off are skipped until you turn them back on here.</p>
+  <ol id="klist"></ol>
+  <button class="kbtn" type="button" id="kadd">+ Add another key</button>
+  <p class="hint" style="margin:14px 0 0">Mix free and paid keys any way you like, for example a free Groq key first and a paid one as backup. For paid keys, set a monthly spending limit on the provider’s website.</p>
+</dialog>
+<div class="knotes" id="knotes" aria-live="polite"></div>
 <dialog class="acct" id="acct" aria-labelledby="acctTitle">
   <button class="x" type="button" id="acctClose" aria-label="Close">×</button>
   <div id="acctBody"></div>
@@ -430,8 +469,18 @@ dialog.acct .x{position:absolute;right:12px;top:10px;background:none;border:0;fo
       <label><input type="radio" name="mode" value="l2e"> Latin to English</label>
     </fieldset>
     <label><input type="checkbox" id="limit" checked> Only 1st and 2nd declension nouns and adjectives</label>
-    <label>AI provider <select id="prov" style="font:inherit;background:var(--wash);color:var(--ink);border:1px solid var(--line);border-radius:4px;padding:5px 8px"><option value="auto">Detect from key</option><option value="groq">Groq</option><option value="gemini">Google Gemini</option><option value="openrouter">OpenRouter</option><option value="cerebras">Cerebras</option><option value="mistral">Mistral</option><option value="huggingface">Hugging Face</option><option value="cohere">Cohere</option></select></label>
-    <span class="keyfield"><label>AI API key <input type="password" id="key" autocomplete="off" placeholder="Paste a free key" style="background:var(--wash);border:1px solid var(--line);border-radius:4px;padding:6px 10px;width:15em;max-width:52vw"></label><a class="info" href="keys.html" target="_blank" rel="noopener" title="Which free AI keys work?" aria-label="Which free AI keys work? Opens in a new tab">i</a></span>
+    <div class="aikeys">
+      <div class="kline" id="simplekey">
+        <label>AI provider <select id="prov" style="font:inherit;background:var(--wash);color:var(--ink);border:1px solid var(--line);border-radius:4px;padding:5px 8px"><option value="auto">Detect from key</option><optgroup label="Free keys"><option value="groq">Groq</option><option value="gemini">Google Gemini</option><option value="openrouter">OpenRouter</option><option value="cerebras">Cerebras</option><option value="mistral">Mistral</option><option value="huggingface">Hugging Face</option><option value="cohere">Cohere</option></optgroup><optgroup label="Paid keys"><option value="openai">OpenAI (ChatGPT)</option><option value="anthropic">Anthropic (Claude)</option><option value="xai">xAI (Grok)</option></optgroup></select></label>
+        <span class="keyfield"><label>AI API key <input type="password" id="key" autocomplete="off" placeholder="Paste an API key" style="background:var(--wash);border:1px solid var(--line);border-radius:4px;padding:6px 10px;width:15em;max-width:52vw"></label><a class="info" href="keys.html" target="_blank" rel="noopener" title="Which AI keys work?" aria-label="Which AI keys work? Opens in a new tab">i</a></span>
+      </div>
+      <div class="kline" id="advkey" hidden><span><b>AI keys:</b> <span id="advsum"></span></span><button type="button" class="kbtn" id="kedit">Edit keys</button><a class="info" href="keys.html" target="_blank" rel="noopener" title="Which AI keys work?" aria-label="Which AI keys work? Opens in a new tab">i</a></div>
+      <div class="kline kopts">
+        <label id="kRemBl"><input type="checkbox" id="kRemB"> Remember key(s) on this browser</label>
+        <label id="kRemAl"><input type="checkbox" id="kRemA"> <span id="kRemAt">Save key(s) to my account</span></label>
+        <button type="button" class="kbtn" id="kadv">Advanced: several keys</button>
+      </div>
+    </div>
     <div class="go">
       <span class="hint" id="keymsg" style="color:var(--bad)"></span><span class="hint" id="count">Choose at least one topic</span>
       <button class="btn" id="startbtn" disabled>Start practice</button>
@@ -1494,7 +1543,7 @@ function sync(){
 }
 const mixed=()=>document.querySelector('input[name=style]:checked').value==='mixed';
 const modeSel=()=>document.querySelector('input[name=mode]:checked').value;
-/* ---------- AI provider layer (any of these free keys works) ---------- */
+/* ---------- AI provider layer (free and paid keys; one or many, ranked) ---------- */
 const PROVIDERS={
   groq:{name:'Groq',base:'https://api.groq.com/openai/v1',re:/^gsk_/,prefer:['llama-3.3-70b','gpt-oss-120b','70b','llama'],skip:/whisper|guard|tts|embed|speech|orpheus|compound|playai/i,fallback:'llama-3.3-70b-versatile'},
   gemini:{name:'Google Gemini',base:'https://generativelanguage.googleapis.com/v1beta/openai',re:/^AIza/,prefer:['gemini-2.5-flash','gemini-flash-latest','flash'],skip:/image|tts|audio|live|embed|imagen|veo|pro|aqa|gemma|learnlm|thinking|lite/i,fallback:'gemini-2.5-flash'},
@@ -1502,35 +1551,140 @@ const PROVIDERS={
   cerebras:{name:'Cerebras',base:'https://api.cerebras.ai/v1',re:/^csk-/,prefer:['gpt-oss-120b','llama-3.3-70b','llama','qwen'],skip:/embed/i,fallback:'gpt-oss-120b'},
   huggingface:{name:'Hugging Face',base:'https://router.huggingface.co/v1',re:/^hf_/,prefer:['openai/gpt-oss-120b','llama-3.3-70b','Llama-3.3-70B','Qwen3','qwen'],skip:/vision|VL|embed|coder|image/i,fallback:'openai/gpt-oss-120b',check:'https://huggingface.co/api/whoami-v2'},
   cohere:{name:'Cohere',base:'https://api.cohere.ai/compatibility/v1',re:/^[A-Za-z0-9]{40}$/,prefer:['command-a-03-2025','command-a','command-r-plus','command-r'],skip:/vision|translate|reasoning|embed|rerank|light|nightly/i,fallback:'command-a-03-2025',check:'https://api.cohere.com/v1/models?endpoint=chat',listFromCheck:r=>(r.models||[]).map(m=>m.name)},
-  mistral:{name:'Mistral',base:'https://api.mistral.ai/v1',re:/^[A-Za-z0-9]{32}$/,prefer:['mistral-small-latest','mistral-medium-latest','mistral-large-latest'],skip:/embed|ocr|moderation|codestral|pixtral|voxtral|devstral/i,fallback:'mistral-small-latest'}
+  mistral:{name:'Mistral',base:'https://api.mistral.ai/v1',re:/^[A-Za-z0-9]{32}$/,prefer:['mistral-small-latest','mistral-medium-latest','mistral-large-latest'],skip:/embed|ocr|moderation|codestral|pixtral|voxtral|devstral/i,fallback:'mistral-small-latest'},
+  // Paid keys. Each uses a cheap, fast model from the family, which is plenty for grading and short tutoring replies.
+  openai:{name:'OpenAI (ChatGPT)',paid:true,base:'https://api.openai.com/v1',re:/^sk-(?!or-|ant-)/,prefer:['gpt-4.1-mini','gpt-5-mini','gpt-4o-mini','mini'],skip:/audio|realtime|tts|whisper|embed|image|dall|search|transcri|moderation|codex|instruct|davinci|babbage|nano|preview|\d{4}-\d\d-\d\d/i,fallback:'gpt-4.1-mini'},
+  anthropic:{name:'Anthropic (Claude)',paid:true,native:'anthropic',base:'https://api.anthropic.com/v1',re:/^sk-ant-/,check:'/models?limit=100',prefer:['haiku','sonnet'],skip:/claude-(2|instant|3-)/i,fallback:'claude-haiku-4-5'},
+  xai:{name:'xAI (Grok)',paid:true,base:'https://api.x.ai/v1',re:/^xai-/,prefer:['grok-4-fast-non-reasoning','grok-4-1-fast-non-reasoning','grok-3-mini','fast-non-reasoning','mini'],skip:/image|vision|imagine|embed|code/i,fallback:'grok-3-mini'}
 };
-let ai={key:'',prov:null,model:''};
+// Anthropic accepts calls straight from a web page only with its explicit browser-access header.
+const aiHeaders=(P,key)=>P.native==='anthropic'?{'x-api-key':key,'anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'}:{Authorization:'Bearer '+key};
 async function tryProvider(id,key){
-  const P=PROVIDERS[id],h={Authorization:'Bearer '+key};
+  const P=PROVIDERS[id],h=aiHeaders(P,key);
   const url=c=>/^https?:/.test(c)?c:P.base+c;
-  let r;try{r=await fetch(url(P.check||'/models'),{headers:h})}catch(e){throw new Error(`Couldn't reach ${P.name} from this page.`)}
-  if(r.status===401||r.status===403||r.status===400)throw new Error(`${P.name} did not accept that key.`);
-  if(!r.ok)throw new Error(`${P.name} returned error ${r.status}.`);
+  let r;try{r=await fetch(url(P.check||'/models'),{headers:h})}catch(e){throw new Error(`Couldn't reach ${P.name} from this page`)}
+  if(r.status===401||r.status===403||r.status===400)throw new Error(`${P.name} did not accept that key`);
+  if(!r.ok)throw new Error(`${P.name} returned error ${r.status}`);
   let ids=[];
-  try{if(P.listFromCheck)ids=P.listFromCheck(await r.json());else{const lr=P.check?await fetch(P.base+'/models',{headers:h}):r;ids=((await lr.json()).data||[]).map(m=>String(m.id).replace(/^models\//,''));}}catch(e){}
+  try{if(P.listFromCheck)ids=P.listFromCheck(await r.json());else{const lr=(P.check&&!P.native)?await fetch(P.base+'/models',{headers:h}):r;ids=((await lr.json()).data||[]).map(m=>String(m.id).replace(/^models\//,''));}}catch(e){}
   if(P.freeOnly)ids=ids.filter(i=>i.endsWith(':free'));
   ids=ids.filter(i=>!P.skip.test(i));
   const model=(id==='gemini'&&ids.includes('gemini-2.5-flash'))?'gemini-2.5-flash':P.prefer.map(x=>ids.find(i=>i.includes(x))).find(Boolean)||ids[0]||P.fallback;
-  ai={key,prov:id,model};
+  return{prov:id,model};
 }
-async function aiInit(key,choice){
+const guessProv=key=>Object.keys(PROVIDERS).filter(id=>PROVIDERS[id].re.test(key));
+async function detectKey(key,choice){
   if(choice&&choice!=='auto')return tryProvider(choice,key);
-  const order=Object.keys(PROVIDERS).filter(id=>PROVIDERS[id].re.test(key));
-  if(!order.length)throw new Error("That doesn't look like a key from a provider this site knows. Pick the provider from the list, or tap ⓘ to see which keys work.");
+  const order=guessProv(key);
+  if(!order.length)throw new Error("That doesn't look like a key from a provider this site knows. Pick the provider from the list, or tap ⓘ to see which keys work");
   let last;for(const id of order){try{return await tryProvider(id,key)}catch(e){last=e}}throw last;
 }
-async function aiChat(messages,retry=true){
-  const P=PROVIDERS[ai.prov];
-  let r;try{r=await fetch(P.base+'/chat/completions',{method:'POST',headers:{Authorization:'Bearer '+ai.key,'Content-Type':'application/json'},body:JSON.stringify({model:ai.model,temperature:0,messages})})}
+async function chatWith(s,messages,retry=true,temp=true){
+  const P=PROVIDERS[s.st.prov];let body;
+  if(P.native){const sys=messages.filter(m=>m.role==='system').map(m=>m.content).join('\n\n');
+    body={model:s.st.model,max_tokens:1024,messages:messages.filter(m=>m.role!=='system')};if(sys)body.system=sys;}
+  else body={model:s.st.model,messages};
+  if(temp)body.temperature=0;
+  let r;try{r=await fetch(P.base+(P.native?'/messages':'/chat/completions'),{method:'POST',headers:{...aiHeaders(P,s.key),'Content-Type':'application/json'},body:JSON.stringify(body)})}
   catch(e){throw new Error(P.name+' could not be reached')}
-  if(r.status===429)throw new Error(P.name+' rate limit reached; wait a minute');
-  if(!r.ok){if(retry&&ai.model!==P.fallback&&(r.status===404||r.status===400)){ai.model=P.fallback;return aiChat(messages,false)}throw new Error(P.name+' error '+r.status)}
-  const j=await r.json();return String(((j.choices||[])[0]||{}).message?.content||'');
+  if(r.status===429)throw new Error(P.name+' hit a rate or spending limit');
+  if(r.status===401||r.status===403)throw new Error(P.name+' refused the key');
+  if(!r.ok){let txt='';try{txt=await r.text()}catch(e){}
+    if(temp&&r.status===400&&/temperature/i.test(txt))return chatWith(s,messages,retry,false); // some reasoning models only allow the default temperature
+    if(/credit|balance|billing|quota|payment/i.test(txt))throw new Error(P.name+' says the account is out of credit');
+    if(retry&&s.st.model!==P.fallback&&(r.status===404||r.status===400)){s.st.model=P.fallback;return chatWith(s,messages,false,temp)}
+    throw new Error(P.name+' error '+r.status)}
+  const j=await r.json();
+  if(P.native)return(j.content||[]).filter(b=>b.type==='text').map(b=>b.text).join('');
+  return String(((j.choices||[])[0]||{}).message?.content||'');
+}
+/* ---------- Key slots. Simple mode uses slot 1 from the bar; advanced mode uses every slot that is on, in rank order. ---------- */
+const lsGet=(k,d)=>{try{const v=localStorage.getItem(k);return v===null?d:JSON.parse(v)}catch(e){return d}};
+const lsSet=(k,v)=>{try{v===undefined?localStorage.removeItem(k):localStorage.setItem(k,JSON.stringify(v))}catch(e){}};
+let kid=0;const mkSlot=(o={})=>({id:++kid,key:String(o.key||''),prov:PROVIDERS[o.prov]?o.prov:'auto',on:o.on!==false,st:null,err:''});
+let keyRemB=lsGet('verba-keys-browser',false),keyRemA=lsGet('verba-keys-account',false),advanced=store.get('keyadv',false);
+let slots=((keyRemB&&lsGet('verba-aikeys',null))||[{prov:store.get('prov','auto')}]).map(mkSlot);
+const serialKeys=()=>slots.map(s=>({key:s.key,prov:s.prov,on:s.on}));
+function saveKeys(){lsSet('verba-aikeys',keyRemB?serialKeys():undefined);if(keyRemA)try{acctDirty('aikeys')}catch(e){}}
+const provName=s=>s.st?PROVIDERS[s.st.prov].name:PROVIDERS[s.prov]?PROVIDERS[s.prov].name:s.key.trim()&&guessProv(s.key.trim()).length?PROVIDERS[guessProv(s.key.trim())[0]].name:'unknown provider';
+function syncSimple(){const s=slots[0],k=$('key').value.trim(),p=$('prov').value;if(s.key!==k||s.prov!==p){s.key=k;s.prov=p;s.st=null;s.err='';saveKeys()}}
+function fillSimple(){$('key').value=slots[0].key;$('prov').value=slots[0].prov}
+const activeSlots=()=>advanced?slots.filter(s=>s.on&&s.key.trim()):(syncSimple(),slots[0].key?[slots[0]]:[]);
+const aiName=()=>{const s=activeSlots()[0];return s?provName(s):'the AI'};
+async function useSlot(s){if(!s.st)s.st=await detectKey(s.key.trim(),s.prov)}
+// Every AI request starts again at the top-ranked key that is on, and falls down the list on any failure.
+async function aiChat(messages){
+  const list=activeSlots();
+  if(!list.length)throw new Error(advanced?'every AI key is turned off; turn one back on under Edit keys':'no AI key was entered');
+  let last;
+  for(let i=0;i<list.length;i++){const s=list[i];
+    try{await useSlot(s);const t=await chatWith(s,messages);s.err='';kStatus();return t}
+    catch(e){last=e;s.err=e.message||'failed';if(advanced)keyNotice(s,last,list[i+1]);kStatus()}}
+  throw new Error(advanced&&list.length>1?`all ${list.length} keys failed (last: ${last.message})`:last.message);
+}
+function keyNotice(s,e,nextS){
+  const n=slots.indexOf(s)+1;
+  let el=document.querySelector(`.knote[data-id="${s.id}"]`);
+  if(!el){el=document.createElement('div');el.className='knote';el.dataset.id=s.id;el.setAttribute('role','alert');$('knotes').appendChild(el)}
+  el.innerHTML=`<img src="${faceImg('shocked')}" alt=""><div><b>Key ${n} · ${esc(provName(s))} failed.</b> ${esc(e.message||'Unknown error')}. ${nextS?`Switched to key ${slots.indexOf(nextS)+1} · ${esc(provName(nextS))} for this request. Key ${n} will be tried first again next time.`:'There are no more keys to try.'}
+    <div class="row"><button class="kbtn" data-a="off">Turn key ${n} off</button><button class="kbtn" data-a="keep">Keep trying it</button></div></div>`;
+  el.querySelector('[data-a=off]').onclick=()=>{s.on=false;saveKeys();keysUI(true);el.remove();toast('cheeky',`Key ${n} is off. Turn it back on any time under Edit keys.`)};
+  el.querySelector('[data-a=keep]').onclick=()=>el.remove();
+}
+const provOpts=v=>`<option value="auto">Detect from key</option><optgroup label="Free keys">${Object.entries(PROVIDERS).filter(([,P])=>!P.paid).map(([id,P])=>`<option value="${id}"${v===id?' selected':''}>${esc(P.name)}</option>`).join('')}</optgroup><optgroup label="Paid keys">${Object.entries(PROVIDERS).filter(([,P])=>P.paid).map(([id,P])=>`<option value="${id}"${v===id?' selected':''}>${esc(P.name)}</option>`).join('')}</optgroup>`;
+function statText(s){
+  if(!s.key.trim())return['','No key yet'];
+  if(!s.on)return['bad','Off'+(s.err?': last failed ('+s.err+')':'')];
+  if(s.err)return['bad','Last attempt failed: '+s.err];
+  if(s.st)return['ok','Working: '+PROVIDERS[s.st.prov].name+', '+s.st.model];
+  return['',provName(s)+' · not checked yet'];
+}
+function kStatus(){if(!$('keysdlg').open)return;document.querySelectorAll('#klist .krow').forEach(li=>{const s=slots.find(x=>x.id==li.dataset.id);if(!s)return;const[c,t]=statText(s),el=li.querySelector('.kstat');el.className='kstat '+c;el.textContent=t})}
+function renderKeys(){
+  if(advanced)while(slots.length<2)slots.push(mkSlot());
+  $('keysdlg').classList.toggle('dim',!advanced);$('advOn').checked=advanced;
+  $('klist').innerHTML=slots.map((s,i)=>`<li class="krow${s.on?'':' off'}" data-id="${s.id}"><span class="krank" aria-label="Rank ${i+1}">${i+1}</span>
+    <div class="kfields"><select data-f="prov" aria-label="Provider for key ${i+1}">${provOpts(s.prov)}</select><input type="password" data-f="key" autocomplete="off" spellcheck="false" placeholder="Paste API key ${i+1}" aria-label="API key ${i+1}" value="${esc(s.key)}"></div>
+    <div><div class="kctl"><label><input type="checkbox" data-f="on"${s.on?' checked':''}> On</label><button data-a="up" aria-label="Move key ${i+1} up"${i?'':' disabled'}>▲</button><button data-a="down" aria-label="Move key ${i+1} down"${i<slots.length-1?'':' disabled'}>▼</button><button data-a="del" aria-label="Remove key ${i+1}"${slots.length>1?'':' disabled'}>Remove</button></div><div class="kstat"></div></div></li>`).join('');
+  kStatus();
+}
+function keysUI(full){
+  $('simplekey').hidden=advanced;$('advkey').hidden=!advanced;
+  if(!advanced)fillSimple();
+  const withKey=slots.filter(s=>s.key.trim()),on=withKey.filter(s=>s.on);
+  $('advsum').textContent=!withKey.length?'none added yet':`${withKey.length} ranked, ${on.length} on${on.length?', trying '+provName(on[0])+' first':''}`;
+  $('kadv').hidden=advanced;
+  $('kRemB').checked=keyRemB;
+  let ready=false;try{ready=acctReady()}catch(e){}const inn=ready&&!!acct.key;
+  $('kRemA').disabled=!inn;$('kRemA').checked=keyRemA&&inn;$('kRemAl').classList.toggle('dis',!inn);
+  $('kRemAt').textContent='Save key(s) to my account'+(!ready?' (once accounts are switched on)':!inn?' (sign in first)':'');
+  $('kRemAl').title=inn?'Your keys follow your account to every device you sign in on.':!ready?'Accounts are not switched on yet.':'Sign in with your account key first.';
+  if($('keysdlg').open){if(full)renderKeys();else kStatus()}
+}
+function setupKeys(){
+  $('key').addEventListener('input',()=>{syncSimple();keysUI()});$('prov').addEventListener('change',()=>{syncSimple();keysUI()});
+  $('kRemB').addEventListener('change',e=>{keyRemB=e.target.checked;lsSet('verba-keys-browser',keyRemB);saveKeys()});
+  $('kRemA').addEventListener('change',e=>{keyRemA=e.target.checked;lsSet('verba-keys-account',keyRemA);try{pushNow()}catch(x){}});
+  const open=()=>{if(!advanced)syncSimple();$('keysdlg').showModal();renderKeys()};
+  $('kadv').addEventListener('click',open);$('kedit').addEventListener('click',open);
+  $('keysClose').addEventListener('click',()=>$('keysdlg').close());
+  $('keysdlg').addEventListener('click',e=>{if(e.target===$('keysdlg'))$('keysdlg').close()});
+  $('keysdlg').addEventListener('close',()=>{saveKeys();keysUI()});
+  $('advOn').addEventListener('change',e=>{if(!e.target.checked)syncSimple();advanced=e.target.checked;store.set('keyadv',advanced);renderKeys();keysUI();saveKeys()});
+  $('kadd').addEventListener('click',()=>{slots.push(mkSlot());renderKeys();saveKeys();const ins=$('klist').querySelectorAll('input[data-f=key]');ins[ins.length-1].focus()});
+  const slotOf=el=>{const li=el.closest('.krow');return li&&slots.find(x=>x.id==li.dataset.id)};
+  $('klist').addEventListener('input',e=>{const s=slotOf(e.target);if(!s||e.target.dataset.f!=='key')return;s.key=e.target.value.trim();s.st=null;s.err='';saveKeys();keysUI()});
+  $('klist').addEventListener('change',e=>{const s=slotOf(e.target),f=e.target.dataset.f;if(!s||f==='key')return;
+    if(f==='prov'){s.prov=e.target.value;s.st=null;s.err='';kStatus()}
+    else if(f==='on'){s.on=e.target.checked;if(s.on){s.err='';const n=document.querySelector(`.knote[data-id="${s.id}"]`);if(n)n.remove()}e.target.closest('.krow').classList.toggle('off',!s.on);kStatus()}
+    saveKeys();keysUI()});
+  $('klist').addEventListener('click',e=>{const a=e.target.dataset.a;if(!a)return;const s=slotOf(e.target),i=slots.indexOf(s);
+    if(a==='up'&&i>0)[slots[i-1],slots[i]]=[slots[i],slots[i-1]];
+    else if(a==='down'&&i<slots.length-1)[slots[i+1],slots[i]]=[slots[i],slots[i+1]];
+    else if(a==='del'&&slots.length>1){if(s.key.trim()&&!confirm(`Remove key ${i+1} · ${provName(s)}?`))return;slots.splice(i,1)}
+    else return;
+    renderKeys();saveKeys();keysUI()});
+  keysUI();
 }
 const parseJ=t=>{const m=String(t).replace(/```(json)?/g,'').match(/\{[\s\S]*\}/);if(!m)throw new Error('the AI gave an unreadable reply');return JSON.parse(m[0])};
 const ctxOf=q=>{const e2l=q.mode==='e2l',vocab=[...new Set(q.tokens.map(t=>t.vocab).filter(Boolean))].join('; ');
@@ -1619,10 +1773,14 @@ function buildCharts(){
 }
 
 async function tryStart(){
-  const k=$('key').value.trim(),pv=$('prov').value;$('keymsg').textContent='';store.set('prov',pv);
-  if(!k){$('keymsg').textContent='Paste an AI API key first. Tap ⓘ for free ones.';$('key').focus();return;}
-  if(k!==ai.key||(pv!=='auto'&&pv!==ai.prov)){$('startbtn').disabled=true;$('startbtn').textContent='Checking key…';
-    try{await aiInit(k,pv)}catch(e){$('keymsg').textContent=e.message||'Could not reach the AI provider.';return}finally{$('startbtn').textContent='Start practice';sync()}}
+  $('keymsg').textContent='';store.set('prov',$('prov').value);
+  const list=activeSlots();
+  if(!list.length){$('keymsg').textContent=advanced?'Add a key, or turn one back on, under Edit keys.':'Paste an AI API key first. Tap ⓘ for keys that work.';if(!advanced)$('key').focus();return;}
+  if(!list.some(s=>s.st)){$('startbtn').disabled=true;$('startbtn').textContent=list.length>1?'Checking keys…':'Checking key…';
+    let ok=false,last=null;
+    try{for(let i=0;i<list.length&&!ok;i++){const s=list[i];try{await useSlot(s);s.err='';ok=true}catch(e){last=e;s.err=e.message||'failed';if(advanced)keyNotice(s,e,list[i+1])}}}
+    finally{$('startbtn').textContent='Start practice';sync();keysUI()}
+    if(!ok){$('keymsg').textContent=advanced&&list.length>1?'None of your keys worked. '+(last.message||''):(last&&last.message?last.message+'.':'Could not reach the AI provider.');return}}
   start();
 }
 function start(){
@@ -1713,7 +1871,7 @@ function react(kind){moodTok++;setFelix(R(REACT_MOODS[kind]))}
 })();
 /* ---------- Accounts: a personal account key, synced through Firebase Firestore ---------- */
 var ACCOUNTS={projectId:'',apiKey:''}; // filled in once the Firebase project exists
-var SYNC_KEYS=['xp','days','topics','bFrames','bIngs','per','mode','limit','prov','tab'];
+var SYNC_KEYS=['xp','days','topics','bFrames','bIngs','per','mode','limit','prov','tab','keyadv'];
 var acct={key:'',timer:null,last:null,busy:false};
 try{acct.key=localStorage.getItem('verba-account')||''}catch(e){}
 const acctReady=()=>!!(ACCOUNTS.projectId&&ACCOUNTS.apiKey);
@@ -1731,13 +1889,17 @@ async function cloudPut(id,data){
   const r=await fetch(docURL(id),{method:'PATCH',headers:{'Content-Type':'application/json'},body:JSON.stringify({fields:{data:{stringValue:JSON.stringify(data)},updated:{timestampValue:new Date().toISOString()}}})});
   if(!r.ok)throw new Error('Saving to your account failed (error '+r.status+').');
 }
-const localData=()=>{const o={};SYNC_KEYS.forEach(k=>{try{const v=localStorage.getItem('verba.'+k);if(v!==null)o[k]=JSON.parse(v)}catch(e){}});return o};
+const localData=()=>{const o={};SYNC_KEYS.forEach(k=>{try{const v=localStorage.getItem('verba.'+k);if(v!==null)o[k]=JSON.parse(v)}catch(e){}});
+  if(keyRemA)o.aikeys=serialKeys(); // only when "Save key(s) to my account" is ticked; unticking removes them on the next save
+  return o};
 function applyRemote(d){
   if(!d)return;
   const l=localData();
   if(typeof d.xp==='number')d.xp=Math.max(d.xp,l.xp||0);
   if(l.days&&d.days&&(l.days.last>d.days.last||(l.days.last===d.days.last&&l.days.count>d.days.count)))d.days=l.days;
   SYNC_KEYS.forEach(k=>{if(k in d){try{localStorage.setItem('verba.'+k,JSON.stringify(d[k]))}catch(e){}}});
+  if(Array.isArray(d.aikeys)&&d.aikeys.length){slots=d.aikeys.map(mkSlot);keyRemA=true;lsSet('verba-keys-account',true);if(keyRemB)lsSet('verba-aikeys',serialKeys())}
+  else if(keyRemA){keyRemA=false;lsSet('verba-keys-account',false)}
   refreshFromStore();
 }
 function refreshFromStore(){
@@ -1748,13 +1910,15 @@ function refreshFromStore(){
   bFrames.clear();store.get('bFrames',[]).forEach(x=>bFrames.add(x));bIngs.clear();store.get('bIngs',[]).forEach(x=>bIngs.add(x));
   document.querySelectorAll('#frames input').forEach(b=>b.checked=bFrames.has(b.value));document.querySelectorAll('#ings input').forEach(b=>b.checked=bIngs.has(b.value));
   $('per').value=store.get('per','2');$('limit').checked=store.get('limit',true);$('prov').value=store.get('prov','auto');
+  advanced=store.get('keyadv',false);keysUI(true);
   const m0=document.querySelector(`input[name=mode][value=${store.get('mode','e2l')}]`);if(m0)m0.checked=true;
   sync();
 }
-function acctDirty(k){if(!acct.key||!acctReady()||!SYNC_KEYS.includes(k)||acct.pulling)return;clearTimeout(acct.timer);acct.timer=setTimeout(pushNow,2500)}
+function acctDirty(k){if(!acct.key||!acctReady()||!(SYNC_KEYS.includes(k)||k==='aikeys')||acct.pulling)return;clearTimeout(acct.timer);acct.timer=setTimeout(pushNow,2500)}
 async function pushNow(){if(!acct.key||!acctReady())return;try{await cloudPut(acct.key,localData());acct.last=new Date();acct.err=''}catch(e){acct.err=e.message}acctUI()}
 async function pullNow(){if(!acct.key||!acctReady())return;acct.pulling=true;try{const d=await cloudGet(acct.key);if(d)applyRemote(d);acct.last=new Date();acct.err=''}catch(e){acct.err=e.message}acct.pulling=false;acctUI()}
 function acctUI(){
+  try{keysUI()}catch(e){}
   $('acctbtn').classList.toggle('on',!!acct.key);$('acctlbl').textContent=acct.key?'Synced':'Account';
   $('acctbtn').setAttribute('aria-label',acct.key?'Account: synced':'Account: not signed in');
   if(!$('acct').open)return;
@@ -1811,7 +1975,7 @@ async function checkT(){
   let r=e2l?gradeLatin(q,inp.value):gradeEnglish(q,inp.value),aiR=null,aiErr='';
   inp.disabled=true;
   if(!r.ok&&!r.empty&&!r.essential){
-    busy=true;$('check').disabled=true;moodTok++;setFelix('thinking');$('feedback').innerHTML=`<li>Checking with ${esc(PROVIDERS[ai.prov].name)}…</li>`;
+    busy=true;$('check').disabled=true;moodTok++;setFelix('thinking');$('feedback').innerHTML=`<li>Checking with ${esc(aiName())}…</li>`;
     try{aiR=await aiGrade(q,inp.value.trim())}catch(e){aiErr=e.message||'the AI could not be reached'}
     busy=false;$('check').disabled=false;if(cur!==q)return;
     if(aiR&&aiR.ok)r={ok:true,ai:true};
@@ -1857,6 +2021,7 @@ $('back').addEventListener('click',()=>{$('drill').hidden=true;$('start').hidden
 $('vtoggle').addEventListener('click',()=>{const l=$('vlist');l.hidden=!l.hidden;$('vtoggle').textContent=l.hidden?'Show':'Hide'});
 buildCharts();
 buildStart();
+setupKeys();
 </script>
 </body>
 </html>
