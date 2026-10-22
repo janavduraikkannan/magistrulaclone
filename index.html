@@ -208,7 +208,9 @@ input.full.ok{border-color:var(--ok)} input.full.bad{border-color:var(--bad)} in
 @keyframes floatup{0%{transform:translateY(0);opacity:0}15%{opacity:1}100%{transform:translateY(-46px);opacity:0}}
 .vocab{margin-bottom:26px}
 .vocab ul{list-style:none;padding:0;margin:12px 0 0;display:flex;flex-wrap:wrap;gap:8px}
-.vocab li{font-family:var(--latin);font-size:1.1rem;padding:6px 14px;background:var(--surface);border:1px solid var(--line);border-radius:12px}
+.vocab li{font-family:var(--latin);font-size:1.1rem;padding:6px 14px;background:var(--surface);border:1px solid var(--line);border-radius:12px;cursor:pointer;user-select:none;transition:border-color .12s,transform .08s}
+.vocab li:hover,.vocab li:focus-visible{border-color:var(--accent2);outline:none}
+.vocab li:active{transform:translateY(1px)}
 
 /* ask Felix */
 .askai{display:grid;grid-template-columns:auto 1fr;gap:6px 20px;align-items:start;margin:0 0 50px;background:var(--surface);border:1px solid var(--line);border-radius:22px;padding:20px clamp(14px,3vw,28px);box-shadow:var(--shadow)}
@@ -1862,7 +1864,7 @@ function next(){
     const e2l=q.mode==='e2l';q.latin=cap(q.display||q.tokens.map(t=>t.la+(t.post||'')).join(' '))+q.end;
     $('qbody').innerHTML=`<p class="${e2l?'english':'line'}" style="margin-top:0">${esc(e2l?cap(q.en)+q.end:q.latin)}</p><input class="full" type="text" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false" placeholder="Type the whole sentence in ${e2l?'Latin':'English'}" aria-label="Your translation">`;
     const seen=new Set();
-    $('vlist').innerHTML=[...q.tokens.map(t=>t.vocab),...(q.extraVocab||[])].filter(v=>v&&!seen.has(v)&&seen.add(v)).map(v=>`<li>${esc(v)}</li>`).join('');
+    $('vlist').innerHTML=[...q.tokens.map(t=>t.vocab),...(q.extraVocab||[])].filter(v=>v&&!seen.has(v)&&seen.add(v)).map(v=>vocabLi(v)).join('');
     const f=$('qbody').querySelector('input');f.focus();lastInput=f;
   }else{
     const showForm=false;let first=true,i=0;
@@ -1875,7 +1877,7 @@ function next(){
     }).join('')+(q.form?'':`<span class="w" style="margin-left:-.38em">${q.end}</span>`);
     $('qbody').innerHTML=(q.form?`<p class="english" style="margin:0 0 6px">${esc(q.en)}.</p>`:'')+`<p class="sentence">${html}</p>`+(q.form?'':`<p class="english">${esc(cap(q.en))}${q.end}</p>`);
     const seen=new Set();
-    $('vlist').innerHTML=q.tokens.filter(t=>t.vocab&&!seen.has(t.vocab)&&seen.add(t.vocab)).map(t=>`<li>${esc(t.vocab)}</li>`).join('');
+    $('vlist').innerHTML=q.tokens.filter(t=>t.vocab&&!seen.has(t.vocab)&&seen.add(t.vocab)).map(t=>vocabLi(t.vocab)).join('');
     const f=$('qbody').querySelector('input');if(f){f.focus();lastInput=f;}
   }
   renderChat();score();
@@ -2228,6 +2230,31 @@ $('askq').addEventListener('input',e=>{const t=e.target,p=t.selectionStart,v=t.v
 $('askq').addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();ask()}});
 $('startbtn').addEventListener('click',tryStart);
 $('back').addEventListener('click',()=>{$('drill').hidden=true;$('start').hidden=false;$('bar').hidden=false;window.scrollTo(0,0)});
+/* Click a vocab word to type it into the answer box at the cursor (or at the end if the cursor was never placed). */
+function vocabWords(v){
+  const i=v.indexOf(' : '),la=(i<0?v:v.slice(0,i)).trim(),en=i<0?'':v.slice(i+3).trim();
+  const laW=(la.match(/^[^\s,(/]+/)||[la])[0];
+  const enW=en.split(/[;,]/)[0].replace(/\([^)]*\)/g,'').replace(/\s+/g,' ').trim()||en;
+  return{la:laW,en:enW};
+}
+const vocabLi=v=>{const w=vocabWords(v);return `<li tabindex="0" role="button" data-la="${esc(w.la)}" data-en="${esc(w.en)}" title="Click to put “${esc(q&&q.mode==='l2e'?w.en:w.la)}” in your answer">${esc(v)}</li>`};
+document.addEventListener('selectionchange',()=>{const a=document.activeElement;if(a&&a.tagName==='INPUT'&&$('qbody').contains(a))a.dataset.caret='1'});
+function insertVocab(li){
+  if(!q||q.choice||checked)return;
+  let inp=lastInput&&$('qbody').contains(lastInput)&&!lastInput.disabled?lastInput:$('qbody').querySelector('input:not(:disabled)');
+  if(!inp)return;
+  const word=q.mode==='l2e'?li.dataset.en:li.dataset.la;if(!word)return;
+  const v=inp.value,placed=inp.dataset.caret==='1'&&inp.selectionStart!=null;
+  const a=placed?inp.selectionStart:v.length,b=placed?(inp.selectionEnd??a):v.length;
+  const before=v.slice(0,a),after=v.slice(b);
+  const pre=before&&!/\s$/.test(before)?' ':'',post=after&&/^[^\s.,;:!?)]/.test(after)?' ':'';
+  inp.value=before+pre+word+post+after;
+  const pos=(before+pre+word).length;
+  inp.focus();inp.setSelectionRange(pos,pos);inp.dataset.caret='1';lastInput=inp;
+}
+$('vlist').addEventListener('mousedown',e=>{if(e.target.closest('li'))e.preventDefault()}); // keep the cursor where it is in the answer box
+$('vlist').addEventListener('click',e=>{const li=e.target.closest('li');if(li)insertVocab(li)});
+$('vlist').addEventListener('keydown',e=>{const li=e.target.closest('li');if(li&&(e.key==='Enter'||e.key===' ')){e.preventDefault();insertVocab(li)}});
 $('vtoggle').addEventListener('click',()=>{const l=$('vlist');l.hidden=!l.hidden;$('vtoggle').textContent=l.hidden?'Show':'Hide'});
 buildCharts();
 buildStart();
