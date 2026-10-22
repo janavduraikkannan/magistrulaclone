@@ -1870,24 +1870,25 @@ function react(kind){moodTok++;setFelix(R(REACT_MOODS[kind]))}
   });
 })();
 /* ---------- Accounts: a personal account key, synced through Firebase Firestore ---------- */
-var ACCOUNTS={projectId:'',apiKey:''}; // filled in once the Firebase project exists
+var ACCOUNTS={projectId:'verba-791ca',apiKey:''}; // Firebase project; a web API key is optional (access is governed by firestore.rules)
 var SYNC_KEYS=['xp','days','topics','bFrames','bIngs','per','mode','limit','prov','tab','keyadv'];
 var acct={key:'',timer:null,last:null,busy:false};
 try{acct.key=localStorage.getItem('verba-account')||''}catch(e){}
-const acctReady=()=>!!(ACCOUNTS.projectId&&ACCOUNTS.apiKey);
+const acctReady=()=>!!ACCOUNTS.projectId;
 const B32='ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
 function newKey(){const a=new Uint8Array(24);crypto.getRandomValues(a);return [...a].map(x=>B32[x%32]).join('')}
 const normKey=k=>String(k).toUpperCase().replace(/^VERBA/,'').replace(/[^A-Z0-9]/g,'');
 const showKey=k=>'VERBA-'+k.match(/.{1,4}/g).join('-');
-const docURL=id=>`https://firestore.googleapis.com/v1/projects/${ACCOUNTS.projectId}/databases/(default)/documents/accounts/${id}?key=${ACCOUNTS.apiKey}`;
+const docURL=id=>`https://firestore.googleapis.com/v1/projects/${ACCOUNTS.projectId}/databases/(default)/documents/accounts/${id}`+(ACCOUNTS.apiKey?`?key=${ACCOUNTS.apiKey}`:'');
 async function cloudGet(id){
-  const r=await fetch(docURL(id));if(r.status===404)return null;
-  if(!r.ok)throw new Error(r.status===403?'That key was refused.':'The account server returned error '+r.status+'.');
+  const r=await fetch(docURL(id));
+  if(r.status===404){let m='';try{m=((await r.json()).error||{}).message||''}catch(e){}if(/database/i.test(m))throw new Error('The account server isn\'t finished being set up yet (no Firestore database).');return null}
+  if(!r.ok)throw new Error(r.status===403?'The account server refused the request (its security rules may not be published yet).':'The account server returned error '+r.status+'.');
   const j=await r.json();return JSON.parse(((j.fields||{}).data||{}).stringValue||'{}');
 }
 async function cloudPut(id,data){
   const r=await fetch(docURL(id),{method:'PATCH',headers:{'Content-Type':'application/json'},body:JSON.stringify({fields:{data:{stringValue:JSON.stringify(data)},updated:{timestampValue:new Date().toISOString()}}})});
-  if(!r.ok)throw new Error('Saving to your account failed (error '+r.status+').');
+  if(!r.ok)throw new Error(r.status===403?'Saving was refused (the account server\'s security rules may not be published yet).':r.status===404?'The account server isn\'t finished being set up yet (no Firestore database).':'Saving to your account failed (error '+r.status+').');
 }
 const localData=()=>{const o={};SYNC_KEYS.forEach(k=>{try{const v=localStorage.getItem('verba.'+k);if(v!==null)o[k]=JSON.parse(v)}catch(e){}});
   if(keyRemA)o.aikeys=serialKeys(); // only when "Save key(s) to my account" is ticked; unticking removes them on the next save
