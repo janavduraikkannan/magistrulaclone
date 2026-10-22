@@ -12,7 +12,7 @@ document.documentElement.setAttribute("data-theme",t);})();
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600;9..144,700&family=Figtree:wght@400;600;700;800&family=Gentium+Book+Plus:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
-<link rel="icon" href="img/felix/happy.svg" type="image/svg+xml">
+<link rel="icon" href="img/felix/happy.svg?v=5" type="image/svg+xml">
 <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.3/dist/confetti.browser.min.js" defer></script>
 <style>
 :root{
@@ -208,6 +208,9 @@ input.full.ok{border-color:var(--ok)} input.full.bad{border-color:var(--bad)} in
 .askrow input{flex:1 1 16em;background:var(--bg);border:2px solid var(--line);padding:.55em .8em;border-radius:14px;color:var(--ink)}
 .askrow input:focus{outline:none;border-color:var(--accent2);box-shadow:0 0 0 4px color-mix(in srgb,var(--accent2) 25%,transparent)}
 .hint.warn{color:var(--bad);font-weight:800}
+.lw{text-decoration:underline dotted var(--accent);text-decoration-thickness:2px;text-underline-offset:3px;cursor:help;border-radius:3px}
+.lw:focus-visible{outline:2px solid var(--accent);outline-offset:1px}
+#lwtip{position:fixed;z-index:60;max-width:260px;background:var(--ink);color:var(--surface);padding:5px 10px;border-radius:8px;font:600 .85rem/1.35 system-ui,sans-serif;pointer-events:none;box-shadow:var(--shadow)}
 .typing{display:inline-flex;gap:4px;vertical-align:middle;margin-left:6px}
 .typing i{width:6px;height:6px;border-radius:50%;background:var(--muted);animation:blink 1s infinite}
 .typing i:nth-child(2){animation-delay:.15s}.typing i:nth-child(3){animation-delay:.3s}
@@ -364,11 +367,11 @@ dialog.acct .x{position:absolute;right:12px;top:10px;background:none;border:0;fo
 
   <main id="start">
     <section class="hero">
-      <img class="felixbig" src="img/felix/delighted.svg" alt="Fēlix, the Verba cat">
+      <img class="felixbig" src="img/felix/delighted.svg?v=5" alt="Fēlix, the Verba cat">
       <div>
         <h1>Learn Latin by <em>writing</em> it.</h1>
         <p>Sentences built fresh from Latin I Honors through AP Latin. Earn XP, keep your streak alive, and ask Fēlix when you're stuck.</p>
-        <div class="bubble" id="heroBubble">Salvē! I'm Fēlix. Pick some topics and let's go.</div>
+        <div class="bubble" id="heroBubble"><span class="lw" tabindex="0" data-en="hello!">Salvē</span>! I'm <span class="lw" tabindex="0" data-en="lucky (my name; fēlēs means cat)">Fēlix</span>. Pick some topics and let's go.</div>
       </div>
     </section>
     <div class="tabs" role="tablist"><button role="tab" id="tabTopics" aria-selected="true">Practice by topic</button><button role="tab" id="tabBuild" aria-selected="false">Build your own sentence type</button></div>
@@ -407,7 +410,7 @@ dialog.acct .x{position:absolute;right:12px;top:10px;background:none;border:0;fo
       <ul id="vlist"></ul>
     </section>
     <section class="askai" id="askai">
-      <div class="felixcol"><img id="felix" src="img/felix/happy.svg" alt="Fēlix looking happy"><b>Fēlix</b><small>AI tutor cat</small></div>
+      <div class="felixcol"><img id="felix" src="img/felix/happy.svg?v=5" alt="Fēlix looking happy"><b>Fēlix</b><small>AI tutor cat</small></div>
       <div class="askmain">
         <h3>Ask Fēlix</h3>
         <ul class="chat" id="chat" aria-live="polite"></ul>
@@ -1428,6 +1431,24 @@ const selected=new Set();let q=null,checked=false,lastInput=null;
 const stats={right:0,total:0,streak:0};
 const store={get(k,d){try{const v=localStorage.getItem('verba.'+k);return v===null?d:JSON.parse(v)}catch(e){return d}},set(k,v){try{localStorage.setItem('verba.'+k,JSON.stringify(v))}catch(e){}try{acctDirty(k)}catch(e){}}};
 const esc=s=>s.replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+// Latin words with hover definitions. In fixed text, write {Latin|English}; AI replies send a word→meaning map instead.
+const LW=/\{([^{}|]+)\|([^{}]+)\}/g;
+const latH=s=>esc(String(s)).replace(LW,(_,w,d)=>`<span class="lw" tabindex="0" data-en="${d}">${w}</span>`);
+const plain=s=>String(s).replace(LW,'$1');
+const cleanG=o=>{const g={};if(Array.isArray(o))o.forEach(x=>{if(x&&typeof x==='object'){const v=Object.values(x).filter(y=>typeof y==='string');if(v.length>1)g[v[0]]=v[1]}});else if(o&&typeof o==='object')Object.entries(o).forEach(([k,v])=>{g[k]=v});
+  const out={};Object.entries(g).forEach(([k,v])=>{k=String(k).normalize('NFC').trim();if(k&&k.length<60&&typeof v==='string'&&v.trim())out[k]=v.trim().slice(0,140)});return out};
+function glossify(el,map){
+  const keys=Object.keys(map||{}).sort((a,b)=>b.length-a.length);if(!keys.length)return;
+  const low={};keys.forEach(k=>low[k.toLowerCase()]=map[k]);
+  const re=new RegExp('(?<![\\p{L}\\p{M}])('+keys.map(k=>k.replace(/[.*+?^${}()|[\]\\]/g,'\\$&')).join('|')+')(?![\\p{L}\\p{M}])','giu');
+  const w=document.createTreeWalker(el,NodeFilter.SHOW_TEXT,{acceptNode:n=>n.parentElement.closest('.lw,.tag,.la,code')?NodeFilter.FILTER_REJECT:NodeFilter.FILTER_ACCEPT});
+  const nodes=[];while(w.nextNode())nodes.push(w.currentNode);
+  nodes.forEach(n=>{const t=n.nodeValue.normalize('NFC');re.lastIndex=0;if(!re.test(t))return;re.lastIndex=0;
+    const f=document.createDocumentFragment();let i=0,m;
+    while((m=re.exec(t))){f.append(t.slice(i,m.index));const sp=document.createElement('span');sp.className='lw';sp.tabIndex=0;sp.textContent=m[0];sp.dataset.en=low[m[0].toLowerCase()]||'';f.append(sp);i=m.index+m[0].length}
+    f.append(t.slice(i));n.replaceWith(f)});
+}
+let moodTok=0;
 const cap=s=>s.charAt(0).toUpperCase()+s.slice(1);
 
 function buildStart(){
@@ -1516,23 +1537,25 @@ const ctxOf=q=>{const e2l=q.mode==='e2l',vocab=[...new Set(q.tokens.map(t=>t.voc
   return{e2l,src:q.choice?q.line+' ('+q.cite+')':e2l?cap(q.en)+q.end:q.latin,model:q.choice?q.answer:e2l?q.latin:cap(q.en)+q.end,vocab}};
 async function aiGrade(q,answer){
   const c=ctxOf(q);
-  const t=await aiChat([{role:'system',content:'You grade Latin translation exercises for a high school student. The reference answer is known to be correct. Mark the student correct only if their sentence means the same as the reference: same case roles, number, tense, voice, mood and person. Accept any valid phrasing or synonym, either English article, and any Latin word order. Ignore macrons, capitalization and punctuation. Forgive obvious spelling typos (swapped, missing, doubled or extra letters, such as posion for poison) when the intended word is clear and the slip does not turn it into a different real word or a different grammatical form; still mark the answer correct and name the typo in the reason. A difference that changes number, tense, person, voice or case is never a typo: field for fields is incorrect, and in Latin a typo is only forgivable in the stem of a word, never in its ending. If the student sentence contains a wrong ending or a wrong word, it is incorrect. Reply only with JSON: {"correct": true or false, "reason": "one short sentence for the student"}.'},
+  const t=await aiChat([{role:'system',content:'You grade Latin translation exercises for a high school student. The reference answer is known to be correct. Mark the student correct only if their sentence means the same as the reference: same case roles, number, tense, voice, mood and person. Accept any valid phrasing or synonym, either English article, and any Latin word order. Ignore macrons, capitalization and punctuation. Forgive obvious spelling typos (swapped, missing, doubled or extra letters, such as posion for poison) when the intended word is clear and the slip does not turn it into a different real word or a different grammatical form; still mark the answer correct and name the typo in the reason. A difference that changes number, tense, person, voice or case is never a typo: field for fields is incorrect, and in Latin a typo is only forgivable in the stem of a word, never in its ending. If the student sentence contains a wrong ending or a wrong word, it is incorrect. Also pick how Fēlix, the site\'s cat mascot, reacts to this answer, as "mood", one of: '+Object.entries(MOODS).map(([k,v])=>k+' ('+v+')').join(', ')+'. Reply only with JSON: {"correct": true or false, "reason": "one short sentence for the student", "mood": "one of the expressions"}.'},
     {role:'user',content:`Direction: ${c.e2l?'English to Latin':'Latin to English'}\nSentence to translate: ${c.src}\nReference answer: ${c.model}\nVocabulary: ${c.vocab}\nStudent answer: ${answer}`}]);
-  const j=parseJ(t);return{ok:j.correct===true,reason:String(j.reason||'')};
+  const j=parseJ(t);return{ok:j.correct===true,reason:String(j.reason||''),mood:MOODS[j.mood]?j.mood:null};
 }
-const MOODS={happy:'friendly default',delighted:'excited: a great question, or the student is on the right track',laughing:'something funny, or a silly mix-up',adoring:'the student did something impressive or thanked you',sly:'a teasing hint or playful nudge, or you caught a question fishing for the answer',cheeky:'warm and encouraging, a little affectionate',shocked:'surprised: a big mistake or a tricky exception',sad:'sympathetic: the student is struggling or got it wrong',grumpy:'mock-grumpy about Latin irregularities or about being asked for the answer outright',fish:'proud and triumphant: the student caught a tricky one, like a cat with its catch'};
-const PERSONA="You are Fēlix, the cheerful cat mascot of Verba, a Latin practice site (fēlēs means cat and fēlīx means lucky). Be warm, encouraging and a little playful, with the occasional light cat pun, but keep every explanation accurate, clear and short. Also choose the facial expression that best fits your reply from this list, as \"mood\": "+Object.entries(MOODS).map(([k,v])=>k+' ('+v+')').join(', ')+". ";
-const GREETINGS=["Salvē! I'm Fēlix. Stuck on an ending? Ask me anything about the grammar.","Avē, discipule! Curiosity never hurt this cat. What would you like to know?","Nine lives, and I've spent every one of them on Latin. Ask away!","Purr-haps a question about endings? I'm all ears (both of them).","Fēlēs means cat and fēlīx means lucky, so you're lucky to have a cat tutor. Ask me anything!","Tip from a wise cat: ask about the rules, not the answer, and your score stays safe.","Need a paw with this one? General grammar questions are always free.","I knocked a scroll off the table for you. Shall we read it together?"];
-const THINKING=["Fēlix is consulting the scrolls","Sharpening claws on the grammar","Checking with Cicero","Chasing the ablative around the room","Unrolling a very long scroll","Asking the other cats in the Forum","Pawing through the dictionary","Napping on it for a second"];
+const MOODS={happy:'friendly default',delighted:'excited: a great question, or the student is on the right track',laughing:'something funny, or a silly mix-up',adoring:'the student did something impressive or thanked you',sly:'a teasing hint or playful nudge, or you caught a question fishing for the answer',cheeky:'warm and encouraging, a little affectionate',shocked:'surprised: a big mistake or a tricky exception',sad:'sympathetic: the student is struggling or got it wrong',grumpy:'mock-grumpy about Latin irregularities or about being asked for the answer outright',fish:'proud and triumphant, like a cat with its catch: the student nailed a tricky one or is on a streak'};
+// thinking is never picked by the AI: the site shows it while waiting for an AI reply.
+const FACES={...MOODS,thinking:'waiting for the AI'};
+const PERSONA="You are Fēlix, the cheerful cat mascot of Verba, a Latin practice site (fēlēs means cat and fēlīx means lucky). Be warm, encouraging and a little playful, with the occasional light cat pun, but keep every explanation accurate, clear and short. You always choose the expression Fēlix shows, as \"mood\", from this list: "+Object.entries(MOODS).map(([k,v])=>k+' ('+v+')').join(', ')+". You may sprinkle in a Latin word or short phrase now and then, playfully or in context (for example salvē, euge, mīrābile, ēheu, discipule). Whenever your reply text contains any Latin word or phrase, including words quoted from the exercise, also return \"latin\": an object mapping each one exactly as written in your reply to a short English meaning, for example {\"euge\": \"well done!\"}; use {} if there is none. Before the student has submitted, give only a word's general dictionary meaning there, never its translation within the exercise or which form it takes in it. ";
+const GREETINGS=["{Salvē|hello!}! I'm {Fēlix|lucky (my name; fēlēs means cat)}. Stuck on an ending? Ask me anything about the grammar.","{Avē|hail! greetings!}, {discipule|student (said to you)}! Curiosity never hurt this cat. What would you like to know?","Nine lives, and I've spent every one of them on Latin. Ask away!","Purr-haps a question about endings? I'm all ears (both of them).","{Fēlēs|cat} means cat and {fēlīx|lucky} means lucky, so you're lucky to have a cat tutor. Ask me anything!","Tip from a wise cat: ask about the rules, not the answer, and your score stays safe.","Need a paw with this one? General grammar questions are always free.","I knocked a scroll off the table for you. Shall we read it together?","{Salvē|hello!}, {amīce|friend (said to you)}! Ready to {scrībere|to write} some Latin?","{Carpe diem|seize the day}! Questions about grammar are always welcome."];
+const THINKING=["{Fēlix|lucky (my name)} is consulting the scrolls","Sharpening claws on the grammar","Checking with Cicero","Chasing the ablative around the room","Unrolling a very long scroll","Asking the other cats in the {Forum|the public square of Rome}","Pawing through the dictionary","Napping on it for a second","{Cōgitō|I am thinking}… whiskers twitching","{Festīnā lentē|make haste slowly}: checking carefully","{Exspectā|wait!}, the answer is on the tip of my tongue"];
 const COURSE={I:'Latin I Honors',II:'Latin II Honors',III:'Latin III Honors',AP:'AP Latin'};
 const LEAD_RULES={
  I:"This is a Latin I exercise, so be LIGHT about what counts as leading; beginners are expected to ask lots of questions about forms. NOT leading (judge as fine): any question about how a word declines or conjugates, including a word from this sentence, when the student names the form they want or proposes it themselves (for example 'is the ablative plural of vir virīs?' or 'pelagus is neuter, so is the ablative singular still pelagō?'); confirming the student's own reasoning about a paradigm, gender, ending or macron; general grammar; what a case or construction does; vocabulary meanings; how to approach the sentence. TOO leading only if the student asks you to: give the answer or translate any part of the sentence; decide which case, number, tense, person or voice a word needs in THIS sentence (the choice itself, not the form once chosen); parse or identify a word as it appears in the sentence; or check, correct, confirm or fill in their draft.",
  II:"This is a Latin II exercise, so be MODERATE about what counts as leading. NOT leading: questions about how a word declines or conjugates when the student names the form or proposes it themselves; confirming the student's own reasoning about a paradigm; general grammar; vocabulary meanings; how to approach the sentence. TOO leading: asking for the answer or any part of the translation; asking which case, number, tense, person, voice or construction a word or clause needs in THIS sentence; asking you to parse or identify a word or construction as it appears in the sentence; asking for a form of a word in the sentence without naming which form; or asking you to check, correct, confirm or fill in their draft.",
  III:"This is a Latin III exercise, so be FIRM about what counts as leading; students should know their forms. NOT leading: general grammar, how a construction works in general, vocabulary meanings, how to approach the sentence. TOO leading: asking for the answer or any part of the translation; asking for or confirming any specific form of a word from this sentence; asking which case, mood, tense or construction anything in this sentence needs; asking you to parse anything in the sentence; or asking you to check, correct, confirm or fill in their draft.",
  AP:"This is an AP Latin exercise, so be STRICT about what counts as leading. NOT leading: general grammar, general questions about poetic devices or meter, vocabulary meanings. TOO leading: anything that resolves part of this specific exercise, including any form, parsing, construction, device or translation of something in it, or checking, correcting, confirming or filling in their draft."};
-const askBefore=lv=>PERSONA+"You are tutoring a high school student with one practice exercise from "+COURSE[lv]+". The student has NOT submitted yet and is asking you a question. You are shown the exercise, the correct answer, the student's current draft (whatever is typed in the answer box right now), and every earlier question and reply about this exercise, each with the draft as it was at that moment. Treat the whole conversation as context. Use the draft only as a reference to understand what the student is thinking. Do NOT correct the draft, point out mistakes in it, or say whether it is right or wrong, unless the student specifically asks you to check, correct, fix or fill in their answer. Jobs: 1) Decide whether the newest question is too leading, using these rules for this course. "+LEAD_RULES[lv]+" Judge the question by what it asks, not by whether your honest reply happens to touch the sentence. A question that only becomes a giveaway combined with earlier ones counts as too leading. When it is a close call, decide in the student's favor. 2) Answer the newest question helpfully in 2 to 4 short sentences. If it is too leading, still answer it, but do not write out the whole translated sentence unless the student asked you to correct or fill in their answer. 3) Only if the student explicitly asks you to correct, fix, change, rewrite or fill in their answer, put the full corrected answer in \"edit\" (it will replace the text in their answer box; keep everything in their draft that was already right and fix only what is wrong). Otherwise \"edit\" must be null. Reply only with JSON: {\"leading\": true or false, \"why\": \"one short sentence explaining the judgment\", \"reply\": \"your answer to the student\", \"edit\": null or \"the full corrected answer\", \"mood\": \"one of the expressions\"}.";
+const askBefore=lv=>PERSONA+"You are tutoring a high school student with one practice exercise from "+COURSE[lv]+". The student has NOT submitted yet and is asking you a question. You are shown the exercise, the correct answer, the student's current draft (whatever is typed in the answer box right now), and every earlier question and reply about this exercise, each with the draft as it was at that moment. Treat the whole conversation as context. Use the draft only as a reference to understand what the student is thinking. Do NOT correct the draft, point out mistakes in it, or say whether it is right or wrong, unless the student specifically asks you to check, correct, fix or fill in their answer. Jobs: 1) Decide whether the newest question is too leading, using these rules for this course. "+LEAD_RULES[lv]+" Judge the question by what it asks, not by whether your honest reply happens to touch the sentence. A question that only becomes a giveaway combined with earlier ones counts as too leading. When it is a close call, decide in the student's favor. 2) Answer the newest question helpfully in 2 to 4 short sentences. If it is too leading, still answer it, but do not write out the whole translated sentence unless the student asked you to correct or fill in their answer. 3) Only if the student explicitly asks you to correct, fix, change, rewrite or fill in their answer, put the full corrected answer in \"edit\" (it will replace the text in their answer box; keep everything in their draft that was already right and fix only what is wrong). Otherwise \"edit\" must be null. Reply only with JSON: {\"leading\": true or false, \"why\": \"one short sentence explaining the judgment\", \"reply\": \"your answer to the student\", \"edit\": null or \"the full corrected answer\", \"mood\": \"one of the expressions\", \"latin\": {\"Latin word as written in your reply\": \"short English meaning\"}}.";
 const levelOf=q=>{const order=['I','II','III','AP'];const lv=q.topic&&q.topic.level;return order.includes(lv)?lv:'I'};
-const ASK_AFTER=()=>PERSONA+"You are tutoring a high school Latin student. The student has already submitted an answer to this exercise, so you may explain everything openly, including the full answer, why their answer was right or wrong, and the grammar involved. Treat the whole conversation about this exercise as context. Answer the newest question clearly in 2 to 5 short sentences. Reply only with JSON: {\"reply\": \"your answer\", \"mood\": \"one of the expressions\"}.";
+const ASK_AFTER=()=>PERSONA+"You are tutoring a high school Latin student. The student has already submitted an answer to this exercise, so you may explain everything openly, including the full answer, why their answer was right or wrong, and the grammar involved. Treat the whole conversation about this exercise as context. Answer the newest question clearly in 2 to 5 short sentences. Reply only with JSON: {\"reply\": \"your answer\", \"mood\": \"one of the expressions\", \"latin\": {\"Latin word as written in your reply\": \"short English meaning\"}}.";
 const draftOf=()=>{const f=$('qbody').querySelector('input.full');return f?f.value.trim():''};
 async function aiAsk(q,question,draft){
   const c=ctxOf(q),after=checked;
@@ -1540,9 +1563,9 @@ async function aiAsk(q,question,draft){
   const user=`Course: ${COURSE[levelOf(q)]}\nExercise type: ${q.choice?'identify the literary device in a line of Latin poetry':c.e2l?'translate English into Latin':'translate Latin into English'}\nSentence: ${c.src}\nCorrect answer: ${c.model}\nVocabulary shown to the student: ${c.vocab||'(none)'}\n${after?`Student's submitted answer: ${q.submitted||'(none)'}\nResult: ${q.result||''}\n`:`Student's current draft in the answer box: ${draft||'(empty)'}\n`}Earlier conversation about this exercise:\n${hist}\nNewest question: ${question}`;
   const t=await aiChat([{role:'system',content:after?ASK_AFTER():askBefore(levelOf(q))},{role:'user',content:user}]);
   const moodOf=m=>MOODS[m]?m:'happy';
-  if(after){try{const j=parseJ(t);return{a:String(j.reply||''),mood:moodOf(j.mood),after:true}}catch(e){return{a:t.trim(),mood:'happy',after:true}}}
+  if(after){try{const j=parseJ(t);return{a:String(j.reply||''),mood:moodOf(j.mood),latin:cleanG(j.latin),after:true}}catch(e){return{a:t.trim(),mood:'happy',after:true}}}
   const j=parseJ(t),edit=typeof j.edit==='string'&&j.edit.trim()&&!q.choice?j.edit.trim():null;
-  return{a:String(j.reply||''),leading:j.leading===true||!!edit,why:String(j.why||''),edit,mood:moodOf(j.mood)};
+  return{a:String(j.reply||''),leading:j.leading===true||!!edit,why:String(j.why||''),edit,mood:moodOf(j.mood),latin:cleanG(j.latin)};
 }
 function md(s){
   const inl=t=>esc(t).replace(/`([^`]+)`/g,'<code>$1</code>').replace(/\*\*([^*]+?)\*\*/g,'<b>$1</b>').replace(/__([^_]+?)__/g,'<b>$1</b>')
@@ -1560,23 +1583,23 @@ function md(s){
   close();
   return out.join('\n').replace(/\n{2,}/g,'<br><br>').replace(/\n(?!<\/?[uo]l)/g,'<br>').replace(/\n/g,'').replace(/(<br>)+(<[uo]l>)/g,'$2').replace(/(<\/[uo]l>)(<br>)+/g,'$1');
 }
-const felixImg=m=>`img/felix/${MOODS[m]?m:'happy'}.svg`,faceImg=m=>`img/felix/face-${MOODS[m]?m:'happy'}.svg`;
+const FV='?v=5',felixImg=m=>`img/felix/${FACES[m]?m:'happy'}.svg${FV}`,faceImg=m=>`img/felix/face-${FACES[m]?m:'happy'}.svg${FV}`;
 function setFelix(m){const f=$('felix');if(!f)return;f.src=felixImg(m);f.alt=`Fēlix looking ${m}`;f.classList.remove('react');void f.offsetWidth;f.classList.add('react');}
 function renderChat(){
-  const greet=`<li class="greet"><div class="arow"><img src="${faceImg('happy')}" alt=""><div class="ca">${esc(q.greeting||GREETINGS[0])}</div></div></li>`;
-  $('chat').innerHTML=greet+q.chat.map(x=>`<li><p class="cq"><b>You${x.after?' (after answering)':''}:</b> ${esc(x.q)}</p><div class="arow"><img src="${faceImg(x.pending?'sly':x.err?'sad':x.mood)}" alt=""><div class="ca">${x.pending?`<i>${esc(x.thinking)}</i><span class="typing"><i></i><i></i><i></i></span>`:x.err?`<span class="tag bad">Couldn't ask</span> ${esc(x.err)}`:`${x.after?'':x.leading?`<span class="tag bad">Too leading</span> `:`<span class="tag ok">Fine to ask</span> `}${md(x.a)}${x.why&&!x.after?`<br><small>${esc(x.why)}</small>`:''}${x.edit?`<br><span class="tag edit">Edited your answer</span> <span class="la">${esc(x.edit)}</span>`:''}`}</div></div></li>`).join('');
-  const box=$('chat');box.scrollTop=box.scrollHeight;
+  const greet=`<li class="greet"><div class="arow"><img src="${faceImg(q.greetMood||'happy')}" alt=""><div class="ca">${latH(q.greeting||GREETINGS[0])}</div></div></li>`;
+  $('chat').innerHTML=greet+q.chat.map((x,k)=>`<li><p class="cq"><b>You${x.after?' (after answering)':''}:</b> ${esc(x.q)}</p><div class="arow"><img src="${faceImg(x.pending?'thinking':x.err?'sad':x.mood)}" alt=""><div class="ca" data-k="${k}">${x.pending?`<i>${latH(x.thinking)}</i><span class="typing"><i></i><i></i><i></i></span>`:x.err?`<span class="tag bad">Couldn't ask</span> ${esc(x.err)}`:`${x.after?'':x.leading?`<span class="tag bad">Too leading</span> `:`<span class="tag ok">Fine to ask</span> `}${md(x.a)}${x.why&&!x.after?`<br><small>${esc(x.why)}</small>`:''}${x.edit?`<br><span class="tag edit">Edited your answer</span> <span class="la">${esc(x.edit)}</span>`:''}`}</div></div></li>`).join('');
+  const box=$('chat');box.querySelectorAll('.ca[data-k]').forEach(el=>{const x=q.chat[+el.dataset.k];if(x&&!x.pending&&x.latin)glossify(el,x.latin)});box.scrollTop=box.scrollHeight;
   $('askhint').textContent=checked?'Ask anything now; questions after answering never affect your score.':q.leaked?'A question was too leading, so this sentence will count as wrong. You can still answer it.':'Before you answer: a question that gives away part of the answer makes this sentence count as wrong.';
   $('askhint').className='hint'+(q.leaked&&!checked?' warn':'');
 }
 async function ask(){
   const inp=$('askq'),text=inp.value.trim();if(!text||!q)return;
   const draft=checked?(q.submitted||''):draftOf(),cur=q,item={q:text,pending:true,after:checked,draft,thinking:R(THINKING)};
-  q.chat.push(item);inp.value='';renderChat();
+  q.chat.push(item);inp.value='';renderChat();moodTok++;setFelix('thinking');
   try{Object.assign(item,await aiAsk(cur,text,draft))}catch(e){item.err=e.message||'The AI could not be reached'}
   item.pending=false;if(!item.after&&item.leading)cur.leaked=true;
   if(item.edit&&cur===q&&!checked){const f=$('qbody').querySelector('input.full');if(f&&!f.disabled){f.value=item.edit;}}
-  if(cur===q){renderChat();setFelix(item.err?'sad':item.mood)}
+  if(cur===q){renderChat();moodTok++;setFelix(item.err?'sad':item.mood)}
 }
 function buildCharts(){
   const PN=['1st (I)','2nd (you)','3rd (he/she/it)'],PL=['(we)','(you)','(they)'],re=x=>x.replace(/^(\S*)ris$/,'$1ris / -$1re');
@@ -1605,7 +1628,7 @@ function start(){
   $('start').hidden=true;$('bar').hidden=true;$('drill').hidden=false;window.scrollTo(0,0);next();
 }
 function next(){
-  q=tab==='build'?makeBuilt(bFrames,bIngs,$('per').value):makeQuestion(selected,false);checked=false;q.chat=[];q.leaked=false;q.greeting=R(GREETINGS);$('askq').value='';setFelix('happy');
+  q=tab==='build'?makeBuilt(bFrames,bIngs,$('per').value):makeQuestion(selected,false);checked=false;q.chat=[];q.leaked=false;q.greeting=R(GREETINGS);q.greetMood='happy';$('askq').value='';
   $('feedback').innerHTML='';$('check').textContent='Check answer';
   const blanks=q.choice?[]:q.tokens.filter(t=>t.blank);
   $('concept').textContent=blanks.length>1?'Mixed: '+[...new Set(blanks.map(b=>TOPICS.find(t=>b.cids.includes(t.id)&&selected.has(t.id))||q.topic).map(t=>t.name))].join(' + '):q.topic.name;
@@ -1635,6 +1658,16 @@ function next(){
     const f=$('qbody').querySelector('input');if(f){f.focus();lastInput=f;}
   }
   renderChat();score();
+  const cur=q,e=exOf(q);
+  moodFor(`Moment: a new exercise just appeared and Fēlix greets the student.\nCourse: ${COURSE[levelOf(q)]}\nExercise type: ${e.type}\nExercise: ${e.src}\nFēlix's greeting: ${plain(q.greeting)}\nStudent's streak: ${stats.streak} correct in a row`,'happy').then(m=>{if(cur===q&&!q.chat.length){q.greetMood=m;renderChat()}});
+}
+const exOf=q=>{if(q.choice)return{type:'identify the literary device in a line of Latin poetry',src:q.line+' ('+q.cite+')',model:q.answer};
+  if(q.mode==='blank')return{type:'fill in the missing Latin word forms',src:q.tokens.map(t=>t.blank?'____ ('+t.lemma+')':t.la+(t.post||'')).join(' ')+(q.form?'':q.end||''),model:q.tokens.filter(t=>t.blank).map(t=>t.la).join(', ')};
+  const c=ctxOf(q);return{type:c.e2l?'translate English into Latin':'translate Latin into English',src:c.src,model:c.model}};
+async function moodFor(moment,fallback){
+  const t=++moodTok,cur=q;setFelix('thinking');let m=fallback;
+  try{if(ai.key){const j=parseJ(await aiChat([{role:'system',content:PERSONA+'Right now you are not writing a reply: only pick the expression Fēlix shows for the moment described. Reply only with JSON: {"mood": "one of the expressions"}.'},{role:'user',content:moment}]));if(MOODS[j.mood])m=j.mood}}catch(e){}
+  if(t===moodTok&&cur===q)setFelix(m);return m;
 }
 const RANKS=[['Discipulus','student'],['Tīrō','recruit'],['Mīles','soldier'],['Decuriō','squad leader'],['Centuriō','centurion'],['Tribūnus','tribune'],['Lēgātus','general'],['Praetor','judge'],['Cōnsul','consul'],['Imperātor','emperor']];
 const lvlXP=n=>50*n*(n-1);
@@ -1647,19 +1680,37 @@ function hud(){
   $('hudLv').textContent='Lv '+n;$('hudRank').innerHTML=`${r[0]}<small>${r[1]}</small>`;$('hudXP').textContent=xp;
   $('hudBar').style.width=pct+'%';$('hudBarWrap').setAttribute('aria-valuenow',pct);
 }
-function toast(mood,text){const t=document.createElement('div');t.className='toast';t.innerHTML=`<img src="${faceImg(mood)}" alt=""><span>${text}</span>`;document.body.appendChild(t);setTimeout(()=>t.remove(),3300)}
+function toast(mood,text){const t=document.createElement('div');t.className='toast';t.innerHTML=`<img src="${faceImg(mood)}" alt=""><span>${latH(text)}</span>`;document.body.appendChild(t);setTimeout(()=>t.remove(),3300)}
+(function(){
+  const tip=document.createElement('div');tip.id='lwtip';tip.hidden=true;tip.setAttribute('role','tooltip');document.body.appendChild(tip);
+  const lw=e=>e.target&&e.target.closest?e.target.closest('.lw'):null;
+  const show=t=>{tip.textContent=t.dataset.en;tip.hidden=false;const r=t.getBoundingClientRect();
+    tip.style.left=Math.max(8,Math.min(r.left+r.width/2-tip.offsetWidth/2,innerWidth-tip.offsetWidth-8))+'px';
+    let top=r.top-tip.offsetHeight-8;if(top<8)top=r.bottom+8;tip.style.top=top+'px'};
+  document.addEventListener('mouseover',e=>{const t=lw(e);if(t&&t.dataset.en)show(t)});
+  document.addEventListener('mouseout',e=>{const t=lw(e);if(t&&!t.contains(e.relatedTarget)&&document.activeElement!==t)tip.hidden=true});
+  document.addEventListener('focusin',e=>{const t=lw(e);if(t&&t.dataset.en)show(t)});
+  document.addEventListener('focusout',e=>{if(lw(e))tip.hidden=true});
+  document.addEventListener('click',e=>{const t=lw(e);if(t&&t.dataset.en){t.focus();show(t)}});
+  addEventListener('scroll',()=>{tip.hidden=true},true);
+})();
 function boom(big){try{if(window.confetti)confetti({particleCount:big?160:60,spread:big?100:60,origin:{y:big?.35:.7},disableForReducedMotion:true,colors:['#A9442A','#2E5E66','#946A10','#5A7A2C','#E9DEC7']})}catch(e){}}
 function award(){
   const pts=10+2*(Math.min(stats.streak,6)-1),before=store.get('xp',0),after=before+pts;store.set('xp',after);
   const d=store.get('days',{last:'',count:0}),t=today(),y=today(new Date(Date.now()-864e5));
-  if(d.last!==t){const c=d.last===y?d.count+1:1;store.set('days',{last:t,count:c});if(c>1)toast('delighted',`${c}-day streak! Keep it up!`);}
+  if(d.last!==t){const c=d.last===y?d.count+1:1;store.set('days',{last:t,count:c});if(c>1)toast('delighted',`${c}-day streak! {Euge|well done}! Keep it up!`);}
   const f=document.createElement('span'),cb=$('check');f.className='xpfloat';f.textContent=`+${pts} XP`;f.style.left=(cb.offsetLeft+cb.offsetWidth+12)+'px';f.style.top=(cb.offsetTop+4)+'px';cb.parentNode.appendChild(f);setTimeout(()=>f.remove(),1400);
   const n0=rankLv(before),n1=rankLv(after);
-  if(n1>n0){const r=RANKS[Math.min(n1,RANKS.length)-1];boom(true);toast('adoring',`Level ${n1}! You're now a ${r[0]} (${r[1]}).`);}
-  else if(stats.streak&&stats.streak%5===0){boom(false);toast('laughing',`${stats.streak} in a row! Ēheu, you're on fire!`);}
+  if(n1>n0){const r=RANKS[Math.min(n1,RANKS.length)-1];boom(true);toast('adoring',`Level ${n1}! You're now a {${r[0]}|${r[1]}}.`);}
+  else if(stats.streak&&stats.streak%5===0){boom(false);toast('laughing',`${stats.streak} in a row! {Iō|hooray!}, you're on fire!`);}
   hud();
 }
-function react(kind){setFelix(kind==='ok'?R(['happy','delighted','adoring','fish']):kind==='leak'?'sly':kind==='mac'?'cheeky':R(['sad','shocked']))}
+function react(kind,aiMood){
+  const fb=kind==='ok'?R(['happy','delighted','adoring','fish']):kind==='leak'?'sly':kind==='mac'?'cheeky':R(['sad','shocked']);
+  if(aiMood&&MOODS[aiMood]){moodTok++;setFelix(aiMood);return}
+  const e=exOf(q),res={ok:'correct',mac:'correct, but some macrons were missing',leak:'correct, but it does not count because a question asked beforehand was too leading',bad:'incorrect'}[kind];
+  moodFor(`Moment: the student just submitted an answer.\nCourse: ${COURSE[levelOf(q)]}\nExercise type: ${e.type}\nExercise: ${e.src}\nCorrect answer: ${e.model}\nStudent's answer: ${q.submitted||'(none)'}\nResult: ${res}\nStreak now: ${stats.streak} correct in a row`,fb);
+}
 (function(){
   var root=document.documentElement, tt=document.getElementById("theme-toggle");
   tt.setAttribute("aria-label",root.getAttribute("data-theme")==="dark"?"dark":"light");
@@ -1738,7 +1789,7 @@ function acctUI(){
   const msg=(t,c)=>{$('kmsg').className='msg '+(c||'');$('kmsg').textContent=t};
   $('kmake').onclick=async()=>{msg('Creating…');try{const k=newKey();await cloudPut(k,localData());acct.key=k;try{localStorage.setItem('verba-account',k)}catch(e){}acct.last=new Date();acct.err='';acctUI();$('kmsg').className='msg ok';$('kmsg').textContent='Account created! Copy your key and keep it somewhere safe.'}catch(e){msg(e.message,'bad')}};
   $('kuse').onclick=async()=>{const k=normKey($('kin').value);if(k.length!==24){msg('That key looks incomplete. It should be VERBA- plus 24 letters and numbers.','bad');return}
-    msg('Signing in…');try{const d=await cloudGet(k);if(!d){msg('No account uses that key. Check for typos.','bad');return}acct.key=k;try{localStorage.setItem('verba-account',k)}catch(e){}applyRemote(d);await pushNow();$('acct').close();acctUI();toast('happy','Welcome back! Your progress is loaded.')}catch(e){msg(e.message,'bad')}};
+    msg('Signing in…');try{const d=await cloudGet(k);if(!d){msg('No account uses that key. Check for typos.','bad');return}acct.key=k;try{localStorage.setItem('verba-account',k)}catch(e){}applyRemote(d);await pushNow();$('acct').close();acctUI();toast('happy','{Salvē iterum|hello again}! Your progress is loaded.')}catch(e){msg(e.message,'bad')}};
 }
 $('acctbtn').addEventListener('click',()=>{$('acct').showModal();acctUI()});
 $('acctClose').addEventListener('click',()=>$('acct').close());
@@ -1759,6 +1810,7 @@ function check(){
     else fb.push(`<li class="bad"><b class="bad">Incorrect.</b> ${r.empty?'No answer given. ':''}The answer is ${la}${t.alt?' or <span class="la">'+esc(t.alt.join(', '))+'</span>':''}: ${what}</li>`);
   });
   stats.streak=all?stats.streak+1:0;
+  q.submitted=spans.map(s=>s.querySelector('input').value.trim()).join(', ');q.result=all?'correct':'incorrect';react(all?'ok':'bad');
   $('feedback').innerHTML=fb.join('');checked=true;$('check').textContent='Next sentence';$('check').focus();score();
 }
 let busy=false;
@@ -1768,14 +1820,14 @@ async function checkT(){
   let r=e2l?gradeLatin(q,inp.value):gradeEnglish(q,inp.value),aiR=null,aiErr='';
   inp.disabled=true;
   if(!r.ok&&!r.empty&&!r.essential){
-    busy=true;$('check').disabled=true;$('feedback').innerHTML=`<li>Checking with ${esc(PROVIDERS[ai.prov].name)}…</li>`;
+    busy=true;$('check').disabled=true;moodTok++;setFelix('thinking');$('feedback').innerHTML=`<li>Checking with ${esc(PROVIDERS[ai.prov].name)}…</li>`;
     try{aiR=await aiGrade(q,inp.value.trim())}catch(e){aiErr=e.message||'the AI could not be reached'}
     busy=false;$('check').disabled=false;if(cur!==q)return;
     if(aiR&&aiR.ok)r={ok:true,ai:true};
   }
   const counts=r.ok&&!q.leaked;
-  inp.classList.add(counts?'ok':r.ok&&q.leaked?'leak':'bad');stats.total++;if(counts)stats.right++;stats.streak=counts?prev+1:0;if(counts)award();react(counts?(r.macron?'mac':'ok'):r.ok&&q.leaked?'leak':'bad');
-  q.submitted=inp.value.trim();q.result=r.ok?'correct':'incorrect';
+  inp.classList.add(counts?'ok':r.ok&&q.leaked?'leak':'bad');stats.total++;if(counts)stats.right++;stats.streak=counts?prev+1:0;if(counts)award();
+  q.submitted=inp.value.trim();q.result=r.ok?'correct':'incorrect';react(counts?(r.macron?'mac':'ok'):r.ok&&q.leaked?'leak':'bad',aiR&&!q.leaked?aiR.mood:null);
   const model=`<span class="la">${esc(e2l?q.latin:cap(q.en)+q.end)}</span>`,order=e2l?' Any word order is accepted.':'';
   const why=aiR&&aiR.reason?`<br>${esc(aiR.reason)}`:aiErr?`<br>The AI check failed (${esc(aiErr)}), so only the built-in checker ran.`:'';
   let li;
@@ -1791,7 +1843,7 @@ async function checkT(){
 }
 $('qbody').addEventListener('click',e=>{
   const o=e.target.dataset&&e.target.dataset.o;if(!o||checked)return;checked=true;
-  const right=o===q.answer,ok=right&&!q.leaked;stats.total++;if(ok)stats.right++;stats.streak=ok?stats.streak+1:0;if(ok)award();react(ok?'ok':right?'leak':'bad');q.submitted=o;q.result=right?'correct':'incorrect';
+  const right=o===q.answer,ok=right&&!q.leaked;stats.total++;if(ok)stats.right++;stats.streak=ok?stats.streak+1:0;if(ok)award();q.submitted=o;q.result=right?'correct':'incorrect';react(ok?'ok':right?'leak':'bad');
   $('qbody').querySelectorAll('.choices button').forEach(b=>{b.disabled=true;if(b.dataset.o===q.answer)b.classList.add(q.leaked&&b===e.target?'leak':'ok');else if(b===e.target)b.classList.add('bad')});
   $('feedback').innerHTML=`<li class="${ok?'ok':right?'mac':'bad'}"><b class="${ok?'ok':right?'mac':'bad'}">${ok?'Correct.':right?'Correct, but not counted.':'Incorrect.'}</b>${right&&!ok?' A question you asked before answering was too leading, so this one doesn’t count toward your score.':''} ${cap(q.answer)}: ${esc(q.explain)}</li>`;renderChat();
   $('check').hidden=false;$('check').textContent='Next line';$('check').focus();score();
