@@ -1,4 +1,4 @@
-"""Fēlix mascot generator (bust, one pose per mood). Run: python3 tools/felix.py img/felix"""
+"""Fēlix mascot generator (bust, floating paws, one pose per mood). Run: python3 tools/felix.py img/felix"""
 import math
 O='#2A2420';FUR='#E8944A';DFUR='#C9733A';MUZ='#F7DDB2';PINK='#E7A3A0';TOGA='#F1E6CD';TSH='#D9C9A6';SASH='#9A3B26';L1='#4E6A2A';L2='#6E8B3D';FISH='#7FA9BC';FISHD='#557F93'
 def st(w=3.4): return f'stroke="{O}" stroke-width="{w}" stroke-linejoin="round" stroke-linecap="round"'
@@ -126,12 +126,21 @@ POSE0={
  'cheeky':dict(tilt=-8,tab=1,arms=[(L,(66,216),(72,218),(82,212),0),(R,(204,198),(210,168),(200,146),-15)],fx=lambda:sparkle(214,70,7)),
  'shocked':dict(tilt=0,lift=-4,arms=[(L,(40,198),(36,166),(56,142),30),(R,(200,198),(204,166),(184,142),-30)],fx=lambda:tear(194,58)),
  'sad':dict(tilt=6,drop=4,tab=1,arms=[(L,(66,218),(70,220),(80,214),0),(R,(174,218),(170,220),(160,214),0)],fx=lambda:tear(150,122)),
- 'grumpy':dict(tilt=-3,arms=[(L,(86,232),(136,226),(160,210),0),(R,(154,230),(104,224),(80,208),0)]),
+ 'grumpy':dict(tilt=-3,arms=[(R,(0,0),(0,0),(108,212),-25),(L,(0,0),(0,0),(134,206),20)]),
  'fish':dict(tilt=-6,lift=-2,tab=1,arms=[(L,(66,216),(72,218),(82,212),0),(R,(206,198),(212,166),(204,142),-10)],fx=lambda:sparkle(30,70,9)+sparkle(214,96,6)),
  'thinking':dict(tilt=5,tab=1,arms=[(L,(66,216),(72,218),(82,212),0),(R,(200,204),(184,170),(152,162),-30)],fx=think_dots),
 }
 GRUMPMARK='<g transform="translate(184 50)">'+''.join(line(d,3,'#C0392B') for d in ('M0,6 Q5,5 6,0','M10,0 Q11,5 16,6','M16,10 Q11,11 10,16','M6,16 Q5,11 0,10'))+'</g>'
 POSE=POSE0
+def float_paw(end,a,left):
+    x,y=end;k=-1 if left else 1
+    s=f'<ellipse cx="{x}" cy="{y+17}" rx="8" ry="2.6" fill="{O}" opacity=".12"/>' if y<200 else ''
+    s+=f'<g transform="rotate({a} {x} {y})"><ellipse cx="{x}" cy="{y}" rx="14" ry="13" fill="{FUR}" {st(3.2)}/>'
+    s+=f'<ellipse cx="{x-k*10}" cy="{y+3}" rx="5.5" ry="6.5" fill="{FUR}" {st(2.8)}/>'
+    s+=line(f'M{x-4},{y+3} L{x-4},{y+9}',2.2)+line(f'M{x+3},{y+3} L{x+3},{y+9}',2.2)
+    s+=f'<ellipse cx="{x+1}" cy="{y-4}" rx="5" ry="3" fill="#F3B98A" opacity=".55"/></g>'
+    if y<150: s+=line(f'M{x+k*20},{y-12} q{k*5},8 0,16',2.2)+line(f'M{x+k*26},{y-8} q{k*4},6 0,11',2.2)
+    return s
 TUNIC='#E2CB9C'
 def raised(P,side): return any(end[1]<160 and (sh[0]<120)==(side<0) for sh,c1,c2,end,a in P['arms'])
 def body_path(P):
@@ -181,20 +190,20 @@ def head_svg(mood):
     return h
 def build(mood):
     P=POSE[mood];dy=14+P.get('lift',0)+P.get('drop',0)
-    s=body_svg(P)
+    s=f'<path d="{BUST}" fill="{TOGA}" {st(3.6)}/><g clip-path="url(#body)"><path d="M150,160 L190,166 L96,240 L52,240 Z" fill="{SASH}" {st(2.4)}/>'
+    s+=line('M60,206 Q78,214 84,236',2.4)+line('M178,200 Q170,218 176,240',2.4)+line('M200,214 Q196,228 200,240',2.4)
+    s+=f'<path d="M120,164 L220,180 L220,240 L150,240 Z" fill="{TSH}" opacity=".35"/></g>'
     s+=f'<path d="M98,160 Q120,176 142,160 L142,172 Q120,184 98,172 Z" fill="{MUZ}" {st(3)}/>'
     if P.get('tab'): s+=TAB()
     s+=f'<g transform="translate(0 {dy}) rotate({P["tilt"]} 120 150)">{head_svg(mood)}</g>'
-    for sh,c1,c2,end,a in P['arms']:
-        if end[1]<160: k=-1 if sh[0]<120 else 1;sh=(120+k*53,192);c1=(c1[0]+k*2,min(c1[1],180))
-        s+=arm(sh,c1,c2,end,a)
+    for sh,c1,c2,end,a in P['arms']: s+=float_paw(end,a,sh[0]<120)
     if 'fx' in P: s+=P['fx']()
     if mood=='grumpy': s+=GRUMPMARK
     return s
 def svg(mood,face=False):
     vb='46 22 148 148' if face else '0 0 240 240';w=148 if face else 240
     defs=(f'<defs><filter id="rough" x="-5%" y="-5%" width="110%" height="110%"><feTurbulence type="fractalNoise" baseFrequency="0.035" numOctaves="2" seed="7" result="n"/><feDisplacementMap in="SourceGraphic" in2="n" scale="2.2"/></filter>'
-          f'<clipPath id="head"><path d="{HEAD}"/></clipPath><clipPath id="body"><path d="{body_path(POSE[mood])}"/></clipPath></defs>')
+          f'<clipPath id="head"><path d="{HEAD}"/></clipPath><clipPath id="body"><path d="{BUST}"/></clipPath></defs>')
     return f'<svg xmlns="http://www.w3.org/2000/svg" viewBox="{vb}" width="{w}" height="{w}">\n{defs}\n<g filter="url(#rough)">\n{build(mood)}\n</g>\n</svg>\n'
 if __name__=='__main__':
     import sys

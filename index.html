@@ -12,7 +12,7 @@ document.documentElement.setAttribute("data-theme",t);})();
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600;9..144,700&family=Figtree:wght@400;600;700;800&family=Gentium+Book+Plus:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
-<link rel="icon" href="img/felix/happy.svg?v=8" type="image/svg+xml">
+<link rel="icon" href="img/felix/happy.svg?v=9" type="image/svg+xml">
 <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.3/dist/confetti.browser.min.js" defer></script>
 <style>
 :root{
@@ -367,7 +367,7 @@ dialog.acct .x{position:absolute;right:12px;top:10px;background:none;border:0;fo
 
   <main id="start">
     <section class="hero">
-      <img class="felixbig" src="img/felix/delighted.svg?v=8" alt="Fēlix, the Verba cat">
+      <img class="felixbig" src="img/felix/delighted.svg?v=9" alt="Fēlix, the Verba cat">
       <div>
         <h1>Learn Latin by <em>writing</em> it.</h1>
         <p>Sentences built fresh from Latin I Honors through AP Latin. Earn XP, keep your streak alive, and ask Fēlix when you're stuck.</p>
@@ -410,7 +410,7 @@ dialog.acct .x{position:absolute;right:12px;top:10px;background:none;border:0;fo
       <ul id="vlist"></ul>
     </section>
     <section class="askai" id="askai">
-      <div class="felixcol"><img id="felix" src="img/felix/happy.svg?v=8" alt="Fēlix looking happy"><b>Fēlix</b><small>AI tutor cat</small></div>
+      <div class="felixcol"><img id="felix" src="img/felix/happy.svg?v=9" alt="Fēlix looking happy"><b>Fēlix</b><small>AI tutor cat</small></div>
       <div class="askmain">
         <h3>Ask Fēlix</h3>
         <ul class="chat" id="chat" aria-live="polite"></ul>
@@ -1586,7 +1586,7 @@ function md(s){
   close();
   return out.join('\n').replace(/\n{2,}/g,'<br><br>').replace(/\n(?!<\/?[uo]l)/g,'<br>').replace(/\n/g,'').replace(/(<br>)+(<[uo]l>)/g,'$2').replace(/(<\/[uo]l>)(<br>)+/g,'$1');
 }
-const FV='?v=8',felixImg=m=>`img/felix/${FACES[m]?m:'happy'}.svg${FV}`,faceImg=m=>`img/felix/face-${FACES[m]?m:'happy'}.svg${FV}`;
+const FV='?v=9',felixImg=m=>`img/felix/${FACES[m]?m:'happy'}.svg${FV}`,faceImg=m=>`img/felix/face-${FACES[m]?m:'happy'}.svg${FV}`;
 function setFelix(m){const f=$('felix');if(!f)return;f.src=felixImg(m);f.alt=`Fēlix looking ${m}`;f.classList.remove('react');void f.offsetWidth;f.classList.add('react');}
 function renderChat(){
   const greet=`<li class="greet"><div class="arow"><img src="${faceImg(q.greetMood||'happy')}" alt=""><div class="ca">${latH(q.greeting||GREETINGS[0])}</div></div></li>`;
