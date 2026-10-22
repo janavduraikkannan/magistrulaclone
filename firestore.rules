@@ -1,6 +1,11 @@
 rules_version = '2';
 // Verba accounts: each account is one document named by its secret account key.
 // A key can read and save its own document; nobody can list or delete accounts.
+//
+// Leaderboard: board/{id} is public. The id is a hash of the account key, so it never reveals the key.
+// Each update must include `prev`, the link of a hash chain (made from the account key) whose SHA-256
+// equals the stored `lock`, and must set a new lock. Only someone holding the account key can make the
+// next link, so only the owner can change their entry. XP can only rise at a realistic speed.
 service cloud.firestore {
   match /databases/{database}/documents {
     match /accounts/{id} {
@@ -11,6 +16,41 @@ service cloud.firestore {
         && request.resource.data.data.size() < 20000;
       allow list, delete: if false;
     }
+
+    function boardOk(d) {
+      let fields = ['n', 'lock', 'prev', 'on', 'xp', 'wk', 'wxp', 'days', 'dlast', 'user', 'name', 'nvis', 'school', 'course', 't'];
+      return d.keys().hasOnly(fields) && d.keys().hasAll(fields)
+        && d.n is int && d.lock is bytes && d.lock.size() == 32
+        && d.prev is string && d.prev.size() <= 64
+        && d.on is bool
+        && d.xp is int && d.xp >= 0
+        && d.wk is string && d.wk.size() <= 10
+        && d.wxp is int && d.wxp >= 0 && d.wxp <= d.xp
+        && d.days is int && d.days >= 0 && d.days <= 5000
+        && d.dlast is string && d.dlast.size() <= 10
+        && d.user is string && d.user.size() <= 20
+        && d.name is string && d.name.size() <= 51
+        && d.nvis in ['', 'school', 'all']
+        && d.school is string && d.school.size() <= 60
+        && d.course in ['', 'I', 'I+', 'II', 'II+', 'III', 'III+', 'AP', 'AP+']
+        && d.t == request.time;
+    }
+    match /board/{pid} {
+      allow get: if true;
+      allow list: if request.query.limit <= 300;
+      allow create: if pid.matches('[0-9a-f]{24}')
+        && boardOk(request.resource.data)
+        && request.resource.data.n == 0
+        && request.resource.data.prev == ''
+        && request.resource.data.xp <= 100000;
+      allow update: if boardOk(request.resource.data)
+        && request.resource.data.n == resource.data.n + 1
+        && hashing.sha256(request.resource.data.prev) == resource.data.lock
+        && request.resource.data.xp <= resource.data.xp + 1000
+             + (request.time.toMillis() - resource.data.t.toMillis()) / 100;
+      allow delete: if false;
+    }
+
     match /{document=**} {
       allow read, write: if false;
     }

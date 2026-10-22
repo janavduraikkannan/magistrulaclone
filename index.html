@@ -350,6 +350,52 @@ dialog.acct .x{position:absolute;right:12px;top:10px;background:none;border:0;fo
   [data-theme="dark"] .sun-and-moon>.moon>circle{transition-delay:.25s;transition-duration:.5s}
 }
 @media (max-width:700px){.acct-btn span.lbl{display:none}}
+
+/* profile + leaderboard */
+dialog.acct{position:relative}
+dialog.acct .ph{font-family:var(--display);font-size:1.2rem;margin:0 0 6px}
+dialog.acct .warnbox{border:2px dashed var(--bad);border-radius:8px;padding:8px 12px;background:color-mix(in srgb,var(--bad) 8%,var(--surface));font-size:.93rem;margin:6px 0 12px}
+dialog.acct .pf{display:flex;flex-direction:column;gap:4px;font-weight:800;margin:10px 0 0;font-size:.95rem}
+dialog.acct .pf input,dialog.acct .pf select{font-family:var(--ui);font-weight:600;font-size:1rem;width:100%;background:var(--surface2);border:2px solid var(--line);border-radius:8px;padding:8px 10px;color:var(--ink)}
+dialog.acct .pgrid{display:grid;grid-template-columns:1fr 1fr;gap:0 12px}
+dialog.acct .pf .opt{font-weight:600;color:var(--muted);font-size:.85rem}
+dialog.acct .hint{margin:4px 0 0;font-size:.88rem}
+dialog.acct .chk{display:flex;gap:9px;align-items:center;font-weight:800;margin:14px 0 4px;cursor:pointer}
+dialog.acct .chk input{width:auto;accent-color:var(--accent2)}
+.laurea-card{display:flex;gap:12px;align-items:center;margin-top:12px;padding:10px 12px;border:2px solid var(--gold);border-radius:10px;background:color-mix(in srgb,var(--gold) 14%,var(--surface))}
+.laurea-card .gi{width:48px;height:48px;color:var(--gold)}
+.laurea{display:inline-flex;align-items:center;gap:3px;font-size:.75rem;font-weight:800;color:var(--gold);border:1.5px solid var(--gold);border-radius:999px;padding:0 7px 0 5px;vertical-align:.1em;white-space:nowrap}
+.laurea .gi{width:1.1em;height:1.1em}
+dialog.boarddlg{max-width:min(760px,calc(100vw - 24px));width:100%}
+dialog.boarddlg h2{display:flex;align-items:center;gap:10px}
+dialog.boarddlg h2 .gi{color:var(--gold)}
+.live{font-family:var(--ui);font-size:.75rem;font-weight:800;text-transform:uppercase;letter-spacing:.08em;color:var(--ok);display:inline-flex;align-items:center;gap:5px;margin-left:4px}
+.live i{width:8px;height:8px;border-radius:50%;background:var(--ok);animation:livepulse 1.6s ease-in-out infinite}
+.live.off{color:var(--muted)}.live.off i{background:var(--muted);animation:none}
+@keyframes livepulse{50%{opacity:.25}}
+.bctl{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin:10px 0 6px}
+.bctl select{font:inherit;font-weight:700;background:var(--surface2);color:var(--ink);border:2px solid var(--line);border-radius:8px;padding:6px 8px}
+.btabs{display:inline-flex;border:2px solid var(--line2);border-radius:8px;overflow:hidden}
+.btabs button{font:inherit;font-weight:800;background:var(--surface2);color:var(--ink);border:0;padding:6px 12px;cursor:pointer}
+.btabs button[aria-selected=true]{background:var(--accent2);color:var(--accent2-ink)}
+.bnote{margin:6px 0;font-weight:700}
+.blist{list-style:none;margin:8px 0 0;padding:0;display:flex;flex-direction:column;gap:6px;max-height:min(60vh,560px);overflow:auto}
+.brow{display:grid;grid-template-columns:2.4em minmax(0,1fr) auto auto auto;gap:4px 12px;align-items:center;padding:7px 10px;border:2px solid var(--line);border-radius:8px;background:var(--surface)}
+.brow.me{border-color:var(--accent);box-shadow:inset 4px 0 var(--accent)}
+.brow.p1{background:color-mix(in srgb,var(--lv1) 22%,var(--surface))}
+.brow.p2{background:color-mix(in srgb,#9AA3AD 26%,var(--surface))}
+.brow.p3{background:color-mix(in srgb,#B0703C 22%,var(--surface))}
+.bpos{font-family:var(--display);font-weight:700;font-size:1.25rem;text-align:center}
+.bwho{min-width:0}
+.bwho b{font-weight:800;overflow-wrap:anywhere}
+.bwho .rn{color:var(--muted);font-weight:700}
+.bwho small{display:block;color:var(--muted);font-weight:600;font-size:.82rem;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.youtag{font-size:.7rem;font-weight:800;background:var(--accent);color:var(--accent-ink);border-radius:4px;padding:0 5px;margin-left:4px;vertical-align:.15em}
+.blv{font-weight:700;white-space:nowrap;font-size:.9rem}.blv small{color:var(--muted)}
+.bdays{white-space:nowrap;font-weight:800;color:var(--accent)}.bdays .gi{width:1.1em;height:1.1em}
+.bxp{font-family:var(--display);font-weight:700;white-space:nowrap;text-align:right;min-width:4.5em}
+.bgap{text-align:center;color:var(--muted);font-weight:800;letter-spacing:.3em}
+@media (max-width:560px){.brow{grid-template-columns:2em minmax(0,1fr) auto}.blv,.bdays{display:none}}
 </style>
 </head>
 <body>
@@ -365,6 +411,7 @@ dialog.acct .x{position:absolute;right:12px;top:10px;background:none;border:0;fo
         <div class="xpbar" role="progressbar" aria-label="XP toward next level" aria-valuemin="0" aria-valuemax="100" id="hudBarWrap"><i id="hudBar"></i></div>
         <span class="chip"><svg class="gi ic-star" aria-hidden="true"><use href="#gi-round-star"/></svg><span id="hudXP">0</span><span class="xpw">&nbsp;XP</span></span>
       </div>
+      <button class="acct-btn" id="boardbtn" type="button" aria-haspopup="dialog" aria-label="Leaderboard"><svg class="gi" aria-hidden="true"><use href="#gi-trophy"/></svg><span class="lbl">Leaderboard</span></button>
       <button class="acct-btn" id="acctbtn" type="button" aria-haspopup="dialog"><svg class="gi" aria-hidden="true"><use href="#gi-centurion-helmet"/></svg><span class="lbl" id="acctlbl">Account</span><i class="dot" aria-hidden="true"></i></button>
       <button class="theme-toggle" id="theme-toggle" type="button" aria-label="light" aria-live="polite">
         <svg class="sun-and-moon" aria-hidden="true" width="24" height="24" viewBox="0 0 24 24">
@@ -401,6 +448,19 @@ dialog.acct .x{position:absolute;right:12px;top:10px;background:none;border:0;fo
 <dialog class="acct" id="acct" aria-labelledby="acctTitle">
   <button class="x" type="button" id="acctClose" aria-label="Close">×</button>
   <div id="acctBody"></div>
+  <div id="profBody"></div>
+</dialog>
+<dialog class="acct boarddlg" id="board" aria-labelledby="boardTitle">
+  <button class="x" type="button" id="boardClose" aria-label="Close">×</button>
+  <h2 id="boardTitle"><svg class="gi" aria-hidden="true"><use href="#gi-trophy"/></svg>Leaderboard <span class="live off" id="blive"><i></i><span id="bage">connecting</span></span></h2>
+  <div class="bctl">
+    <div class="btabs" role="tablist" aria-label="Time range"><button type="button" role="tab" data-v="all" aria-selected="true">All time</button><button type="button" role="tab" data-v="week" aria-selected="false">This week</button></div>
+    <select id="bScope" aria-label="Who to show"><option value="all">Everyone</option><option value="school">My school</option></select>
+    <select id="bCourse" aria-label="Course"><option value="">All courses</option><option value="I">Latin I Honors</option><option value="II">Latin II Honors</option><option value="III">Latin III Honors</option><option value="AP">AP Latin</option><option value="done">Finished Latin</option></select>
+  </div>
+  <p class="bnote" id="bnote"></p>
+  <ol class="blist" id="boardBody"></ol>
+  <p class="hint" id="bfoot">Ranked by XP: 10 to 20 XP per correct answer (more on a streak). Weekly XP resets every Monday.</p>
 </dialog>
 <div class="wrap">
 
@@ -1851,6 +1911,7 @@ function toast(mood,text){const t=document.createElement('div');t.className='toa
 function boom(big){try{if(window.confetti)confetti({particleCount:big?160:60,spread:big?100:60,origin:{y:big?.35:.7},disableForReducedMotion:true,colors:['#A9442A','#2E5E66','#946A10','#5A7A2C','#E9DEC7']})}catch(e){}}
 function award(){
   const pts=10+2*(Math.min(stats.streak,6)-1),before=store.get('xp',0),after=before+pts;store.set('xp',after);
+  {let w=store.get('wk',{id:'',xp:0});if(w.id!==wkId())w={id:wkId(),xp:0};w.xp+=pts;store.set('wk',w);}
   const d=store.get('days',{last:'',count:0}),t=today(),y=today(new Date(Date.now()-864e5));
   if(d.last!==t){const c=d.last===y?d.count+1:1;store.set('days',{last:t,count:c});if(c>1)toast('delighted',`${c}-day streak! {Euge|well done}! Keep it up!`);}
   const f=document.createElement('span'),cb=$('check');f.className='xpfloat';f.textContent=`+${pts} XP`;f.style.left=(cb.offsetLeft+cb.offsetWidth+12)+'px';f.style.top=(cb.offsetTop+4)+'px';cb.parentNode.appendChild(f);setTimeout(()=>f.remove(),1400);
@@ -1871,7 +1932,7 @@ function react(kind){moodTok++;setFelix(R(REACT_MOODS[kind]))}
 })();
 /* ---------- Accounts: a personal account key, synced through Firebase Firestore ---------- */
 var ACCOUNTS={projectId:'verba-791ca',apiKey:''}; // Firebase project; a web API key is optional (access is governed by firestore.rules)
-var SYNC_KEYS=['xp','days','topics','bFrames','bIngs','per','mode','limit','prov','tab','keyadv'];
+var SYNC_KEYS=['xp','days','wk','profile','topics','bFrames','bIngs','per','mode','limit','prov','tab','keyadv'];
 var acct={key:'',timer:null,last:null,busy:false};
 try{acct.key=localStorage.getItem('verba-account')||''}catch(e){}
 const acctReady=()=>!!ACCOUNTS.projectId;
@@ -1897,6 +1958,7 @@ function applyRemote(d){
   if(!d)return;
   const l=localData();
   if(typeof d.xp==='number')d.xp=Math.max(d.xp,l.xp||0);
+  if(l.wk&&d.wk&&(l.wk.id>d.wk.id||(l.wk.id===d.wk.id&&l.wk.xp>d.wk.xp)))d.wk=l.wk;
   if(l.days&&d.days&&(l.days.last>d.days.last||(l.days.last===d.days.last&&l.days.count>d.days.count)))d.days=l.days;
   SYNC_KEYS.forEach(k=>{if(k in d){try{localStorage.setItem('verba.'+k,JSON.stringify(d[k]))}catch(e){}}});
   if(Array.isArray(d.aikeys)&&d.aikeys.length){slots=d.aikeys.map(mkSlot);keyRemA=true;lsSet('verba-keys-account',true);if(keyRemB)lsSet('verba-aikeys',serialKeys())}
@@ -1912,11 +1974,12 @@ function refreshFromStore(){
   document.querySelectorAll('#frames input').forEach(b=>b.checked=bFrames.has(b.value));document.querySelectorAll('#ings input').forEach(b=>b.checked=bIngs.has(b.value));
   $('per').value=store.get('per','2');$('limit').checked=store.get('limit',true);$('prov').value=store.get('prov','auto');
   advanced=store.get('keyadv',false);keysUI(true);
+  try{if($('acct').open&&!$('profBody').contains(document.activeElement))profUI()}catch(e){}
   const m0=document.querySelector(`input[name=mode][value=${store.get('mode','e2l')}]`);if(m0)m0.checked=true;
   sync();
 }
 function acctDirty(k){if(!acct.key||!acctReady()||!(SYNC_KEYS.includes(k)||k==='aikeys')||acct.pulling)return;clearTimeout(acct.timer);acct.timer=setTimeout(pushNow,2500)}
-async function pushNow(){if(!acct.key||!acctReady())return;try{await cloudPut(acct.key,localData());acct.last=new Date();acct.err=''}catch(e){acct.err=e.message}acctUI()}
+async function pushNow(){if(!acct.key||!acctReady())return;try{await cloudPut(acct.key,localData());acct.last=new Date();acct.err=''}catch(e){acct.err=e.message}acctUI();try{pushBoard()}catch(e){}}
 async function pullNow(){if(!acct.key||!acctReady())return;acct.pulling=true;try{const d=await cloudGet(acct.key);if(d)applyRemote(d);acct.last=new Date();acct.err=''}catch(e){acct.err=e.message}acct.pulling=false;acctUI()}
 function acctUI(){
   try{keysUI()}catch(e){}
@@ -1933,7 +1996,7 @@ function acctUI(){
       <p class="hint">Use this key to sign in on another device. Keep it private: anyone with it can open your progress. Signing out keeps your progress on this browser and in your account.</p>`;
     $('kcopy').onclick=async()=>{try{await navigator.clipboard.writeText(showKey(acct.key));$('kmsg').className='msg ok';$('kmsg').textContent='Copied!'}catch(e){$('kmsg').textContent='Select the key above and copy it.'}};
     $('ksync').onclick=async()=>{$('kmsg').textContent='Syncing…';await pullNow();await pushNow()};
-    $('kout').onclick=()=>{if(!confirm('Sign out on this browser? Make sure you have your key saved somewhere first.'))return;acct.key='';try{localStorage.removeItem('verba-account')}catch(e){}acctUI()};
+    $('kout').onclick=()=>{if(!confirm('Sign out on this browser? Make sure you have your key saved somewhere first.'))return;acct.key='';board.pidFor='';board.pid='';try{localStorage.removeItem('verba-account')}catch(e){}acctUI();profUI()};
     return;
   }
   B.innerHTML=`<h2 id="acctTitle">Save your progress</h2><p>Make a free account key to keep your XP, streak and settings on every device. No email or password: the key is your account.</p>
@@ -1943,14 +2006,160 @@ function acctUI(){
     <div class="row"><button class="btn quiet" id="kuse">Sign in with key</button></div>
     <p class="msg" id="kmsg"></p>`;
   const msg=(t,c)=>{$('kmsg').className='msg '+(c||'');$('kmsg').textContent=t};
-  $('kmake').onclick=async()=>{msg('Creating…');try{const k=newKey();await cloudPut(k,localData());acct.key=k;try{localStorage.setItem('verba-account',k)}catch(e){}acct.last=new Date();acct.err='';acctUI();$('kmsg').className='msg ok';$('kmsg').textContent='Account created! Copy your key and keep it somewhere safe.'}catch(e){msg(e.message,'bad')}};
+  $('kmake').onclick=async()=>{msg('Creating…');try{const k=newKey();await cloudPut(k,localData());acct.key=k;try{localStorage.setItem('verba-account',k)}catch(e){}acct.last=new Date();acct.err='';acctUI();profUI();pushBoard();$('kmsg').className='msg ok';$('kmsg').textContent='Account created! Copy your key and keep it somewhere safe.'}catch(e){msg(e.message,'bad')}};
   $('kuse').onclick=async()=>{const k=normKey($('kin').value);if(k.length!==24){msg('That key looks incomplete. It should be VERBA- plus 24 letters and numbers.','bad');return}
     msg('Signing in…');try{const d=await cloudGet(k);if(!d){msg('No account uses that key. Check for typos.','bad');return}acct.key=k;try{localStorage.setItem('verba-account',k)}catch(e){}applyRemote(d);await pushNow();$('acct').close();acctUI();toast('happy','{Salvē iterum|hello again}! Your progress is loaded.')}catch(e){msg(e.message,'bad')}};
 }
-$('acctbtn').addEventListener('click',()=>{$('acct').showModal();acctUI()});
+/* ---------- Optional profile and the public, live leaderboard ----------
+   Each account gets a public leaderboard entry at board/<id>, where the id is a hash of the secret account key,
+   so the entry never reveals the key. To change an entry you must show the previous link of a hash chain built
+   from your key (checked by firestore.rules), so only the account's owner can update it. */
+const COURSES=[['','Not set'],['I','Latin I Honors'],['I+','Latin I Honors – completed'],['II','Latin II Honors'],['II+','Latin II Honors – completed'],['III','Latin III Honors'],['III+','Latin III Honors – completed'],['AP','AP Latin'],['AP+','AP Latin – completed']];
+const COURSE_SHORT={I:'Latin I',II:'Latin II',III:'Latin III',AP:'AP Latin'};
+const SCHOOLS=['Collierville High School'];
+const PROF0={first:'',last:'',user:'',school:'',sOther:false,nvis:'school',course:'',board:true};
+const prof=()=>Object.assign({},PROF0,store.get('profile',{}));
+const fullName=p=>[p.first,p.last].map(x=>String(x||'').trim()).filter(Boolean).join(' ');
+const normSchool=x=>String(x||'').trim().toLowerCase().replace(/\s+/g,' ');
+const courseShort=c=>c?COURSE_SHORT[c.replace('+','')]+(c.endsWith('+')?' · completed':''):'';
+function wkId(d=new Date()){const t=new Date(Date.UTC(d.getFullYear(),d.getMonth(),d.getDate()));const day=t.getUTCDay()||7;t.setUTCDate(t.getUTCDate()+4-day);const y=t.getUTCFullYear(),w=Math.ceil(((t-Date.UTC(y,0,1))/864e5+1)/7);return y+'-W'+String(w).padStart(2,'0')}
+const ANIMALS=[['Lupus','wolf'],['Vulpēs','fox'],['Ursus','bear'],['Aquila','eagle'],['Leō','lion'],['Equus','horse'],['Corvus','raven'],['Columba','dove'],['Delphīnus','dolphin'],['Cervus','stag'],['Noctua','owl'],['Taurus','bull'],['Lepus','hare'],['Anser','goose'],['Fēlēs','cat'],['Apis','bee']];
+const laureaTag=()=>`<span class="laurea" title="Laurea: completed AP Latin"><svg class="gi" aria-hidden="true"><use href="#gi-laurel-crown"/></svg>Laurea</span>`;
+
+async function sha(x){return new Uint8Array(await crypto.subtle.digest('SHA-256',new TextEncoder().encode(x)))}
+const hex=b=>[...b].map(x=>x.toString(16).padStart(2,'0')).join('');
+const b64=b=>btoa(String.fromCharCode(...b));
+const FS=()=>`https://firestore.googleapis.com/v1/projects/${ACCOUNTS.projectId}/databases/(default)/documents`;
+const qk=()=>ACCOUNTS.apiKey?`?key=${ACCOUNTS.apiKey}`:'';
+const fsv=v=>typeof v==='boolean'?{booleanValue:v}:typeof v==='number'?{integerValue:String(v)}:v instanceof Uint8Array?{bytesValue:b64(v)}:{stringValue:String(v)};
+const fromFs=f=>{const o={};for(const[k,v]of Object.entries(f||{}))o[k]='integerValue'in v?Number(v.integerValue):'booleanValue'in v?v.booleanValue:'stringValue'in v?v.stringValue:'timestampValue'in v?v.timestampValue:'bytesValue'in v?v.bytesValue:'doubleValue'in v?v.doubleValue:null;return o};
+var board={pid:'',pidFor:'',n:null,sig:'',busy:false,again:false,rows:null,at:0,err:'',lerr:'',view:'all',tick:null,loading:false};
+async function myPid(){if(!acct.key)return '';if(board.pidFor!==acct.key){board.pid=hex(await sha('verba-board:'+acct.key)).slice(0,24);board.pidFor=acct.key;board.n=null;board.sig=''}return board.pid}
+const chainLink=async i=>hex(await sha('verba-chain:'+acct.key+':'+i));
+function boardFields(){
+  const p=prof(),d=store.get('days',{last:'',count:0}),w=store.get('wk',{id:'',xp:0}),cw=wkId(),on=p.board!==false;
+  const school=String(p.school||'').trim().slice(0,60),name=fullName(p).slice(0,50);
+  const nvis=p.nvis==='all'?'all':(p.nvis==='school'&&school)?'school':'';
+  return{on,xp:Math.max(0,Math.floor(store.get('xp',0))),wk:cw,wxp:w.id===cw?Math.min(w.xp,store.get('xp',0)):0,days:Math.min(d.count||0,5000),dlast:d.last||'',
+    user:on?String(p.user||'').trim().slice(0,20):'',name:on&&nvis?name:'',nvis:on&&name?nvis:'',school:on?school:'',course:on?(p.course||''):''};
+}
+async function pushBoard(){
+  if(!acct.key||!acctReady())return;
+  if(board.busy){board.again=true;return}
+  board.busy=true;
+  try{
+    const pid=await myPid(),f=boardFields(),sig=JSON.stringify(f);
+    if(sig!==board.sig)for(let attempt=0;attempt<2;attempt++){
+      if(board.n===null){const r=await fetch(FS()+'/board/'+pid+qk());
+        if(r.status===404)board.n=-1;else if(r.ok)board.n=fromFs((await r.json()).fields).n;else throw new Error(r.status===403?'The leaderboard isn\u2019t switched on yet (its security rules need publishing).':'Couldn\u2019t reach the leaderboard ('+r.status+').')}
+      const create=board.n<0,n=create?0:board.n+1;
+      const doc=Object.assign({},f,{n,prev:create?'':await chainLink(board.n),lock:await sha(await chainLink(n))}),fields={};
+      for(const[k,v]of Object.entries(doc))fields[k]=fsv(v);
+      const r=await fetch(FS()+':commit'+qk(),{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({writes:[{update:{name:`projects/${ACCOUNTS.projectId}/databases/(default)/documents/board/${pid}`,fields},updateTransforms:[{fieldPath:'t',setToServerValue:'REQUEST_TIME'}],currentDocument:{exists:!create}}]})});
+      if(r.ok){board.n=n;board.sig=sig;board.err='';break}
+      board.n=null; // another device may have updated first: read again and retry once
+      if(attempt)board.err=r.status===403?'The leaderboard refused your update. Its security rules may not be published yet.':'Updating your leaderboard entry failed ('+r.status+').';
+    }
+  }catch(e){board.err=e.message}
+  finally{board.busy=false;if(board.again){board.again=false;setTimeout(pushBoard,1500)}if($('board').open)loadBoard()}
+}
+async function loadBoard(){
+  if(board.loading)return;board.loading=true;
+  try{
+    const r=await fetch(FS()+':runQuery'+qk(),{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({structuredQuery:{from:[{collectionId:'board'}],orderBy:[{field:{fieldPath:'xp'},direction:'DESCENDING'}],limit:300}})});
+    if(!r.ok)throw new Error(r.status===403?'The leaderboard isn\u2019t switched on yet (its security rules need publishing).':'Couldn\u2019t load the leaderboard ('+r.status+').');
+    const j=await r.json();
+    board.rows=j.filter(x=>x.document).map(x=>Object.assign(fromFs(x.document.fields),{pid:x.document.name.split('/').pop()}));
+    board.at=Date.now();board.lerr='';
+  }catch(e){board.lerr=e.message}
+  board.loading=false;renderBoard();
+}
+function whoHTML(r,viewerSchool){
+  const showName=r.name&&(r.nvis==='all'||(r.nvis==='school'&&viewerSchool&&normSchool(r.school)===viewerSchool));
+  const a=ANIMALS[parseInt(r.pid.slice(0,4),16)%ANIMALS.length];
+  let main=r.user?esc(r.user):showName?esc(r.name):`Anonymous <span class="lw" tabindex="0" data-en="${a[1]}">${a[0]}</span>`;
+  if(r.user&&showName)main+=` <span class="rn">(${esc(r.name)})</span>`;
+  const sub=[r.school?esc(r.school):'',courseShort(r.course)].filter(Boolean).join(' · ');
+  return`<b>${main}</b>${r.course==='AP+'?' '+laureaTag():''}${r.pid===board.pid&&acct.key?'<span class="youtag">you</span>':''}${sub?`<small>${sub}</small>`:''}`;
+}
+function renderBoard(){
+  const L=$('boardBody');if(!L)return;
+  const p=prof(),vs=normSchool(p.school),cw=wkId(),td=today(),yd=today(new Date(Date.now()-864e5));
+  const week=board.view==='week',scope=$('bScope').value,cf=$('bCourse').value,me=acct.key?board.pid:'';
+  $('bScope').querySelector('[value=school]').disabled=!vs;if(!vs&&scope==='school')$('bScope').value='all';
+  const live=!board.lerr&&board.at;$('blive').className='live'+(live?'':' off');
+  if(board.lerr){$('bnote').innerHTML=`<span style="color:var(--bad)">${esc(board.lerr)}</span>`;L.innerHTML='';return}
+  if(!board.rows){$('bnote').textContent='Loading…';L.innerHTML='';return}
+  const sc=r=>week?(r.wk===cw?r.wxp:0):r.xp;
+  let rows=board.rows.filter(r=>r.on!==false&&sc(r)>0);
+  if($('bScope').value==='school')rows=rows.filter(r=>normSchool(r.school)===vs);
+  if(cf==='done')rows=rows.filter(r=>/\+$/.test(r.course||''));else if(cf)rows=rows.filter(r=>r.course===cf);
+  rows.sort((a,b)=>sc(b)-sc(a)||String(a.t).localeCompare(String(b.t)));
+  const mi=rows.findIndex(r=>r.pid===me);
+  const row=(r,i)=>{const lv=rankLv(r.xp),rk=RANKS[Math.min(lv,RANKS.length)-1],days=(r.dlast===td||r.dlast===yd)?r.days:0;
+    return`<li class="brow${r.pid===me?' me':''}${i<3?' p'+(i+1):''}"><span class="bpos">${i+1}</span><div class="bwho">${whoHTML(r,vs)}</div><span class="blv">Lv ${lv} <span class="lw" tabindex="0" data-en="${rk[1]}">${rk[0]}</span></span><span class="bdays" title="Day streak">${days?`<svg class="gi" aria-hidden="true"><use href="#gi-fluffy-flame"/></svg>${days}`:''}</span><span class="bxp">${sc(r).toLocaleString()} XP</span></li>`};
+  const SHOW=100;let h=rows.slice(0,SHOW).map(row).join('');
+  if(mi>=SHOW)h+=`<li class="bgap" aria-hidden="true">···</li>`+row(rows[mi],mi);
+  L.innerHTML=h||`<li class="hint" style="padding:10px">${week?'Nobody has earned XP this week yet. Be the first!':'Nobody here yet.'}</li>`;
+  let note='';
+  if(!acct.key)note='Create an account key (the Account button) to join the leaderboard.';
+  else if(board.err)note=`<span style="color:var(--bad)">${esc(board.err)}</span>`;
+  else if(p.board===false)note='You\u2019re hidden from the leaderboard. Turn it back on in Account.';
+  else if(mi===0)note=`You\u2019re in first place! <span class="lw" tabindex="0" data-en="well done!">Euge</span>!`;
+  else if(mi>0)note=`You\u2019re #${mi+1}. ${(sc(rows[mi-1])-sc(rows[mi])+1).toLocaleString()} XP to move up a place.`;
+  else note=week?'Get an answer right this week to appear here.':'Get an answer right to appear here.';
+  $('bnote').innerHTML=note;
+}
+function boardTick(){
+  if(!$('board').open){clearInterval(board.tick);board.tick=null;return}
+  const s=board.at?Math.round((Date.now()-board.at)/1000):0;
+  $('bage').textContent=board.lerr?'offline':!board.at?'connecting':s<5?'live':'live · '+s+'s ago';
+  if(document.visibilityState==='visible'&&(!board.at||Date.now()-board.at>30000))loadBoard();
+}
+$('boardbtn').addEventListener('click',()=>{$('board').showModal();renderBoard();loadBoard();pushBoard();clearInterval(board.tick);board.tick=setInterval(boardTick,1000)});
+$('boardClose').addEventListener('click',()=>$('board').close());
+$('board').addEventListener('click',e=>{if(e.target===$('board'))$('board').close()});
+document.querySelector('#board .btabs').addEventListener('click',e=>{const v=e.target.dataset&&e.target.dataset.v;if(!v)return;board.view=v;document.querySelectorAll('#board .btabs button').forEach(b=>b.setAttribute('aria-selected',b.dataset.v===v));renderBoard()});
+$('bScope').addEventListener('change',renderBoard);$('bCourse').addEventListener('change',renderBoard);
+document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible'&&$('board').open)loadBoard()});
+
+function profUI(){
+  const P=$('profBody');if(!P)return;
+  if(!acctReady()){P.innerHTML='';return}
+  const p=prof(),sel=SCHOOLS.includes(p.school)?p.school:(p.sOther||p.school)?'*':'';
+  P.innerHTML=`<hr><h3 class="ph">Profile &amp; leaderboard</h3>
+    <p class="warnbox"><b>Everything here is optional, and none of it is private or secure.</b> Anything you fill in can be read by anyone who knows how to look, even with “only students at my school” picked. Only add what you’d be fine with anyone seeing.</p>
+    <div class="pgrid"><label class="pf">First name <span class="opt">optional</span><input id="pFirst" maxlength="25" autocomplete="given-name" value="${esc(p.first)}"></label>
+    <label class="pf">Last name <span class="opt">optional</span><input id="pLast" maxlength="25" autocomplete="family-name" value="${esc(p.last)}"></label></div>
+    <p class="hint">First name, last name, both or neither.</p>
+    <label class="pf">Username <span class="opt">optional · shown on the leaderboard</span><input id="pUser" maxlength="20" autocomplete="nickname" spellcheck="false" value="${esc(p.user)}"></label>
+    <label class="pf">School <span class="opt">optional</span><select id="pSchool"><option value="">No school</option>${SCHOOLS.map(x=>`<option${sel===x?' selected':''}>${esc(x)}</option>`).join('')}<option value="*"${sel==='*'?' selected':''}>Other (type it in)</option></select></label>
+    <label class="pf" id="pSchoolCL"${sel==='*'?'':' hidden'}>Your school <input id="pSchoolC" maxlength="60" value="${esc(sel==='*'?p.school:'')}"></label>
+    <label class="pf">Who can see your name <span class="opt" id="pVisH"></span><select id="pVis"><option value="">Nobody</option><option value="school">Only students who picked my school</option><option value="all">Everyone</option></select></label>
+    <label class="pf">Latin course <span class="opt">optional · change it any time</span><select id="pCourse">${COURSES.map(([v,l])=>`<option value="${v}"${p.course===v?' selected':''}>${l}</option>`).join('')}</select></label>
+    <p class="hint">Pick “completed” if you finished that course and aren’t taking Latin anymore.</p>
+    <div id="pAward"></div>
+    <label class="chk"><input type="checkbox" id="pBoard"${p.board!==false?' checked':''}> Show me on the public leaderboard</label>
+    <p class="msg" id="pmsg"></p>`;
+  const vis=()=>{const hasS=$('pSchool').value&&($('pSchool').value!=='*'||$('pSchoolC').value.trim());const o=$('pVis').querySelector('[value=school]');o.disabled=!hasS;
+    const cur=prof().nvis;$('pVis').value=cur==='school'&&!hasS?'':cur;
+    $('pVisH').textContent=!fullName(prof())?'add a name above first':hasS?'':'pick a school to share it with classmates only';
+    $('pAward').innerHTML=$('pCourse').value==='AP+'?`<div class="laurea-card"><svg class="gi" aria-hidden="true"><use href="#gi-laurel-crown"/></svg><div><b><span class="lw" tabindex="0" data-en="laurel crown">Laurea</span> Latīna</b><br>For completing AP Latin. Your laurel crown shows beside your name on the leaderboard.</div></div>`:''};
+  const save=e=>{
+    const old=prof(),s=$('pSchool').value;$('pSchoolCL').hidden=s!=='*';
+    const n={first:$('pFirst').value.trim(),last:$('pLast').value.trim(),user:$('pUser').value.replace(/[^\p{L}\p{N}_.\- ]/gu,'').trim(),
+      school:s==='*'?$('pSchoolC').value.trim():s,sOther:s==='*',nvis:e&&e.target.id==='pVis'?$('pVis').value:old.nvis,course:$('pCourse').value,board:$('pBoard').checked};
+    store.set('profile',n);vis();
+    if(n.course==='AP+'&&old.course!=='AP+'){boom(true);toast('adoring','{Laurea|laurel crown} earned! You finished AP Latin. {Euge|well done}!')}
+    $('pmsg').className='msg ok';$('pmsg').textContent=acct.key?'Saved. The leaderboard updates in a few seconds.':'Saved on this browser. Create an account key above to join the leaderboard.';
+  };
+  P.querySelectorAll('input,select').forEach(x=>x.addEventListener(x.tagName==='SELECT'||x.type==='checkbox'?'change':'input',save));
+  vis();
+}
+$('acctbtn').addEventListener('click',()=>{$('acct').showModal();acctUI();profUI()});
 $('acctClose').addEventListener('click',()=>$('acct').close());
 $('acct').addEventListener('click',e=>{if(e.target===$('acct'))$('acct').close()});
-hud();acctUI();pullNow();
+hud();acctUI();pullNow().then(()=>pushBoard());
 function score(){$('score').innerHTML=`<b>${stats.right}</b> of <b>${stats.total}</b> correct · streak <b>${stats.streak}</b>`}
 function check(){
   if(checked){next();return;}
