@@ -6,6 +6,10 @@ rules_version = '2';
 // Each update must include `prev`, the link of a hash chain (made from the account key) whose SHA-256
 // equals the stored `lock`, and must set a new lock. Only someone holding the account key can make the
 // next link, so only the owner can change their entry. XP can only rise at a realistic speed.
+//
+// Usernames: handles/{name} says which board entry owns a username. A board entry can only use a
+// username whose handles document points back at it, and a handles document can only be created in
+// the same write that points its owner's entry at it, so no two students can share a username.
 service cloud.firestore {
   match /databases/{database}/documents {
     match /accounts/{id} {
@@ -13,12 +17,14 @@ service cloud.firestore {
       allow create, update: if id.size() == 24
         && request.resource.data.keys().hasOnly(['data', 'updated'])
         && request.resource.data.data is string
-        && request.resource.data.data.size() < 20000;
+        && request.resource.data.data.size() < 60000;
       allow list, delete: if false;
     }
 
-    function boardOk(d) {
-      let fields = ['n', 'lock', 'prev', 'on', 'xp', 'wk', 'wxp', 'days', 'dlast', 'user', 'name', 'nvis', 'school', 'course', 't'];
+    function boardOk(pid, d) {
+      let fields = ['n', 'lock', 'prev', 'on', 'xp', 'wk', 'wxp', 'days', 'dlast', 'best', 'since',
+                    'disp', 'handle', 'hid', 'name', 'nvis', 'school', 'course',
+                    'pic', 'img', 'bio', 'motto', 'banner', 't'];
       return d.keys().hasOnly(fields) && d.keys().hasAll(fields)
         && d.n is int && d.lock is bytes && d.lock.size() == 32
         && d.prev is string && d.prev.size() <= 64
@@ -27,28 +33,49 @@ service cloud.firestore {
         && d.wk is string && d.wk.size() <= 10
         && d.wxp is int && d.wxp >= 0 && d.wxp <= d.xp
         && d.days is int && d.days >= 0 && d.days <= 5000
+        && d.best is int && d.best >= 0 && d.best <= 5000
         && d.dlast is string && d.dlast.size() <= 10
-        && d.user is string && d.user.size() <= 20
+        && d.since is string && d.since.size() <= 10
+        && d.disp is string && d.disp.size() <= 24
+        && d.handle is string && d.handle.size() <= 20
+        && d.hid is string && d.hid.matches('([a-z0-9_]{3,20})?')
+        && (d.hid == '' || getAfter(/databases/$(database)/documents/handles/$(d.hid)).data.owner == pid)
         && d.name is string && d.name.size() <= 51
         && d.nvis in ['', 'school', 'all']
         && d.school is string && d.school.size() <= 60
         && d.course in ['', 'I', 'I+', 'II', 'II+', 'III', 'III+', 'AP', 'AP+']
+        && d.pic is string && d.pic.matches('(p:[a-z0-9-]{1,24}|u:[0-9a-f]{8})?')
+        && d.img is string && d.img.size() <= 15000
+        && (d.img == '' || d.img.matches('data:image/jpeg;base64,[A-Za-z0-9+/=]+'))
+        && d.bio is string && d.bio.size() <= 200
+        && d.motto is string && d.motto.size() <= 80
+        && d.banner is string && d.banner.matches('(c:[a-z]{2,10}|p:[a-z0-9-]{1,24})?')
         && d.t == request.time;
     }
     match /board/{pid} {
       allow get: if true;
       allow list: if request.query.limit <= 300;
       allow create: if pid.matches('[0-9a-f]{24}')
-        && boardOk(request.resource.data)
+        && boardOk(pid, request.resource.data)
         && request.resource.data.n == 0
         && request.resource.data.prev == ''
         && request.resource.data.xp <= 100000;
-      allow update: if boardOk(request.resource.data)
+      allow update: if boardOk(pid, request.resource.data)
         && request.resource.data.n == resource.data.n + 1
         && hashing.sha256(request.resource.data.prev) == resource.data.lock
         && request.resource.data.xp <= resource.data.xp + 1000
              + (request.time.toMillis() - resource.data.t.toMillis()) / 100;
       allow delete: if false;
+    }
+    match /handles/{hid} {
+      allow get: if true;
+      allow list: if false;
+      allow create: if hid.matches('[a-z0-9_]{3,20}')
+        && request.resource.data.keys().hasOnly(['owner'])
+        && request.resource.data.owner is string
+        && getAfter(/databases/$(database)/documents/board/$(request.resource.data.owner)).data.hid == hid;
+      allow delete: if getAfter(/databases/$(database)/documents/board/$(resource.data.owner)).data.hid != hid;
+      allow update: if false;
     }
 
     match /{document=**} {

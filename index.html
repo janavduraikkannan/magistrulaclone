@@ -398,6 +398,72 @@ dialog.boarddlg h2 .gi{color:var(--gold)}
 .bxp{font-family:var(--display);font-weight:700;white-space:nowrap;text-align:right;min-width:4.5em}
 .bgap{text-align:center;color:var(--muted);font-weight:800;letter-spacing:.3em}
 @media (max-width:560px){.brow{grid-template-columns:2em minmax(0,1fr) auto}.blv,.bdays{display:none}}
+
+/* avatars, pages, profile pages, ranks */
+.av{position:relative;flex:none;width:40px;height:40px;border-radius:50%;overflow:hidden;display:inline-grid;place-items:center;color:#fff;font-weight:800;font-size:1.05rem;border:2px solid var(--line2);vertical-align:middle}
+.av i{font-style:normal}
+.av img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;background:var(--surface2)}
+.av.big{width:96px;height:96px;font-size:2.4rem;border-width:3px}
+.brow{grid-template-columns:2.2em 40px minmax(0,1fr) auto auto auto;cursor:pointer}
+.brow:hover,.brow:focus-visible{border-color:var(--accent2)}
+.bsearch{width:100%;font:inherit;font-weight:600;background:var(--surface2);color:var(--ink);border:2px solid var(--line);border-radius:8px;padding:8px 10px;margin:4px 0 2px}
+.bmore{list-style:none;text-align:center;padding:6px}
+@media (max-width:560px){.brow{grid-template-columns:1.8em 40px minmax(0,1fr) auto}}
+.golink{cursor:pointer}.golink:hover .rank,.golink:focus-visible .rank{text-decoration:underline;text-underline-offset:3px}
+body.paged>.wrap:not(#pageview),body.paged #bar{display:none!important}
+#pageview{padding-bottom:60px}
+.pvtop{display:flex;gap:10px;flex-wrap:wrap;margin:18px 0 10px}
+.pv h1{font-family:var(--display);font-size:2rem;margin:6px 0;display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.pv h1 .gi{width:40px;height:40px;color:var(--gold)}
+.pv h2{font-family:var(--display);margin:26px 0 10px}
+.muted{color:var(--muted);font-weight:600}
+.pcard{background:var(--surface);background-image:var(--paper);border:2px solid var(--line);border-radius:var(--r);box-shadow:var(--shadow);padding:14px 18px}
+.pcard p{margin:6px 0}
+.pbar{height:14px;border:2px solid var(--line);background:var(--wash);border-radius:4px;overflow:hidden;margin:6px 0}
+.pbar i{display:block;height:100%;background:repeating-linear-gradient(-45deg,var(--accent) 0 6px,color-mix(in srgb,var(--accent) 80%,var(--surface)) 6px 12px);transition:width .6s}
+.rnow h2{margin:2px 0 6px}
+.ladder{list-style:none;padding:0;margin:0;display:flex;flex-direction:column;gap:8px}
+.rk{display:grid;grid-template-columns:3em minmax(0,1fr) auto;gap:12px;align-items:center;padding:10px 14px;border:2px solid var(--line);border-radius:10px;background:var(--surface);opacity:.7}
+.rk.got{opacity:1}.rk.cur{border-color:var(--accent);box-shadow:inset 4px 0 var(--accent);opacity:1}
+.rk .rnum{font-family:var(--display);font-weight:700;font-size:1.3rem;width:2.2em;height:2.2em;border-radius:8px;display:grid;place-items:center;background:var(--surface2);border:2px solid var(--line2)}
+.rk.got .rnum{background:var(--lv1);color:var(--onlv)}
+.rk b{font-family:var(--display);font-size:1.15rem}.rk small{display:block;color:var(--muted);font-weight:600}
+.rxp{text-align:right;font-weight:800;white-space:nowrap}.rxp small{font-weight:600}
+.prof .pbanner{height:140px;border-radius:var(--r) var(--r) 0 0;background-size:cover;background-position:center;border:2px solid var(--line)}
+.phead{display:flex;gap:18px;align-items:flex-start;margin:-48px 0 0 20px;flex-wrap:wrap}
+.phead .av.big{box-shadow:0 0 0 4px var(--bg)}
+.pht{min-width:0;padding-top:54px}.pht h1{margin:0}
+.phandle{margin:2px 0;font-weight:800;color:var(--accent2)}
+.pname{margin:2px 0;font-weight:700}
+.pmotto{font-family:var(--display);font-style:italic;font-size:1.25rem;margin:16px 0 4px;padding-left:14px;border-left:4px solid var(--gold)}
+.pbio{margin:8px 0 0;white-space:pre-wrap;overflow-wrap:anywhere}
+.pstats{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:12px;margin-top:18px}
+.pst{display:flex;flex-direction:column;gap:2px;text-decoration:none;color:var(--ink)}
+.pst>small{color:var(--muted);font-weight:800;text-transform:uppercase;letter-spacing:.06em;font-size:.75rem}
+.pst b{font-family:var(--display);font-size:1.5rem}.pst span{font-weight:600}
+.rankcard:hover{border-color:var(--accent2)}
+.pdl{display:grid;grid-template-columns:max-content 1fr;gap:6px 16px;margin:18px 0 0}.pdl dt{font-weight:800;color:var(--muted)}.pdl dd{margin:0;font-weight:600}
+.badges{list-style:none;padding:0;margin:0;display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:10px}
+.bdg{display:flex;flex-direction:column;align-items:center;text-align:center;gap:2px;padding:12px 8px;border:2px solid var(--gold);border-radius:10px;background:color-mix(in srgb,var(--gold) 10%,var(--surface))}
+.bdg .gi{width:34px;height:34px;color:var(--gold)}.bdg small{color:var(--muted);font-weight:600;font-size:.8rem}
+.bdg.locked{border-color:var(--line);background:var(--surface);opacity:.5;filter:grayscale(1)}
+.warnline{color:var(--bad);font-weight:700}
+dialog.acct .picrow{display:flex;gap:14px;align-items:center;flex-wrap:wrap}
+dialog.acct .upl{display:inline-block;font-size:.95rem;padding:8px 14px}
+dialog.acct .pgh{margin:10px 0 4px;font-size:.8rem;font-weight:800;text-transform:uppercase;letter-spacing:.06em;color:var(--muted)}
+.picks{display:grid;grid-template-columns:repeat(auto-fill,minmax(78px,1fr));gap:8px}
+.pick{position:relative;border:2px solid var(--line);border-radius:10px;padding:4px;background:var(--surface2);cursor:pointer;color:var(--ink);font:inherit;font-size:.72rem;font-weight:700;display:flex;flex-direction:column;align-items:center;gap:3px}
+.pick img{width:58px;height:58px;border-radius:50%;object-fit:cover}
+.pick.on{border-color:var(--accent);box-shadow:0 0 0 2px var(--accent)}
+.pick span{line-height:1.1;text-align:center}
+dialog.acct .hwrap{display:flex;align-items:center;gap:4px}dialog.acct .hwrap b{color:var(--accent2)}
+dialog.acct .opt.bad{color:var(--bad)}dialog.acct .opt.ok{color:var(--ok)}
+dialog.acct textarea{font-family:var(--ui);font-weight:600;font-size:1rem;width:100%;background:var(--surface2);border:2px solid var(--line);border-radius:8px;padding:8px 10px;color:var(--ink);resize:vertical}
+.banners{display:flex;flex-wrap:wrap;gap:8px}
+.ban{width:54px;height:30px;border-radius:6px;border:2px solid var(--line2);cursor:pointer;padding:0;overflow:hidden}
+.ban img{width:100%;height:100%;object-fit:cover;display:block}
+.ban.on{box-shadow:0 0 0 3px var(--accent)}
+.credits2{margin-top:8px;font-size:.85rem}.credits2 summary{cursor:pointer;font-weight:800;color:var(--accent2)}.credits2 ul{margin:6px 0;padding-left:18px}
 </style>
 </head>
 <body>
@@ -460,6 +526,7 @@ dialog.boarddlg h2 .gi{color:var(--gold)}
     <select id="bScope" aria-label="Who to show"><option value="all">Everyone</option><option value="school">My school</option></select>
     <select id="bCourse" aria-label="Course"><option value="">All courses</option><option value="I">Latin I Honors</option><option value="II">Latin II Honors</option><option value="III">Latin III Honors</option><option value="AP">AP Latin</option><option value="done">Finished Latin</option></select>
   </div>
+  <input id="bSearch" class="bsearch" type="search" placeholder="Find a student by name or @username" aria-label="Find a student" autocomplete="off" spellcheck="false">
   <p class="bnote" id="bnote"></p>
   <ol class="blist" id="boardBody"></ol>
   <p class="hint" id="bfoot">Ranked by XP: 10 to 20 XP per correct answer (more on a streak). Weekly XP resets every Monday.</p>
@@ -522,6 +589,8 @@ dialog.boarddlg h2 .gi{color:var(--gold)}
     <footer class="credits">Icons by Lorc and Delapouite from <a href="https://game-icons.net" target="_blank" rel="noopener">game-icons.net</a> (CC BY 3.0). Theme switch after Adam Argyle (web.dev, Apache 2.0) with Feather Icons. Confetti by <a href="https://github.com/catdad/canvas-confetti" target="_blank" rel="noopener">canvas-confetti</a>.</footer>
   </main>
 </div>
+
+<div class="wrap" id="pageview" hidden></div>
 
 <div class="bar" id="bar">
   <div class="wrap">
@@ -1917,7 +1986,7 @@ function award(){
   const pts=10+2*(Math.min(stats.streak,6)-1),before=store.get('xp',0),after=before+pts;store.set('xp',after);
   {let w=store.get('wk',{id:'',xp:0});if(w.id!==wkId())w={id:wkId(),xp:0};w.xp+=pts;store.set('wk',w);}
   const d=store.get('days',{last:'',count:0}),t=today(),y=today(new Date(Date.now()-864e5));
-  if(d.last!==t){const c=d.last===y?d.count+1:1;store.set('days',{last:t,count:c});if(c>1)toast('delighted',`${c}-day streak! {Euge|well done}! Keep it up!`);}
+  if(d.last!==t){const c=d.last===y?d.count+1:1;store.set('days',{last:t,count:c});if(c>store.get('best',0))store.set('best',c);if(c>1)toast('delighted',`${c}-day streak! {Euge|well done}! Keep it up!`);}
   const f=document.createElement('span'),cb=$('check');f.className='xpfloat';f.textContent=`+${pts} XP`;f.style.left=(cb.offsetLeft+cb.offsetWidth+12)+'px';f.style.top=(cb.offsetTop+4)+'px';cb.parentNode.appendChild(f);setTimeout(()=>f.remove(),1400);
   const n0=rankLv(before),n1=rankLv(after);
   if(n1>n0){const r=RANKS[Math.min(n1,RANKS.length)-1];boom(true);toast('adoring',`Level ${n1}! You're now a {${r[0]}|${r[1]}}.`);}
@@ -1936,7 +2005,7 @@ function react(kind){moodTok++;setFelix(R(REACT_MOODS[kind]))}
 })();
 /* ---------- Accounts: a personal account key, synced through Firebase Firestore ---------- */
 var ACCOUNTS={projectId:'verba-791ca',apiKey:''}; // Firebase project; a web API key is optional (access is governed by firestore.rules)
-var SYNC_KEYS=['xp','days','wk','profile','topics','bFrames','bIngs','per','mode','limit','prov','tab','keyadv'];
+var SYNC_KEYS=['xp','days','wk','best','since','profile','topics','bFrames','bIngs','per','mode','limit','prov','tab','keyadv'];
 var acct={key:'',timer:null,last:null,busy:false};
 try{acct.key=localStorage.getItem('verba-account')||''}catch(e){}
 const acctReady=()=>!!ACCOUNTS.projectId;
@@ -1962,6 +2031,8 @@ function applyRemote(d){
   if(!d)return;
   const l=localData();
   if(typeof d.xp==='number')d.xp=Math.max(d.xp,l.xp||0);
+  if(typeof d.best==='number'||l.best)d.best=Math.max(d.best||0,l.best||0);
+  if(l.since&&(!d.since||l.since<d.since))d.since=l.since;
   if(l.wk&&d.wk&&(l.wk.id>d.wk.id||(l.wk.id===d.wk.id&&l.wk.xp>d.wk.xp)))d.wk=l.wk;
   if(l.days&&d.days&&(l.days.last>d.days.last||(l.days.last===d.days.last&&l.days.count>d.days.count)))d.days=l.days;
   SYNC_KEYS.forEach(k=>{if(k in d){try{localStorage.setItem('verba.'+k,JSON.stringify(d[k]))}catch(e){}}});
@@ -2014,103 +2085,195 @@ function acctUI(){
   $('kuse').onclick=async()=>{const k=normKey($('kin').value);if(k.length!==24){msg('That key looks incomplete. It should be VERBA- plus 24 letters and numbers.','bad');return}
     msg('Signing in…');try{const d=await cloudGet(k);if(!d){msg('No account uses that key. Check for typos.','bad');return}acct.key=k;try{localStorage.setItem('verba-account',k)}catch(e){}applyRemote(d);await pushNow();$('acct').close();acctUI();toast('happy','{Salvē iterum|hello again}! Your progress is loaded.')}catch(e){msg(e.message,'bad')}};
 }
-/* ---------- Optional profile and the public, live leaderboard ----------
+/* ---------- Optional profile, profile pages and the public, live leaderboard ----------
    Each account gets a public leaderboard entry at board/<id>, where the id is a hash of the secret account key,
    so the entry never reveals the key. To change an entry you must show the previous link of a hash chain built
-   from your key (checked by firestore.rules), so only the account's owner can update it. */
+   from your key (checked by firestore.rules), so only the account's owner can update it.
+   Usernames are unique: handles/<id> records which entry owns each one. Macrons and other accents are ignored
+   when comparing, so "Mārcus" and "marcus" are the same username. */
 const COURSES=[['','Not set'],['I','Latin I Honors'],['I+','Latin I Honors – completed'],['II','Latin II Honors'],['II+','Latin II Honors – completed'],['III','Latin III Honors'],['III+','Latin III Honors – completed'],['AP','AP Latin'],['AP+','AP Latin – completed']];
 const COURSE_SHORT={I:'Latin I',II:'Latin II',III:'Latin III',AP:'AP Latin'};
 const SCHOOLS=['Collierville High School'];
-const PROF0={first:'',last:'',user:'',school:'',sOther:false,nvis:'school',course:'',board:true};
-const prof=()=>Object.assign({},PROF0,store.get('profile',{}));
+const PROF0={first:'',last:'',disp:'',handle:'',school:'',sOther:false,nvis:'school',course:'',board:true,pic:'',img:'',bio:'',motto:'',banner:''};
+const normH=x=>String(x||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase();
+const fold=x=>normH(x).replace(/\s+/g,' ').trim();
+const validHid=h=>/^[a-z0-9_]{3,20}$/.test(h);
+const cleanHandle=x=>[...String(x||'').normalize('NFC').replace(/\s+/g,'_')].filter(ch=>/^[a-z0-9_]$/.test(normH(ch))).join('').slice(0,20);
+function prof(){
+  const raw=store.get('profile',{})||{};
+  if('user'in raw&&!('disp'in raw)){ // older profiles: the old username becomes the display name, and we try to keep it as the unique username
+    raw.disp=String(raw.user||'');const h=cleanHandle(raw.user);raw.handle=validHid(normH(h))?h:'';delete raw.user;store.set('profile',raw)}
+  return Object.assign({},PROF0,raw);
+}
 const fullName=p=>[p.first,p.last].map(x=>String(x||'').trim()).filter(Boolean).join(' ');
 const normSchool=x=>String(x||'').trim().toLowerCase().replace(/\s+/g,' ');
-const courseShort=c=>c?COURSE_SHORT[c.replace('+','')]+(c.endsWith('+')?' · completed':''):'';
+const courseShort=c=>c&&COURSE_SHORT[c.replace('+','')]?COURSE_SHORT[c.replace('+','')]+(c.endsWith('+')?' · completed':''):'';
+const courseLong=c=>(COURSES.find(x=>x[0]===c)||['',''])[1];
 function wkId(d=new Date()){const t=new Date(Date.UTC(d.getFullYear(),d.getMonth(),d.getDate()));const day=t.getUTCDay()||7;t.setUTCDate(t.getUTCDate()+4-day);const y=t.getUTCFullYear(),w=Math.ceil(((t-Date.UTC(y,0,1))/864e5+1)/7);return y+'-W'+String(w).padStart(2,'0')}
 const ANIMALS=[['Lupus','wolf'],['Vulpēs','fox'],['Ursus','bear'],['Aquila','eagle'],['Leō','lion'],['Equus','horse'],['Corvus','raven'],['Columba','dove'],['Delphīnus','dolphin'],['Cervus','stag'],['Noctua','owl'],['Taurus','bull'],['Lepus','hare'],['Anser','goose'],['Fēlēs','cat'],['Apis','bee']];
 const laureaTag=()=>`<span class="laurea" title="Laurea: completed AP Latin"><svg class="gi" aria-hidden="true"><use href="#gi-laurel-crown"/></svg>Laurea</span>`;
+
+/* Profile pictures: freely licensed photos from Wikimedia Commons (credits are loaded live from Commons), or your own upload. */
+const PICS=[
+  {id:'caesar',n:'Julius Caesar',g:'fig',f:['Bust of Gaius Iulius Caesar in Naples.jpg'],pos:'50% 22%'},
+  {id:'augustus',n:'Augustus',g:'fig',f:['Statue-Augustus (cropped).jpg','Statue-Augustus.jpg'],pos:'50% 8%'},
+  {id:'cicero',n:'Cicero',g:'fig',f:['M-T-Cicero.jpg'],pos:'50% 30%'},
+  {id:'trajan',n:'Trajan',g:'fig',f:['Traianus Glyptothek Munich 336.jpg'],pos:'50% 30%'},
+  {id:'hadrian',n:'Hadrian',g:'fig',f:['Bust Hadrian Musei Capitolini MC817.jpg'],pos:'50% 30%'},
+  {id:'marcus',n:'Marcus Aurelius',g:'fig',f:['Marcus Aurelius Glyptothek Munich.jpg'],pos:'50% 30%'},
+  {id:'constantine',n:'Constantine',g:'fig',f:['Rome-Capitole-StatueConstantin.jpg'],pos:'50% 30%'},
+  {id:'cleopatra',n:'Cleopatra',g:'fig',f:['Kleopatra-VII.-Altes-Museum-Berlin1.jpg'],pos:'50% 30%'},
+  {id:'lupa',n:'Romulus and Remus',g:'fig',f:['Capitoline she-wolf Musei Capitolini MC1181.jpg'],pos:'50% 50%'},
+  {id:'colosseum',n:'Colosseum',g:'place',f:['Colosseum in Rome, Italy - April 2007.jpg'],pos:'50% 50%'},
+  {id:'pantheon',n:'Pantheon',g:'place',f:['Pantheon (Rome) front 2.jpg'],pos:'50% 50%'},
+  {id:'forum',n:'Roman Forum',g:'place',f:['Forum romanum 6k (5760x2097).jpg'],pos:'50% 50%'},
+  {id:'arch',n:'Arch of Constantine',g:'place',f:['Arch of Constantine (Rome) - South side, from Via Triumphalis.jpg'],pos:'50% 50%'},
+  {id:'pontdugard',n:'Pont du Gard',g:'place',f:['Pont du Gard BLS.jpg'],pos:'50% 50%'},
+  {id:'hadwall',n:'Hadrian’s Wall',g:'place',f:['Milecastle 39 on Hadrian\'s Wall.jpg'],pos:'50% 50%'}];
+const PIC=Object.fromEntries(PICS.map(p=>[p.id,p]));
+const BANNERS=[['c:purple','#66023C','Tyrian purple'],['c:red','#A9442A','Roman red'],['c:teal','#2E5E66','Teal'],['c:gold','#A87A22','Gold'],['c:green','#5A7A2C','Laurel green'],['c:stone','#8C8273','Marble grey']];
+const fileURL=(f,w)=>'https://commons.wikimedia.org/wiki/Special:FilePath/'+encodeURIComponent(f.replace(/ /g,'_'))+'?width='+(w||250);
+var commons={info:null,loading:null};
+function loadCommons(){ // which preset files exist, plus each one's author and license, straight from Wikimedia Commons
+  if(commons.loading)return commons.loading;
+  const files=[...new Set(PICS.flatMap(p=>p.f))];
+  const u='https://commons.wikimedia.org/w/api.php?action=query&format=json&origin=*&prop=imageinfo&iiprop=url|extmetadata&iiurlwidth=330&iiextmetadatafilter=Artist|LicenseShortName&titles='+encodeURIComponent(files.map(f=>'File:'+f).join('|'));
+  return commons.loading=fetch(u).then(r=>r.json()).then(j=>{
+    const norm={};((j.query||{}).normalized||[]).forEach(x=>norm[x.to]=x.from);
+    const info={};Object.values((j.query||{}).pages||{}).forEach(pg=>{const from=(norm[pg.title]||pg.title).replace(/^File:/,'');
+      if(pg.missing!==undefined||!pg.imageinfo){info[from]=null;return}
+      const ii=pg.imageinfo[0],m=ii.extmetadata||{},strip=h=>{const d=document.createElement('div');d.innerHTML=h||'';return d.textContent.trim().replace(/\s+/g,' ')};
+      info[from]={thumb:ii.thumburl,page:ii.descriptionurl,artist:strip((m.Artist||{}).value)||'Unknown',lic:strip((m.LicenseShortName||{}).value)||'see file page'}});
+    commons.info=info;return info}).catch(()=>{commons.info={};return commons.info});
+}
+const picFile=q=>{const i=commons.info;if(!i)return q.f[0];return q.f.find(f=>i[f])||q.f.find(f=>!(f in i))||null};
+function avErr(img){const alt=(img.dataset.alt||'').split('|').filter(Boolean);if(alt.length){img.dataset.alt=alt.slice(1).join('|');img.src=fileURL(alt[0])}else img.remove()}
+const avColor=k=>['#A9442A','#2E5E66','#946A10','#5A7A2C','#8E3B4F','#5B4E8C'][parseInt(String(k||'0').replace(/[^0-9a-f]/g,'').slice(0,4)||'0',16)%6];
+var picCache=new Map();try{Object.entries(JSON.parse(localStorage.getItem('verba-pics')||'{}')).forEach(([k,v])=>picCache.set(k,v))}catch(e){}
+function cachePic(k,v){picCache.delete(k);picCache.set(k,v);while(picCache.size>40)picCache.delete(picCache.keys().next().value);try{localStorage.setItem('verba-pics',JSON.stringify(Object.fromEntries(picCache)))}catch(e){}}
+function avatarHTML(r,cls){
+  const label=String(r.disp||r.user||r.handle||'?').trim(),ini=esc(([...label][0]||'?').toUpperCase()),p=String(r.pic||''),c=`av ${cls||''}" style="background:${avColor(r.pid)}`;
+  if(p.startsWith('p:')&&PIC[p.slice(2)]){const q=PIC[p.slice(2)],f=picFile(q)||q.f[0];return`<span class="${c}"><i>${ini}</i><img src="${fileURL(f)}" data-alt="${esc(q.f.filter(x=>x!==f).join('|'))}" style="object-position:${q.pos}" alt="" loading="lazy" onerror="avErr(this)"></span>`}
+  if(p.startsWith('u:')){const src=r.img||picCache.get(r.pid+p);return`<span class="${c}" data-pid="${r.pid}" data-pv="${p}"><i>${ini}</i>${src?`<img src="${src}" alt="">`:''}</span>`}
+  return`<span class="${c}"><i>${ini}</i></span>`;
+}
+async function fillAvatars(root){ // uploaded pictures are kept out of the leaderboard query and fetched only for rows on screen
+  const need=[...root.querySelectorAll('.av[data-pid]')].filter(a=>!a.querySelector('img'));let i=0;
+  const work=async()=>{while(i<need.length){const a=need[i++],k=a.dataset.pid+a.dataset.pv;let src=picCache.get(k);
+    if(!src){try{const r=await fetch(FS()+'/board/'+a.dataset.pid+'?mask.fieldPaths=img'+(ACCOUNTS.apiKey?'&key='+ACCOUNTS.apiKey:''));if(r.ok){src=fromFs((await r.json()).fields).img||'';if(src)cachePic(k,src)}}catch(e){}}
+    if(src&&/^data:image\/jpeg;base64,/.test(src)){const im=new Image();im.alt='';im.src=src;a.appendChild(im)}}};
+  await Promise.all([work(),work(),work(),work()]);
+}
+async function fileToAvatar(file){
+  const url=URL.createObjectURL(file),img=new Image();img.src=url;await img.decode();
+  for(const S of[128,96,72]){const c=document.createElement('canvas');c.width=c.height=S;const x=c.getContext('2d');x.fillStyle='#fff';x.fillRect(0,0,S,S);
+    const m=Math.min(img.naturalWidth,img.naturalHeight);x.drawImage(img,(img.naturalWidth-m)/2,(img.naturalHeight-m)/2,m,m,0,0,S,S);
+    for(let q=.85;q>.35;q-=.1){const d=c.toDataURL('image/jpeg',q);if(d.length<=15000){URL.revokeObjectURL(url);return d}}}
+  URL.revokeObjectURL(url);throw new Error('That picture is too detailed to shrink enough. Try another one.');
+}
 
 async function sha(x){return new Uint8Array(await crypto.subtle.digest('SHA-256',new TextEncoder().encode(x)))}
 const hex=b=>[...b].map(x=>x.toString(16).padStart(2,'0')).join('');
 const b64=b=>btoa(String.fromCharCode(...b));
 const FS=()=>`https://firestore.googleapis.com/v1/projects/${ACCOUNTS.projectId}/databases/(default)/documents`;
+const DOCN=p=>`projects/${ACCOUNTS.projectId}/databases/(default)/documents/${p}`;
 const qk=()=>ACCOUNTS.apiKey?`?key=${ACCOUNTS.apiKey}`:'';
 const fsv=v=>typeof v==='boolean'?{booleanValue:v}:typeof v==='number'?{integerValue:String(v)}:v instanceof Uint8Array?{bytesValue:b64(v)}:{stringValue:String(v)};
 const fromFs=f=>{const o={};for(const[k,v]of Object.entries(f||{}))o[k]='integerValue'in v?Number(v.integerValue):'booleanValue'in v?v.booleanValue:'stringValue'in v?v.stringValue:'timestampValue'in v?v.timestampValue:'bytesValue'in v?v.bytesValue:'doubleValue'in v?v.doubleValue:null;return o};
-var board={pid:'',pidFor:'',n:null,sig:'',busy:false,again:false,rows:null,at:0,err:'',lerr:'',view:'all',tick:null,loading:false};
+async function fsGet(path){const r=await fetch(FS()+'/'+path+qk());if(r.status===404)return null;if(!r.ok)throw new Error(r.status===403?'The leaderboard isn’t switched on yet (its security rules need publishing).':'Couldn’t reach the leaderboard ('+r.status+').');const j=await r.json();return Object.assign(fromFs(j.fields),{pid:j.name.split('/').pop()})}
+var board={pid:'',pidFor:'',n:null,hid:'',handle:'',taken:'',sig:'',busy:false,again:false,rows:null,at:0,err:'',lerr:'',view:'all',tick:null,loading:false};
 async function myPid(){if(!acct.key)return '';if(board.pidFor!==acct.key){board.pid=hex(await sha('verba-board:'+acct.key)).slice(0,24);board.pidFor=acct.key;board.n=null;board.sig=''}return board.pid}
 const chainLink=async i=>hex(await sha('verba-chain:'+acct.key+':'+i));
 function boardFields(){
-  const p=prof(),d=store.get('days',{last:'',count:0}),w=store.get('wk',{id:'',xp:0}),cw=wkId(),on=p.board!==false;
-  const school=String(p.school||'').trim().slice(0,60),name=fullName(p).slice(0,50);
-  const nvis=p.nvis==='all'?'all':(p.nvis==='school'&&school)?'school':'';
-  return{on,xp:Math.max(0,Math.floor(store.get('xp',0))),wk:cw,wxp:w.id===cw?Math.min(w.xp,store.get('xp',0)):0,days:Math.min(d.count||0,5000),dlast:d.last||'',
-    user:on?String(p.user||'').trim().slice(0,20):'',name:on&&nvis?name:'',nvis:on&&name?nvis:'',school:on?school:'',course:on?(p.course||''):''};
+  const p=prof(),d=store.get('days',{last:'',count:0}),w=store.get('wk',{id:'',xp:0}),cw=wkId(),on=p.board!==false,xp=Math.max(0,Math.floor(store.get('xp',0)));
+  const school=String(p.school||'').trim().slice(0,60),name=fullName(p).slice(0,50),nvis=p.nvis==='all'?'all':(p.nvis==='school'&&school)?'school':'';
+  let handle=String(p.handle||'').normalize('NFC').slice(0,20),hid=normH(handle);if(!validHid(hid)){hid='';handle=''}
+  if(hid&&board.taken===hid){hid=board.hid;handle=board.handle}
+  const pic=on&&/^(p:[a-z0-9-]{1,24}|u:[0-9a-f]{8})$/.test(p.pic)&&(!p.pic.startsWith('u:')||p.img)?p.pic:'';
+  return{on,xp,wk:cw,wxp:w.id===cw?Math.min(w.xp,xp):0,days:Math.min(d.count||0,5000),dlast:d.last||'',best:Math.min(Math.max(store.get('best',0),d.count||0),5000),since:String(store.get('since','')).slice(0,10),
+    disp:on?String(p.disp||'').trim().slice(0,24):'',handle,hid,name:on&&nvis?name:'',nvis:on&&name?nvis:'',school:on?school:'',course:on?(p.course||''):'',
+    pic,img:pic.startsWith('u:')?p.img:'',bio:on?String(p.bio||'').trim().slice(0,200):'',motto:on?String(p.motto||'').trim().slice(0,80):'',banner:on&&/^(c:[a-z]{2,10}|p:[a-z0-9-]{1,24})$/.test(p.banner)?p.banner:''};
 }
+async function readMine(pid){const d=await fsGet('board/'+pid);if(!d){board.n=-1;board.hid='';board.handle=''}else{board.n=d.n;board.hid=d.hid||'';board.handle=d.handle||''}}
 async function pushBoard(){
   if(!acct.key||!acctReady())return;
   if(board.busy){board.again=true;return}
   board.busy=true;
   try{
-    const pid=await myPid(),f=boardFields(),sig=JSON.stringify(f);
+    if(!store.get('since',''))store.set('since',today());
+    const pid=await myPid();let f=boardFields(),sig=JSON.stringify(f);
     if(sig!==board.sig)for(let attempt=0;attempt<2;attempt++){
-      if(board.n===null){const r=await fetch(FS()+'/board/'+pid+qk());
-        if(r.status===404)board.n=-1;else if(r.ok)board.n=fromFs((await r.json()).fields).n;else throw new Error(r.status===403?'The leaderboard isn\u2019t switched on yet (its security rules need publishing).':'Couldn\u2019t reach the leaderboard ('+r.status+').')}
-      const create=board.n<0,n=create?0:board.n+1;
-      const doc=Object.assign({},f,{n,prev:create?'':await chainLink(board.n),lock:await sha(await chainLink(n))}),fields={};
+      if(board.n===null)await readMine(pid);
+      f=boardFields();sig=JSON.stringify(f);
+      let claim=false;
+      if(f.hid&&f.hid!==board.hid){const h=await fsGet('handles/'+f.hid);
+        if(h&&h.owner!==pid){board.taken=f.hid;f=boardFields();sig=JSON.stringify(f)}else claim=!h}
+      const create=board.n<0,n=create?0:board.n+1,doc=Object.assign({},f,{n,prev:create?'':await chainLink(board.n),lock:await sha(await chainLink(n))}),fields={};
       for(const[k,v]of Object.entries(doc))fields[k]=fsv(v);
-      const r=await fetch(FS()+':commit'+qk(),{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({writes:[{update:{name:`projects/${ACCOUNTS.projectId}/databases/(default)/documents/board/${pid}`,fields},updateTransforms:[{fieldPath:'t',setToServerValue:'REQUEST_TIME'}],currentDocument:{exists:!create}}]})});
-      if(r.ok){board.n=n;board.sig=sig;board.err='';break}
-      board.n=null; // another device may have updated first: read again and retry once
+      const writes=[{update:{name:DOCN('board/'+pid),fields},updateTransforms:[{fieldPath:'t',setToServerValue:'REQUEST_TIME'}],currentDocument:{exists:!create}}];
+      if(claim)writes.push({update:{name:DOCN('handles/'+f.hid),fields:{owner:{stringValue:pid}}},currentDocument:{exists:false}});
+      if(board.hid&&board.hid!==f.hid)writes.push({delete:DOCN('handles/'+board.hid)});
+      const r=await fetch(FS()+':commit'+qk(),{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({writes})});
+      if(r.ok){board.n=n;board.sig=sig;board.hid=f.hid;board.handle=f.handle;board.err='';break}
+      board.n=null; // another device may have updated first, or someone grabbed the username a moment ago: read again and retry once
       if(attempt)board.err=r.status===403?'The leaderboard refused your update. Its security rules may not be published yet.':'Updating your leaderboard entry failed ('+r.status+').';
     }
   }catch(e){board.err=e.message}
-  finally{board.busy=false;if(board.again){board.again=false;setTimeout(pushBoard,1500)}if($('board').open)loadBoard()}
+  finally{board.busy=false;if(board.again){board.again=false;setTimeout(pushBoard,1500)}if($('board').open)loadBoard();try{handleStatus()}catch(e){}}
 }
+const BOARD_FIELDS=['on','xp','wk','wxp','days','dlast','best','since','disp','user','handle','hid','name','nvis','school','course','pic','bio','motto','banner','t'];
 async function loadBoard(){
   if(board.loading)return;board.loading=true;
   try{
-    const r=await fetch(FS()+':runQuery'+qk(),{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({structuredQuery:{from:[{collectionId:'board'}],orderBy:[{field:{fieldPath:'xp'},direction:'DESCENDING'}],limit:300}})});
-    if(!r.ok)throw new Error(r.status===403?'The leaderboard isn\u2019t switched on yet (its security rules need publishing).':'Couldn\u2019t load the leaderboard ('+r.status+').');
+    const r=await fetch(FS()+':runQuery'+qk(),{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({structuredQuery:{select:{fields:BOARD_FIELDS.map(f=>({fieldPath:f}))},from:[{collectionId:'board'}],orderBy:[{field:{fieldPath:'xp'},direction:'DESCENDING'}],limit:300}})});
+    if(!r.ok)throw new Error(r.status===403?'The leaderboard isn’t switched on yet (its security rules need publishing).':'Couldn’t load the leaderboard ('+r.status+').');
     const j=await r.json();
     board.rows=j.filter(x=>x.document).map(x=>Object.assign(fromFs(x.document.fields),{pid:x.document.name.split('/').pop()}));
     board.at=Date.now();board.lerr='';
   }catch(e){board.lerr=e.message}
   board.loading=false;renderBoard();
 }
-function whoHTML(r,viewerSchool){
-  const showName=r.name&&(r.nvis==='all'||(r.nvis==='school'&&viewerSchool&&normSchool(r.school)===viewerSchool));
-  const a=ANIMALS[parseInt(r.pid.slice(0,4),16)%ANIMALS.length];
-  let main=r.user?esc(r.user):showName?esc(r.name):`Anonymous <span class="lw" tabindex="0" data-en="${a[1]}">${a[0]}</span>`;
-  if(r.user&&showName)main+=` <span class="rn">(${esc(r.name)})</span>`;
-  const sub=[r.school?esc(r.school):'',courseShort(r.course)].filter(Boolean).join(' · ');
-  return`<b>${main}</b>${r.course==='AP+'?' '+laureaTag():''}${r.pid===board.pid&&acct.key?'<span class="youtag">you</span>':''}${sub?`<small>${sub}</small>`:''}`;
+const nameVisible=(r,vs)=>!!r.name&&(r.nvis==='all'||(r.nvis==='school'&&!!vs&&normSchool(r.school)===vs));
+function mainName(r,vs){const a=ANIMALS[parseInt(String(r.pid).slice(0,4),16)%ANIMALS.length]||ANIMALS[0];
+  return r.disp||r.user?esc(r.disp||r.user):r.handle?'@'+esc(r.handle):nameVisible(r,vs)?esc(r.name):`Anonymous <span class="lw" tabindex="0" data-en="${a[1]}">${a[0]}</span>`}
+function whoHTML(r,vs){
+  const nm=nameVisible(r,vs)&&(r.disp||r.user||r.handle)&&fold(r.name)!==fold(r.disp||r.user||'')?` <span class="rn">(${esc(r.name)})</span>`:'';
+  const sub=[r.handle?'@'+esc(r.handle):'',r.school?esc(r.school):'',courseShort(r.course)].filter(Boolean).join(' · ');
+  return`<b>${mainName(r,vs)}</b>${nm}${r.course==='AP+'?' '+laureaTag():''}${r.pid===board.pid&&acct.key?'<span class="youtag">you</span>':''}${sub?`<small>${sub}</small>`:''}`;
 }
+const profKey=r=>r.hid?'u/'+r.hid:'p/'+r.pid;
+const streakOf=r=>{const td=today(),yd=today(new Date(Date.now()-864e5));return(r.dlast===td||r.dlast===yd)?r.days:0};
 function renderBoard(){
   const L=$('boardBody');if(!L)return;
-  const p=prof(),vs=normSchool(p.school),cw=wkId(),td=today(),yd=today(new Date(Date.now()-864e5));
-  const week=board.view==='week',scope=$('bScope').value,cf=$('bCourse').value,me=acct.key?board.pid:'';
-  $('bScope').querySelector('[value=school]').disabled=!vs;if(!vs&&scope==='school')$('bScope').value='all';
-  const live=!board.lerr&&board.at;$('blive').className='live'+(live?'':' off');
+  const p=prof(),vs=normSchool(p.school),cw=wkId(),q=fold($('bSearch').value).replace(/^@/,'');
+  const week=board.view==='week',cf=$('bCourse').value,me=acct.key?board.pid:'';
+  $('bScope').querySelector('[value=school]').disabled=!vs;if(!vs&&$('bScope').value==='school')$('bScope').value='all';
+  $('blive').className='live'+(!board.lerr&&board.at?'':' off');
   if(board.lerr){$('bnote').innerHTML=`<span style="color:var(--bad)">${esc(board.lerr)}</span>`;L.innerHTML='';return}
   if(!board.rows){$('bnote').textContent='Loading…';L.innerHTML='';return}
-  const sc=r=>week?(r.wk===cw?r.wxp:0):r.xp;
-  let rows=board.rows.filter(r=>r.on!==false&&sc(r)>0);
-  if($('bScope').value==='school')rows=rows.filter(r=>normSchool(r.school)===vs);
-  if(cf==='done')rows=rows.filter(r=>/\+$/.test(r.course||''));else if(cf)rows=rows.filter(r=>r.course===cf);
+  const sc=r=>q?r.xp:week?(r.wk===cw?r.wxp:0):r.xp;
+  let rows=board.rows.filter(r=>r.on!==false&&(q||sc(r)>0));
+  if(q)rows=rows.filter(r=>[r.disp,r.user,r.handle,nameVisible(r,vs)?r.name:''].some(x=>x&&fold(x).includes(q)));
+  else{if($('bScope').value==='school')rows=rows.filter(r=>normSchool(r.school)===vs);
+    if(cf==='done')rows=rows.filter(r=>/\+$/.test(r.course||''));else if(cf)rows=rows.filter(r=>r.course===cf)}
   rows.sort((a,b)=>sc(b)-sc(a)||String(a.t).localeCompare(String(b.t)));
+  const all=board.rows.filter(r=>r.on!==false&&r.xp>0).sort((a,b)=>b.xp-a.xp),pos=r=>q?all.indexOf(r):rows.indexOf(r);
   const mi=rows.findIndex(r=>r.pid===me);
-  const row=(r,i)=>{const lv=rankLv(r.xp),rk=RANKS[Math.min(lv,RANKS.length)-1],days=(r.dlast===td||r.dlast===yd)?r.days:0;
-    return`<li class="brow${r.pid===me?' me':''}${i<3?' p'+(i+1):''}"><span class="bpos">${i+1}</span><div class="bwho">${whoHTML(r,vs)}</div><span class="blv">Lv ${lv} <span class="lw" tabindex="0" data-en="${rk[1]}">${rk[0]}</span></span><span class="bdays" title="Day streak">${days?`<svg class="gi" aria-hidden="true"><use href="#gi-fluffy-flame"/></svg>${days}`:''}</span><span class="bxp">${sc(r).toLocaleString()} XP</span></li>`};
+  const row=r=>{const i=pos(r),lv=rankLv(r.xp),rk=RANKS[Math.min(lv,RANKS.length)-1],days=streakOf(r);
+    return`<li class="brow${r.pid===me?' me':''}${i>=0&&i<3&&!q?' p'+(i+1):''}" data-go="${profKey(r)}" tabindex="0" role="link" aria-label="Open profile"><span class="bpos">${i>=0?i+1:'–'}</span>${avatarHTML(r)}<div class="bwho">${whoHTML(r,vs)}</div><span class="blv">Lv ${lv} <span class="lw" tabindex="0" data-en="${rk[1]}">${rk[0]}</span></span><span class="bdays" title="Day streak">${days?`<svg class="gi" aria-hidden="true"><use href="#gi-fluffy-flame"/></svg>${days}`:''}</span><span class="bxp">${sc(r).toLocaleString()} XP</span></li>`};
   const SHOW=100;let h=rows.slice(0,SHOW).map(row).join('');
-  if(mi>=SHOW)h+=`<li class="bgap" aria-hidden="true">···</li>`+row(rows[mi],mi);
-  L.innerHTML=h||`<li class="hint" style="padding:10px">${week?'Nobody has earned XP this week yet. Be the first!':'Nobody here yet.'}</li>`;
+  if(!q&&mi>=SHOW)h+=`<li class="bgap" aria-hidden="true">···</li>`+row(rows[mi]);
+  const hq=cleanHandle($('bSearch').value.replace(/^@/,'')),hid=normH(hq);
+  if(q&&!rows.some(r=>r.hid===hid)&&validHid(hid))h+=`<li class="bmore"><button class="kbtn" type="button" data-go="u/${hid}">Look up @${esc(hq)}</button></li>`;
+  L.innerHTML=h||`<li class="hint" style="padding:10px">${q?'Nobody matches that search.':week?'Nobody has earned XP this week yet. Be the first!':'Nobody here yet.'}</li>`;
+  fillAvatars(L);
   let note='';
-  if(!acct.key)note='Create an account key (the Account button) to join the leaderboard.';
+  if(q)note=`${rows.length} found. Click anyone to see their profile.`;
+  else if(!acct.key)note='Create an account key (the Account button) to join the leaderboard.';
   else if(board.err)note=`<span style="color:var(--bad)">${esc(board.err)}</span>`;
-  else if(p.board===false)note='You\u2019re hidden from the leaderboard. Turn it back on in Account.';
-  else if(mi===0)note=`You\u2019re in first place! <span class="lw" tabindex="0" data-en="well done!">Euge</span>!`;
-  else if(mi>0)note=`You\u2019re #${mi+1}. ${(sc(rows[mi-1])-sc(rows[mi])+1).toLocaleString()} XP to move up a place.`;
+  else if(p.board===false)note='You’re hidden from the leaderboard. Turn it back on in Account.';
+  else if(mi===0)note=`You’re in first place! <span class="lw" tabindex="0" data-en="well done!">Euge</span>!`;
+  else if(mi>0)note=`You’re #${mi+1}. ${(sc(rows[mi-1])-sc(rows[mi])+1).toLocaleString()} XP to move up a place.`;
   else note=week?'Get an answer right this week to appear here.':'Get an answer right to appear here.';
   $('bnote').innerHTML=note;
 }
@@ -2120,50 +2283,193 @@ function boardTick(){
   $('bage').textContent=board.lerr?'offline':!board.at?'connecting':s<5?'live':'live · '+s+'s ago';
   if(document.visibilityState==='visible'&&(!board.at||Date.now()-board.at>30000))loadBoard();
 }
-$('boardbtn').addEventListener('click',()=>{$('board').showModal();renderBoard();loadBoard();pushBoard();clearInterval(board.tick);board.tick=setInterval(boardTick,1000)});
+function openBoard(){$('board').showModal();renderBoard();loadBoard();pushBoard();clearInterval(board.tick);board.tick=setInterval(boardTick,1000)}
+$('boardbtn').addEventListener('click',openBoard);
 $('boardClose').addEventListener('click',()=>$('board').close());
 $('board').addEventListener('click',e=>{if(e.target===$('board'))$('board').close()});
 document.querySelector('#board .btabs').addEventListener('click',e=>{const v=e.target.dataset&&e.target.dataset.v;if(!v)return;board.view=v;document.querySelectorAll('#board .btabs button').forEach(b=>b.setAttribute('aria-selected',b.dataset.v===v));renderBoard()});
-$('bScope').addEventListener('change',renderBoard);$('bCourse').addEventListener('change',renderBoard);
+$('bScope').addEventListener('change',renderBoard);$('bCourse').addEventListener('change',renderBoard);$('bSearch').addEventListener('input',renderBoard);
+const goTo=k=>{document.querySelectorAll('dialog[open]').forEach(d=>d.close());page.inside=true;location.hash=k};
+$('boardBody').addEventListener('click',e=>{if(e.target.closest('.lw'))return;const g=e.target.closest('[data-go]');if(g)goTo(g.dataset.go)});
+$('boardBody').addEventListener('keydown',e=>{if(e.key==='Enter'&&e.target.dataset.go)goTo(e.target.dataset.go)});
 document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible'&&$('board').open)loadBoard()});
 
+/* ---------- Pages: profile pages (#u/username) and the ranks page (#ranks) ---------- */
+var page={inside:false};
+const RANK_INFO=['Every Latinist starts here.','A new recruit, just signed up for the legion.','A full soldier of the legion.','Leader of a decuria, a squad of ten.','Commands a century of about 80 soldiers.','A senior officer of the legion.','Commands a whole legion.','A high judge and magistrate of Rome.','One of the two consuls, the highest office of the Republic.','Emperor, the top rank on Verba. Levels keep going from here.'];
+function lvlProgress(xp){const n=rankLv(xp),a=lvlXP(n),b=lvlXP(n+1);return{n,a,b,pct:Math.max(0,Math.min(100,Math.round(100*(xp-a)/(b-a)))),left:b-xp}}
+const bar=(pct,label)=>`<div class="pbar" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="${pct}" aria-label="${esc(label)}"><i style="width:${pct}%"></i></div>`;
+const pvTop=()=>`<div class="pvtop"><button class="btn quiet" type="button" id="pvBack">← Back</button></div>`;
+function pvBind(){const b=$('pvBack');if(b)b.onclick=()=>{if(page.inside&&history.length>1){history.back()}else{history.replaceState(null,'',location.pathname+location.search);route()}}}
+function renderRanks(){
+  const xp=store.get('xp',0),P=lvlProgress(xp),r=RANKS[Math.min(P.n,RANKS.length)-1],top=lvlXP(RANKS.length),ov=Math.min(100,Math.round(100*xp/top));
+  const ladder=RANKS.map((k,i)=>{const lv=i+1,need=lvlXP(lv),got=xp>=need,cur=Math.min(P.n,RANKS.length)===lv;
+    return`<li class="rk${got?' got':''}${cur?' cur':''}"><span class="rnum">${lv}</span><div><b class="lw" tabindex="0" data-en="${k[1]}">${k[0]}</b> <span class="muted">${k[1]}</span>${cur?'<span class="youtag">you</span>':''}<small>${RANK_INFO[i]}</small>${cur&&lv<RANKS.length?bar(P.pct,'Progress to the next rank'):''}</div><span class="rxp">${need.toLocaleString()} XP<small>${got?'reached ✓':(need-xp).toLocaleString()+' to go'}</small></span></li>`}).join('');
+  const more=[1,2,3].map(k=>`Lv ${RANKS.length+k} at ${lvlXP(RANKS.length+k).toLocaleString()} XP`).join(', ');
+  $('pageview').innerHTML=pvTop()+`<section class="pv ranks">
+    <h1><svg class="gi" aria-hidden="true"><use href="#gi-laurel-crown"/></svg>Ranks &amp; levels</h1>
+    <div class="pcard rnow"><div><p class="muted">You are</p><h2><span class="lw" tabindex="0" data-en="${r[1]}">${r[0]}</span> <span class="muted">· Level ${P.n}</span></h2>
+      <p><b>${xp.toLocaleString()} XP</b> · ${P.left.toLocaleString()} XP to Level ${P.n+1} (${lvlXP(P.n+1).toLocaleString()} XP)</p>${bar(P.pct,'Progress to the next level')}
+      <p class="muted" style="margin-top:14px">${P.n>=RANKS.length?'You’ve reached Imperātor, the top rank. Every level from here is pure glory.':`Road to Imperātor: ${xp.toLocaleString()} of ${top.toLocaleString()} XP`}</p>${P.n>=RANKS.length?'':bar(ov,'Progress to Imperātor')}</div></div>
+    <h2>How XP works</h2>
+    <div class="pcard"><p>Every answer that counts as correct earns XP. The first one in a row earns <b>10 XP</b>, and each correct answer after that in the same run earns 2 more: 12, 14, 16, 18, then <b>20 XP</b> for every answer from the sixth in a row on. A wrong answer resets the run to 10.</p>
+      <p>Answers don’t earn XP if they’re wrong, or if you asked Fēlix a question that was too leading before answering. Questions after you answer never cost anything.</p>
+      <p>Each level needs 100 more XP than the one before: Level <i>n</i> starts at 50 × <i>n</i> × (<i>n</i> − 1) XP, so 100 XP for Level 2, 300 for Level 3, 600 for Level 4 and so on. Your <b>day streak</b> counts days in a row with at least one correct answer, and <b>weekly XP</b> on the leaderboard resets every Monday.</p></div>
+    <h2>All ranks</h2>
+    <ol class="ladder">${ladder}</ol>
+    <p class="muted">After Imperātor the levels keep going: ${more}, and so on.</p></section>`;
+  pvBind();
+}
+function badgesFor(r,place,wplace){
+  const lv=rankLv(r.xp),best=Math.max(r.best||0,r.days||0);
+  const B=[['laurel-crown','Laurea','Completed AP Latin',r.course==='AP+'],['trophy','Victor hebdomadis','#1 on this week’s leaderboard',wplace===1],['trophy','Podium','Top 3 of all time',place>0&&place<=3],
+    ['centurion-helmet','Centuriō','Reached Level 5',lv>=5],['centurion-helmet','Cōnsul','Reached Level 9',lv>=9],['laurel-crown','Imperātor','Reached Level 10',lv>=10],
+    ['fluffy-flame','Trīduum','A 3-day streak',best>=3],['fluffy-flame','Septimāna','A 7-day streak',best>=7],['fluffy-flame','Mēnsis','A 30-day streak',best>=30],['fluffy-flame','Centum diēs','A 100-day streak',best>=100],
+    ['round-star','Mīlle','1,000 XP',r.xp>=1000],['round-star','Decem mīlia','10,000 XP',r.xp>=10000]];
+  return B;
+}
+async function showProfile(key){
+  const pv=$('pageview');pv.innerHTML=pvTop()+'<section class="pv"><p class="muted">Loading profile…</p></section>';pvBind();
+  try{
+    let pid;
+    if(key.startsWith('u/')){const hid=normH(key.slice(2));const h=validHid(hid)?await fsGet('handles/'+hid):null;
+      if(!h){pv.innerHTML=pvTop()+`<section class="pv"><h1>No one here</h1><p>No student has the username <b>@${esc(key.slice(2))}</b>.</p></section>`;pvBind();return}pid=h.owner}
+    else pid=key.slice(2).replace(/[^0-9a-f]/g,'');
+    const me=acct.key?await myPid():'',own=pid===me;
+    let r=await fsGet('board/'+pid);
+    if(own){r=Object.assign({},r||{},boardFields(),{pid});if(r.pic.startsWith('u:'))r.img=prof().img}
+    if(!r){pv.innerHTML=pvTop()+`<section class="pv"><h1>No profile yet</h1><p>${own?'Your profile appears once you’ve signed in with an account key and the leaderboard has your entry.':'This profile doesn’t exist.'}</p></section>`;pvBind();return}
+    if(r.on===false&&!own){pv.innerHTML=pvTop()+`<section class="pv"><h1>Hidden profile</h1><p>This student has chosen not to appear on the leaderboard.</p></section>`;pvBind();return}
+    if(!board.rows)await loadBoard();
+    const vs=normSchool(prof().school),rows=(board.rows||[]).filter(x=>x.on!==false&&x.xp>0).map(x=>x.pid===pid?Object.assign({},x,{xp:r.xp,wxp:r.wxp,wk:r.wk}):x);
+    if(!rows.some(x=>x.pid===pid)&&r.xp>0)rows.push(r);
+    const cw=wkId(),place=rows.slice().sort((a,b)=>b.xp-a.xp).findIndex(x=>x.pid===pid)+1;
+    const wrows=rows.filter(x=>x.wk===cw&&x.wxp>0).sort((a,b)=>b.wxp-a.wxp),wplace=wrows.findIndex(x=>x.pid===pid)+1;
+    const srows=r.school?rows.filter(x=>normSchool(x.school)===normSchool(r.school)).sort((a,b)=>b.xp-a.xp):[],splace=srows.findIndex(x=>x.pid===pid)+1;
+    const P=lvlProgress(r.xp||0),rk=RANKS[Math.min(P.n,RANKS.length)-1],days=streakOf(r),best=Math.max(r.best||0,days);
+    const bn=String(r.banner||''),bc=BANNERS.find(b=>b[0]===bn),bp=bn.startsWith('p:')&&PIC[bn.slice(2)];
+    const bstyle=bp?`background-image:url('${fileURL(picFile(bp)||bp.f[0],960)}')`:`background:${bc?bc[1]:avColor(pid)}`;
+    const nameLine=nameVisible(r,vs)||(own&&r.name)?`<p class="pname">${esc(r.name)}${own&&r.nvis!=='all'?` <span class="muted">(${r.nvis==='school'?'only your school sees this':'hidden'})</span>`:''}</p>`:'';
+    const badges=badgesFor(r,place,wplace),earned=badges.filter(b=>b[3]),locked=own?badges.filter(b=>!b[3]):[];
+    const bdg=b=>`<li class="bdg${b[3]?'':' locked'}" title="${esc(b[2])}"><svg class="gi" aria-hidden="true"><use href="#gi-${b[0]}"/></svg><b>${b[1]}</b><small>${b[2]}</small></li>`;
+    const link=location.origin+location.pathname+'#'+profKey(r);
+    pv.innerHTML=`<div class="pvtop"><button class="btn quiet" type="button" id="pvBack">← Back</button><button class="btn quiet" type="button" id="pvCopy">Copy profile link</button>${own?'<button class="btn" type="button" id="pvEdit">Edit profile</button>':''}</div>
+    <section class="pv prof">
+      <div class="pbanner" style="${bstyle}"></div>
+      <div class="phead">${avatarHTML(r,'big')}<div class="pht"><h1>${mainName(r,vs)} ${r.course==='AP+'?laureaTag():''}${own?'<span class="youtag">you</span>':''}</h1>${r.handle?`<p class="phandle">@${esc(r.handle)}</p>`:own?'<p class="phandle muted">No username yet. Pick one in Edit profile so people can find you.</p>':''}${nameLine}</div></div>
+      ${r.motto?`<blockquote class="pmotto">“${esc(r.motto)}”</blockquote>`:''}${r.bio?`<p class="pbio">${esc(r.bio)}</p>`:''}
+      <div class="pstats">
+        <a class="pcard pst rankcard" href="#ranks"><small>Rank</small><b><span class="lw" tabindex="0" data-en="${rk[1]}">${rk[0]}</span></b><span>Level ${P.n} · ${(r.xp||0).toLocaleString()} XP</span>${bar(P.pct,'Progress to the next level')}<small>${P.left.toLocaleString()} XP to Level ${P.n+1} · see all ranks</small></a>
+        <div class="pcard pst"><small>Leaderboard</small><b>${place?'#'+place:'–'}</b><span>all time${splace?` · #${splace} at ${esc(r.school)}`:''}</span></div>
+        <div class="pcard pst"><small>This week</small><b>${(r.wk===cw?r.wxp:0).toLocaleString()} XP</b><span>${wplace?'#'+wplace+' this week':'no XP yet this week'}</span></div>
+        <div class="pcard pst"><small>Day streak</small><b><svg class="gi" aria-hidden="true" style="color:var(--accent)"><use href="#gi-fluffy-flame"/></svg> ${days}</b><span>best ${best} day${best===1?'':'s'}</span></div>
+      </div>
+      <dl class="pdl">${r.school?`<dt>School</dt><dd>${esc(r.school)}</dd>`:''}${r.course?`<dt>Latin course</dt><dd>${esc(courseLong(r.course))}</dd>`:''}${r.since?`<dt>Member since</dt><dd>${new Date(r.since+'T12:00').toLocaleDateString(undefined,{month:'long',year:'numeric'})}</dd>`:''}</dl>
+      <h2>Honōrēs <span class="muted">honors</span></h2>
+      <ul class="badges">${earned.map(bdg).join('')||'<li class="muted">No honors yet. Keep practicing!</li>'}${locked.map(bdg).join('')}</ul>
+      ${own&&r.on===false?'<p class="warnline">Your profile is hidden from everyone else because “Show me on the public leaderboard” is off.</p>':''}
+    </section>`;
+    pvBind();fillAvatars(pv);
+    $('pvCopy').onclick=async()=>{try{await navigator.clipboard.writeText(link);$('pvCopy').textContent='Copied!'}catch(e){prompt('Copy this link:',link)}};
+    if(own)$('pvEdit').onclick=()=>{$('acct').showModal();acctUI();profUI()};
+  }catch(e){pv.innerHTML=pvTop()+`<section class="pv"><h1>Couldn’t load this profile</h1><p>${esc(e.message)}</p></section>`;pvBind()}
+}
+function route(){
+  const h=decodeURIComponent(location.hash.slice(1)),pv=$('pageview'),on=h==='ranks'||/^(u|p)\//.test(h);
+  document.body.classList.toggle('paged',on);pv.hidden=!on;
+  if(!on){page.inside=false;return}
+  scrollTo(0,0);if(h==='ranks')renderRanks();else showProfile(h);
+}
+addEventListener('hashchange',route);
+addEventListener('keydown',e=>{if(e.key==='Escape'&&document.body.classList.contains('paged')&&!document.querySelector('dialog[open]')){const b=$('pvBack');if(b)b.click()}});
+(function(){const x=document.querySelector('.topbar .xp');x.classList.add('golink');x.setAttribute('role','link');x.tabIndex=0;x.title='See all ranks and how XP works';
+  const go=()=>{page.inside=true;location.hash='ranks'};x.addEventListener('click',go);x.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();go()}})})();
+document.querySelectorAll('.topbar .hud>.chip').forEach(c=>{if(c.querySelector('#hudDays')){c.classList.add('golink');c.addEventListener('click',()=>{page.inside=true;location.hash='ranks'})}});
+
+/* ---------- Account page: profile settings ---------- */
+var hcheck={timer:null,last:''};
+async function handleStatus(){
+  const el=$('pHandleMsg'),inp=$('pHandle');if(!el||!inp)return;
+  const v=cleanHandle(inp.value),hid=normH(v);
+  if(!v){el.className='opt';el.textContent='optional · must be unique';return}
+  if(!validHid(hid)){el.className='opt bad';el.textContent='3 to 20 letters, numbers or _';return}
+  if(board.taken===hid){el.className='opt bad';el.textContent=`@${v} is taken. Try another.`;return}
+  if(acct.key&&board.hid===hid){el.className='opt ok';el.textContent=`@${board.handle} is yours`;return}
+  if(!acct.key){el.className='opt';el.textContent='create an account key to claim it';return}
+  el.className='opt';el.textContent='checking…';
+  clearTimeout(hcheck.timer);hcheck.timer=setTimeout(async()=>{try{const h=await fsGet('handles/'+hid),me=await myPid();if(normH(cleanHandle($('pHandle').value))!==hid)return;
+    if(h&&h.owner!==me){board.taken=hid;el.className='opt bad';el.textContent=`@${v} is taken. Try another.`}
+    else{el.className='opt ok';el.textContent=h?`@${v} is yours`:`@${v} is available. Saving…`}}catch(e){el.className='opt';el.textContent=''}},450);
+}
 function profUI(){
   const P=$('profBody');if(!P)return;
   if(!acctReady()){P.innerHTML='';return}
   const p=prof(),sel=SCHOOLS.includes(p.school)?p.school:(p.sOther||p.school)?'*':'';
+  const grid=g=>PICS.filter(x=>x.g===g).map(x=>`<button type="button" class="pick${p.pic==='p:'+x.id?' on':''}" data-pic="${x.id}" title="${esc(x.n)}" aria-label="${esc(x.n)}"><img src="${fileURL(x.f[0])}" data-alt="${esc(x.f.slice(1).join('|'))}" style="object-position:${x.pos}" alt="" loading="lazy" onerror="avErr(this)"><span>${esc(x.n)}</span></button>`).join('');
   P.innerHTML=`<hr><h3 class="ph">Profile &amp; leaderboard</h3>
-    <p class="warnbox"><b>Everything here is optional, and none of it is private or secure.</b> Anything you fill in can be read by anyone who knows how to look, even with “only students at my school” picked. Only add what you’d be fine with anyone seeing.</p>
+    <p class="warnbox"><b>Everything here is optional, and none of it is private or secure.</b> Anything you fill in, including a picture you upload, can be seen by anyone who knows how to look, even with “only students at my school” picked. Only add what you’d be fine with anyone seeing.</p>
+    <div class="pf"><span>Profile picture <span class="opt">optional</span></span>
+      <div class="picrow"><span id="pPrev"></span><div class="row" style="margin:0"><label class="btn quiet upl">Upload a picture<input type="file" id="pUpload" accept="image/*" hidden></label><button type="button" class="btn quiet" id="pPicNone">No picture</button></div></div>
+      <p class="hint" id="pPicMsg">Or pick one below. Uploads are cropped to a square and shrunk.</p>
+      <p class="pgh">Famous Romans</p><div class="picks">${grid('fig')}</div>
+      <p class="pgh">Landmarks</p><div class="picks">${grid('place')}</div>
+      <details class="credits2"><summary>Picture credits</summary><ul id="pCredits"><li>Loading from Wikimedia Commons…</li></ul></details></div>
+    <label class="pf">Display name <span class="opt">optional · what the leaderboard shows; doesn’t have to be unique</span><input id="pDisp" maxlength="24" value="${esc(p.disp)}"></label>
+    <label class="pf">Username <span class="opt" id="pHandleMsg"></span><span class="hwrap"><b>@</b><input id="pHandle" maxlength="20" spellcheck="false" autocomplete="off" value="${esc(p.handle)}"></span></label>
+    <p class="hint">Your unique name for your profile link and search. Macrons are fine: “Mārcus” and “marcus” count as the same name.</p>
     <div class="pgrid"><label class="pf">First name <span class="opt">optional</span><input id="pFirst" maxlength="25" autocomplete="given-name" value="${esc(p.first)}"></label>
     <label class="pf">Last name <span class="opt">optional</span><input id="pLast" maxlength="25" autocomplete="family-name" value="${esc(p.last)}"></label></div>
     <p class="hint">First name, last name, both or neither.</p>
-    <label class="pf">Username <span class="opt">optional · shown on the leaderboard</span><input id="pUser" maxlength="20" autocomplete="nickname" spellcheck="false" value="${esc(p.user)}"></label>
     <label class="pf">School <span class="opt">optional</span><select id="pSchool"><option value="">No school</option>${SCHOOLS.map(x=>`<option${sel===x?' selected':''}>${esc(x)}</option>`).join('')}<option value="*"${sel==='*'?' selected':''}>Other (type it in)</option></select></label>
     <label class="pf" id="pSchoolCL"${sel==='*'?'':' hidden'}>Your school <input id="pSchoolC" maxlength="60" value="${esc(sel==='*'?p.school:'')}"></label>
     <label class="pf">Who can see your name <span class="opt" id="pVisH"></span><select id="pVis"><option value="">Nobody</option><option value="school">Only students who picked my school</option><option value="all">Everyone</option></select></label>
     <label class="pf">Latin course <span class="opt">optional · change it any time</span><select id="pCourse">${COURSES.map(([v,l])=>`<option value="${v}"${p.course===v?' selected':''}>${l}</option>`).join('')}</select></label>
     <p class="hint">Pick “completed” if you finished that course and aren’t taking Latin anymore.</p>
     <div id="pAward"></div>
+    <label class="pf">Motto <span class="opt">optional · shown on your profile, Latin welcome</span><input id="pMotto" maxlength="80" value="${esc(p.motto)}" placeholder="e.g. Fēstīnā lentē"></label>
+    <label class="pf">About me <span class="opt">optional</span><textarea id="pBio" maxlength="200" rows="2">${esc(p.bio)}</textarea></label>
+    <div class="pf"><span>Profile banner</span><div class="banners">${BANNERS.map(b=>`<button type="button" class="ban${p.banner===b[0]?' on':''}" data-ban="${b[0]}" style="background:${b[1]}" title="${b[2]}" aria-label="${b[2]}"></button>`).join('')}${PICS.filter(x=>x.g==='place').map(x=>`<button type="button" class="ban${p.banner==='p:'+x.id?' on':''}" data-ban="p:${x.id}" title="${esc(x.n)}" aria-label="${esc(x.n)}"><img src="${fileURL(x.f[0])}" alt="" loading="lazy" onerror="this.parentNode.remove()"></button>`).join('')}</div></div>
     <label class="chk"><input type="checkbox" id="pBoard"${p.board!==false?' checked':''}> Show me on the public leaderboard</label>
+    <div class="row"><button type="button" class="btn quiet" id="pView">View my profile</button></div>
     <p class="msg" id="pmsg"></p>`;
-  const vis=()=>{const hasS=$('pSchool').value&&($('pSchool').value!=='*'||$('pSchoolC').value.trim());const o=$('pVis').querySelector('[value=school]');o.disabled=!hasS;
+  const prev=()=>{const q=prof();$('pPrev').innerHTML=avatarHTML(Object.assign({},q,{pid:board.pid||'0'}),'big');P.querySelectorAll('.pick').forEach(b=>b.classList.toggle('on',q.pic==='p:'+b.dataset.pic));P.querySelectorAll('.ban').forEach(b=>b.classList.toggle('on',q.banner===b.dataset.ban))};
+  const vis=()=>{const hasS=$('pSchool').value&&($('pSchool').value!=='*'||$('pSchoolC').value.trim());$('pVis').querySelector('[value=school]').disabled=!hasS;
     const cur=prof().nvis;$('pVis').value=cur==='school'&&!hasS?'':cur;
     $('pVisH').textContent=!fullName(prof())?'add a name above first':hasS?'':'pick a school to share it with classmates only';
-    $('pAward').innerHTML=$('pCourse').value==='AP+'?`<div class="laurea-card"><svg class="gi" aria-hidden="true"><use href="#gi-laurel-crown"/></svg><div><b><span class="lw" tabindex="0" data-en="laurel crown">Laurea</span> Latīna</b><br>For completing AP Latin. Your laurel crown shows beside your name on the leaderboard.</div></div>`:''};
+    $('pAward').innerHTML=$('pCourse').value==='AP+'?`<div class="laurea-card"><svg class="gi" aria-hidden="true"><use href="#gi-laurel-crown"/></svg><div><b><span class="lw" tabindex="0" data-en="laurel crown">Laurea</span> Latīna</b><br>For completing AP Latin. Your laurel crown shows beside your name on the leaderboard and your profile.</div></div>`:''};
+  const done=()=>{$('pmsg').className='msg ok';$('pmsg').textContent=acct.key?'Saved. The leaderboard updates in a few seconds.':'Saved on this browser. Create an account key above to join the leaderboard.'};
+  const patch=o=>{store.set('profile',Object.assign(prof(),o));prev();done()};
   const save=e=>{
     const old=prof(),s=$('pSchool').value;$('pSchoolCL').hidden=s!=='*';
-    const n={first:$('pFirst').value.trim(),last:$('pLast').value.trim(),user:$('pUser').value.replace(/[^\p{L}\p{N}_.\- ]/gu,'').trim(),
-      school:s==='*'?$('pSchoolC').value.trim():s,sOther:s==='*',nvis:e&&e.target.id==='pVis'?$('pVis').value:old.nvis,course:$('pCourse').value,board:$('pBoard').checked};
-    store.set('profile',n);vis();
-    if(n.course==='AP+'&&old.course!=='AP+'){boom(true);toast('adoring','{Laurea|laurel crown} earned! You finished AP Latin. {Euge|well done}!')}
-    $('pmsg').className='msg ok';$('pmsg').textContent=acct.key?'Saved. The leaderboard updates in a few seconds.':'Saved on this browser. Create an account key above to join the leaderboard.';
+    if(e&&e.target.id==='pHandle'){const c=cleanHandle(e.target.value.replace(/^@/,''));if(c!==e.target.value){const at=e.target.selectionStart;e.target.value=c;try{e.target.setSelectionRange(at-1,at-1)}catch(x){}}}
+    const n=Object.assign(old,{first:$('pFirst').value.trim(),last:$('pLast').value.trim(),disp:$('pDisp').value.trim(),handle:cleanHandle($('pHandle').value),
+      school:s==='*'?$('pSchoolC').value.trim():s,sOther:s==='*',nvis:e&&e.target.id==='pVis'?$('pVis').value:old.nvis,course:$('pCourse').value,board:$('pBoard').checked,
+      motto:$('pMotto').value.trim(),bio:$('pBio').value.trim()});
+    const wasAP=store.get('profile',{}).course==='AP+';
+    store.set('profile',n);vis();handleStatus();
+    if(n.course==='AP+'&&!wasAP){boom(true);toast('adoring','{Laurea|laurel crown} earned! You finished AP Latin. {Euge|well done}!')}
+    done();
   };
-  P.querySelectorAll('input,select').forEach(x=>x.addEventListener(x.tagName==='SELECT'||x.type==='checkbox'?'change':'input',save));
-  vis();
+  P.querySelectorAll('input:not([type=file]),select,textarea').forEach(x=>x.addEventListener(x.tagName==='SELECT'||x.type==='checkbox'?'change':'input',save));
+  P.querySelectorAll('.pick').forEach(b=>b.onclick=()=>patch({pic:'p:'+b.dataset.pic,img:''}));
+  P.querySelectorAll('.ban').forEach(b=>b.onclick=()=>patch({banner:b.dataset.ban}));
+  $('pPicNone').onclick=()=>patch({pic:'',img:''});
+  $('pUpload').onchange=async e=>{const f=e.target.files[0];if(!f)return;$('pPicMsg').textContent='Shrinking…';
+    try{const d=await fileToAvatar(f),pv='u:'+hex(await sha(d)).slice(0,8);patch({pic:pv,img:d});$('pPicMsg').textContent='Uploaded. Remember: anyone can see this picture.'}catch(x){$('pPicMsg').textContent=x.message||'That file didn’t work as a picture.'}e.target.value=''};
+  $('pView').onclick=async()=>{if(!acct.key){$('pmsg').className='msg bad';$('pmsg').textContent='Create an account key first to get a profile page.';return}
+    const pid=await myPid(),h=normH(prof().handle);goTo(validHid(h)&&board.taken!==h?'u/'+h:'p/'+pid)};
+  prev();vis();handleStatus();
+  loadCommons().then(info=>{
+    if(!$('pCredits'))return;
+    P.querySelectorAll('.pick').forEach(b=>{const q=PIC[b.dataset.pic],f=picFile(q);if(!f&&Object.keys(info).length)b.remove();else if(f&&info[f]){const im=b.querySelector('img');if(im&&info[f].thumb&&!im.src.includes(encodeURIComponent(f.replace(/ /g,'_')))){im.src=info[f].thumb}else if(im&&info[f].thumb)im.src=info[f].thumb}});
+    const items=PICS.map(q=>{const f=picFile(q),i=f&&info[f];return i?`<li><b>${esc(q.n)}</b>: ${esc(i.artist)}, ${esc(i.lic)} · <a href="${esc(i.page)}" target="_blank" rel="noopener">Wikimedia Commons</a></li>`:''}).join('');
+    $('pCredits').innerHTML=items||'<li>Credits couldn’t be loaded right now. Every preset picture is a freely licensed file on Wikimedia Commons.</li>';
+  });
 }
 $('acctbtn').addEventListener('click',()=>{$('acct').showModal();acctUI();profUI()});
 $('acctClose').addEventListener('click',()=>$('acct').close());
 $('acct').addEventListener('click',e=>{if(e.target===$('acct'))$('acct').close()});
-hud();acctUI();pullNow().then(()=>pushBoard());
+hud();acctUI();route();pullNow().then(()=>pushBoard());
 function score(){$('score').innerHTML=`<b>${stats.right}</b> of <b>${stats.total}</b> correct · streak <b>${stats.streak}</b>`}
 function check(){
   if(checked){next();return;}
