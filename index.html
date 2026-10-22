@@ -285,6 +285,11 @@ footer.credits a{color:var(--muted)}
 .btn:active{transform:translate(2px,2px);box-shadow:1px 1px 0 var(--accent-shadow)}
 .btn.quiet{border:2px solid var(--line2);box-shadow:3px 3px 0 var(--line2);background:var(--surface2)}
 .btn.quiet:active{box-shadow:1px 1px 0 var(--line2)}
+/* focus ring that hugs the button and its hard shadow, instead of a square-cornered box beside it */
+.btn:focus-visible{outline:none;border-radius:8px;box-shadow:3px 3px 0 var(--accent-shadow),0 0 0 3px var(--accent2),3px 3px 0 3px var(--accent2)}
+.btn:focus-visible:active{box-shadow:1px 1px 0 var(--accent-shadow),0 0 0 3px var(--accent2),1px 1px 0 3px var(--accent2)}
+.btn.quiet:focus-visible{box-shadow:3px 3px 0 var(--line2),0 0 0 3px var(--accent2),3px 3px 0 3px var(--accent2)}
+.btn.quiet:focus-visible:active{box-shadow:1px 1px 0 var(--line2),0 0 0 3px var(--accent2),1px 1px 0 3px var(--accent2)}
 .chip{border:2px solid var(--line);box-shadow:2px 2px 0 var(--line2)}
 .chip .gi{width:22px;height:22px}
 .gi{display:inline-block;width:1.2em;height:1.2em;fill:currentColor;flex:none;vertical-align:-.2em}
