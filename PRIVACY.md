@@ -1,6 +1,6 @@
 # Verba Privacy Statement
 
-*Last updated: October 23, 2026 (optional username and password login)*
+*Last updated: October 24, 2026 (accounts shared with Palabras)*
 
 This page explains, as plainly as possible, what information Verba stores, where it goes, and who can see it. Verba is a free practice site made by a student for a Latin class. It is not run by a company, a school or a school district.
 
@@ -74,6 +74,10 @@ You can turn your leaderboard entry off at any time in your account settings. Do
 ### Usernames
 
 Each username can belong to only one student. Verba keeps a public list matching each username to the leaderboard entry that owns it.
+
+## Shared with Palabras
+
+Verba and [Palabras](https://janavduraikkannan.github.io/palabras/) (the Spanish sister site) use one account system. Your account key, username, password login, profile and any AI keys saved to your account are shared by both sites. XP, levels, streaks, topics and course are separate for each language, and each site has its own public leaderboard entry (same scrambled name and username). Spanish progress is stored in its own section of your account document. See the Palabras Privacy Statement for details.
 
 ## What the site's owner can see
 

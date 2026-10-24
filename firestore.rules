@@ -11,6 +11,10 @@ rules_version = '2';
 // username whose handles document points back at it, and a handles document can only be created in
 // the same write that points its owner's entry at it, so no two students can share a username.
 //
+// Spanish leaderboard: boardes/{id} is the public board of Palabras, Verba's Spanish sister site. Same rules as
+// board/{id}, with the same id (so one username serves both sites) and Spanish course codes. A username belongs to an
+// account while either of its boards points at it.
+//
 // Password logins (optional): logins/{id} holds the account key, encrypted in the browser with a key stretched from
 // the username and password. The id comes from the same stretching, so it reveals neither. No password is ever
 // stored in readable form, and no email is ever asked for or sent. Each change must show the previous link of a hash
@@ -26,7 +30,7 @@ service cloud.firestore {
       allow list, delete: if false;
     }
 
-    function boardOk(pid, d) {
+    function boardOk(pid, d, courses) {
       let fields = ['n', 'lock', 'prev', 'on', 'xp', 'wk', 'wxp', 'days', 'dlast', 'best', 'since',
                     'disp', 'handle', 'hid', 'name', 'nvis', 'school', 'course',
                     'pic', 'img', 'bio', 'motto', 'banner', 't'];
@@ -44,11 +48,12 @@ service cloud.firestore {
         && d.disp is string && d.disp.size() <= 24
         && d.handle is string && d.handle.size() <= 20
         && d.hid is string && d.hid.matches('([a-z0-9_]{3,20})?')
-        && (d.hid == '' || getAfter(/databases/$(database)/documents/handles/$(d.hid)).data.owner == pid)
+        && (d.hid == '' || (existsAfter(/databases/$(database)/documents/handles/$(d.hid))
+            && getAfter(/databases/$(database)/documents/handles/$(d.hid)).data.owner == pid))
         && d.name is string && d.name.size() <= 51
         && d.nvis in ['', 'school', 'all']
         && d.school is string && d.school.size() <= 60
-        && d.course in ['', 'I', 'I+', 'II', 'II+', 'III', 'III+', 'AP', 'AP+']
+        && d.course in courses
         && d.pic is string && d.pic.matches('(p:[a-z0-9-]{1,24}|u:[0-9a-f]{8})?')
         && d.img is string && d.img.size() <= 15000
         && (d.img == '' || d.img.matches('data:image/jpeg;base64,[A-Za-z0-9+/=]+'))
@@ -61,16 +66,37 @@ service cloud.firestore {
       allow get: if true;
       allow list: if request.query.limit <= 300;
       allow create: if pid.matches('[0-9a-f]{24}')
-        && boardOk(pid, request.resource.data)
+        && boardOk(pid, request.resource.data, ['', 'I', 'I+', 'II', 'II+', 'III', 'III+', 'AP', 'AP+'])
         && request.resource.data.n == 0
         && request.resource.data.prev == ''
         && request.resource.data.xp <= 100000;
-      allow update: if boardOk(pid, request.resource.data)
+      allow update: if boardOk(pid, request.resource.data, ['', 'I', 'I+', 'II', 'II+', 'III', 'III+', 'AP', 'AP+'])
         && request.resource.data.n == resource.data.n + 1
         && hashing.sha256(request.resource.data.prev) == resource.data.lock
         && request.resource.data.xp <= resource.data.xp + 1000
              + (request.time.toMillis() - resource.data.t.toMillis()) / 100;
       allow delete: if false;
+    }
+    match /boardes/{pid} {
+      allow get: if true;
+      allow list: if request.query.limit <= 300;
+      allow create: if pid.matches('[0-9a-f]{24}')
+        && boardOk(pid, request.resource.data, ['', 'I', 'I+', 'II', 'II+', 'III', 'III+', 'IV', 'IV+', 'AP', 'AP+'])
+        && request.resource.data.n == 0
+        && request.resource.data.prev == ''
+        && request.resource.data.xp <= 100000;
+      allow update: if boardOk(pid, request.resource.data, ['', 'I', 'I+', 'II', 'II+', 'III', 'III+', 'IV', 'IV+', 'AP', 'AP+'])
+        && request.resource.data.n == resource.data.n + 1
+        && hashing.sha256(request.resource.data.prev) == resource.data.lock
+        && request.resource.data.xp <= resource.data.xp + 1000
+             + (request.time.toMillis() - resource.data.t.toMillis()) / 100;
+      allow delete: if false;
+    }
+    function points(owner, hid) {
+      return (existsAfter(/databases/$(database)/documents/board/$(owner))
+                && getAfter(/databases/$(database)/documents/board/$(owner)).data.hid == hid)
+          || (existsAfter(/databases/$(database)/documents/boardes/$(owner))
+                && getAfter(/databases/$(database)/documents/boardes/$(owner)).data.hid == hid);
     }
     match /handles/{hid} {
       allow get: if true;
@@ -78,8 +104,8 @@ service cloud.firestore {
       allow create: if hid.matches('[a-z0-9_]{3,20}')
         && request.resource.data.keys().hasOnly(['owner'])
         && request.resource.data.owner is string
-        && getAfter(/databases/$(database)/documents/board/$(request.resource.data.owner)).data.hid == hid;
-      allow delete: if getAfter(/databases/$(database)/documents/board/$(resource.data.owner)).data.hid != hid;
+        && points(request.resource.data.owner, hid);
+      allow delete: if !points(resource.data.owner, hid);
       allow update: if false;
     }
 

@@ -4,6 +4,8 @@
 
 **Use it here: https://janavduraikkannan.github.io/verba/**
 
+Learning Spanish too? [Palabras](https://janavduraikkannan.github.io/palabras/) is Verba's Spanish sister site, with Fēlix's cousin Felicísimo. The same account works on both; XP and levels are separate for each language.
+
 Verba builds fresh Latin sentences from the topics you pick, then has you translate the whole sentence, English to Latin or Latin to English. It checks your answer, tells you exactly what went wrong, and lets you ask Fēlix, an AI tutor, questions about the grammar along the way. It was made for a high school Latin class, and its topics follow the Tennessee course sequence (Latin I Honors, Latin II Honors, Latin III Honors, AP Latin).
 
 > **Privacy, in short:** Verba has no server of its own. Your practice runs in your browser, your AI key goes straight from your browser to the AI company you chose, and nothing is saved anywhere else unless you make an account. If you do, your account and anything you put on the leaderboard are stored with Google Firebase, are **not encrypted**, and **are not private**. Read the full [Privacy Statement](PRIVACY.md) before making an account.
@@ -64,7 +66,7 @@ Verba is a static website hosted on GitHub Pages. There is no Verba server and n
 | `index.html` | The app |
 | `getkey.html` | Guide to getting a free Groq key |
 | `keys.html` | Every AI provider Verba supports, with free limits |
-| `firestore.rules` | Security rules for accounts, password logins, the leaderboard and usernames |
+| `firestore.rules` | Security rules for accounts, password logins, the leaderboards (Verba's and Palabras') and usernames |
 | `img/felix/` | Fēlix, in every mood |
 | `img/icons/` | Interface icons |
 | `media/` | The key tutorial video, its captions and poster |
