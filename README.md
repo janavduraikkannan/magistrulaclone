@@ -14,7 +14,10 @@ Verba builds fresh Latin sentences from the topics you pick, then has you transl
 
 - **Topics by course.** Every grammar topic from Latin I through AP Latin, grouped under the class it's taught in. Topics already covered in class are shaded.
 - **Build your own sentence type.** Pick a main structure (statement, question, indirect statement, conditional, gapping and more) and the grammar that should appear inside it.
+- **Focus.** Press Focus on any topic or sentence ingredient and every sentence will practice at least one focus item, mixing in your other ticked topics. Anything not ticked never appears.
 - **Whole-sentence translation.** You type the entire sentence. Word order that doesn't change the meaning never counts against you.
+- **Identify the use.** See a highlighted Latin word and name its use (genitive of possession, ablative of means and more), typed for full XP or by multiple choice for half.
+- **Extra credit.** After a translation, name the use of one word for bonus XP. Opening that case's chart voids it.
 - **Fair macron checking.** A missing macron is pointed out but still counts as correct, unless the macron changes which form the word is.
 - **Fēlix, the AI tutor cat.** Ask as many questions as you like. Before you answer, Fēlix judges whether a question gives away too much; after you answer, you can ask anything.
 - **Charts and vocabulary.** Ending charts and a vocabulary list for each sentence, shown by default and easy to hide. Click a vocabulary word to insert it.
