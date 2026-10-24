@@ -513,6 +513,14 @@ mark{background:color-mix(in srgb,var(--gold) 30%,transparent);color:inherit;bor
 #xcin{flex:1 1 12em;font:inherit;background:var(--surface);border:2px solid var(--line);border-radius:8px;padding:.45em .6em;color:var(--ink)}
 .feedback li .bad{color:var(--bad)}
 .xcbtn{padding:6px 14px;font-size:.95rem}
+
+/* email login */
+.lgtabs{display:inline-flex;border:2px solid var(--line2);border-radius:8px;overflow:hidden;margin:6px 0 8px;flex-wrap:wrap}
+.lgtabs button{font:inherit;font-weight:800;background:var(--surface2);color:var(--ink);border:0;padding:7px 14px;cursor:pointer}
+.lgtabs button[aria-selected=true]{background:var(--accent2);color:var(--accent2-ink)}
+dialog.acct input[type=email],dialog.acct input[type=password]{font-family:var(--ui);font-weight:600;letter-spacing:0;margin:0 0 8px}
+dialog.acct .warnbox ul{margin:4px 0 0;padding-left:18px}dialog.acct .warnbox li{margin:3px 0}
+.onbemail{margin-top:10px}.onbemail summary{cursor:pointer;font-weight:800;color:var(--accent2)}
 </style>
 </head>
 <body>
@@ -2003,6 +2011,7 @@ const ONB_PRIV=`<div class="onbtri">
   <section class="no"><h3>Not private</h3><ul>
     <li>The leaderboard and anything you put in your profile can be seen by other people.</li>
     <li>Account data isn’t encrypted: anyone with your account key can open it, and the site’s owner can see it.</li>
+    <li>If you add an email and password, your email is saved in your account, where the site’s owner can see it. Your password isn’t stored, and a forgotten password can’t be recovered.</li>
     <li>A key you save in your browser or account is stored as plain text.</li></ul></section></div>
   <p class="hint">Never type personal details (your address, phone number, passwords) into the chat or your profile.</p>`;
 let onb={i:0,keyOk:false,saved:false,newAcct:''};
@@ -2012,7 +2021,7 @@ const ONB=[
    <p>Pick the topics your class has covered, translate sentences between English and Latin, and earn XP for a daily streak.</p>
    <p class="onbbig">One thing first: Verba needs a free AI key to work. The key lets the site check your sentences and lets me answer your questions. Without one, practice can’t start.</p>
    <p>I’ll show you how to get one for free. No credit card, no cost.</p>
-   <p><button type="button" class="onblink" id="onbHave">I already have an AI key</button></p>`,
+   <div class="row"><button type="button" class="onblink" id="onbHave">I already have an AI key</button><button type="button" class="onblink" id="onbLogin">I have a Verba account: log in</button></div>`,
   next:'Let’s get set up'},
  {face:'sly',say:'Before you sign up for anything, here’s the honest truth about privacy.',
   body:()=>`<p class="onbstep">Step 1 of 5 · Privacy</p><h2 id="onbTitle">What’s private, and what isn’t</h2>${ONB_PRIV}`,next:'Got it'},
@@ -2046,11 +2055,12 @@ const ONB=[
   body:()=>acct.key?`<p class="onbstep">Step 5 of 5 · Account (optional)</p><h2 id="onbTitle">You have an account</h2>
    ${onb.newAcct?`<p class="onbbig">Here’s your account key. Save it too, separately from your AI key. It’s the only way to sign in on another device.</p><div class="keybox">${esc(showKey(onb.newAcct))}</div><div class="row"><button class="btn quiet" type="button" id="onbACopy">Copy account key</button><span class="msg" id="onbAMsg"></span></div>`:'<p>This browser is already signed in.</p>'}
    <label class="chk"><input type="checkbox" id="onbRemA"${keyRemA?' checked':''}> Also save my AI key to my account</label>
-   <p class="hint">Then it follows you to every device you sign in on. It’s stored as plain text in your account, so keep your account key private.</p>`
+   <p class="hint">Then it follows you to every device you log in on. It’s stored as plain text in your account, so keep your account key (and password) private.</p>
+   ${(store.get('login',null)||{}).email?`<p>You can also log in with <b>${esc(store.get('login',null).email)}</b> and your password.</p>`:`<details class="onbemail"${onb.emailOpen?' open':''}><summary>Optional: also log in with an email and password</summary><p>Easier than typing your account key on a new device. Your account key will still work too.</p>${emailSetHTML('oS',false)}</details>`}`
   :`<p class="onbstep">Step 5 of 5 · Account (optional)</p><h2 id="onbTitle">Make a free account?</h2>
    <p>An account saves your XP, streak, topics and settings, so you can pick up on any device, and it puts you on the leaderboard (you choose a username later).</p>
-   <p>There’s no email or password. You get an <b>account key</b>, and that key is your account. Save it somewhere safe, just like your AI key.</p>
-   <div class="row"><button class="btn" type="button" id="onbMake">Create my account key</button><button type="button" class="onblink" id="onbSignin">I already have an account key</button><span class="msg" id="onbAMsg"></span></div>
+   <p>You get an <b>account key</b>, and that key is your account. Save it somewhere safe, just like your AI key. After that you can add an email and password too, so logging in on another device is easier.</p>
+   <div class="row"><button class="btn" type="button" id="onbMake">Create my account</button><button type="button" class="onblink" id="onbSignin">I already have an account: log in</button><span class="msg" id="onbAMsg"></span></div>
    <p class="hint">You can skip this and make an account later with the Account button at the top.</p>`,next:()=>acct.key?'Next':'Skip for now'},
  {face:'fish',say:'{Euge|well done}! You’re all set. Here are a few tricks before you start.',
   body:()=>`<p class="onbstep">All done</p><h2 id="onbTitle">How Verba works</h2><ul>
@@ -2058,8 +2068,14 @@ const ONB=[
    <li>Click a word under <b>Vocabulary</b> to type it into your answer.</li>
    <li>Hover over (or tap) a Latin word with a dotted underline to see what it means.</li>
    <li>Ask me anything in <b>Ask Fēlix</b>. But a question that gives away the answer before you submit makes that sentence count as wrong!</li>
-   <li>Need this guide again? Click <b>New here? Get a free key</b> under the key box.</li></ul>`,next:'Start learning'}
+   <li>Need this guide again? Click <b>New here? Get a free key</b> under the key box.</li></ul>`,next:'Start learning'},
+ {face:'happy',say:'{Salvē iterum|hello again}! Log in and I’ll bring back your XP, streak and settings.',skip:()=>!onb.login,backTo:0,
+  body:()=>`<p class="onbstep">Log in</p><h2 id="onbTitle">Log in to your account</h2>
+   <p>Use the email and password you set up, or your account key. Either one works.</p>${loginFormHTML('oL')}
+   <p class="hint">Forgot your password? Log in with your account key, then set a new password in Account. Without either one, the account can’t be recovered.</p>`,
+  next:'I’m new: set me up',go:()=>{onb.login=false;onbGo(1)}}
 ];
+const ONB_LOGIN=ONB.length-1;
 const onbFace=m=>`img/felix/${m}.svg?v=9`;
 function onbShow(){
   const st=ONB[onb.i];$('onbFelix').src=onbFace(st.face);$('onbSay').innerHTML=latH(st.say);
@@ -2068,6 +2084,8 @@ function onbShow(){
   $('onbBack').style.visibility=onb.i?'visible':'hidden';
   $('onbNext').textContent=typeof st.next==='function'?st.next():st.next;
   const h=$('onbHave');if(h)h.onclick=()=>onbGo(4);
+  const lg=$('onbLogin');if(lg)lg.onclick=()=>{onb.login=true;onbGo(ONB_LOGIN)};
+  if(onb.i===ONB_LOGIN)bindLoginForm('oL',onbLoggedIn);
   if(onb.i===4)onbKeyStep();
   if(onb.i===5)onbAcctStep();
   $('onb').scrollTop=0;onbNextState();
@@ -2099,15 +2117,19 @@ function onbKeyStep(){
 function onbAcctStep(){
   const msg=(t,c)=>{const m=$('onbAMsg');if(m){m.className='msg '+(c||'');m.textContent=t}};
   const mk=$('onbMake');if(mk)mk.onclick=async()=>{msg('Creating…');mk.disabled=true;try{onb.newAcct=await makeAccount();$('onbFelix').src=onbFace('fish');onbShow();$('onbNext').textContent='Next'}catch(e){mk.disabled=false;msg(e.message,'bad')}};
-  const si=$('onbSignin');if(si)si.onclick=()=>{onbDone();$('acct').showModal();acctUI()};
+  const si=$('onbSignin');if(si)si.onclick=()=>{onb.login=true;onbGo(ONB_LOGIN)};
+  const em=$('oSGo');if(em){bindEmailSet('oS',()=>{onb.emailOpen=false;$('onbFelix').src=onbFace('delighted');setTimeout(()=>{if($('onb').open&&onb.i===5)onbShow()},1800)});const d=document.querySelector('.onbemail');if(d)d.ontoggle=()=>onb.emailOpen=d.open}
   const cp=$('onbACopy');if(cp)cp.onclick=async()=>{try{await navigator.clipboard.writeText(showKey(onb.newAcct));msg('Copied! Now paste it somewhere safe.','ok')}catch(e){msg('Select the key above and copy it.','bad')}};
   const ra=$('onbRemA');if(ra)ra.onchange=e=>{keyRemA=e.target.checked;lsSet('verba-keys-account',keyRemA);try{pushNow()}catch(x){}keysUI()};
 }
+function onbLoggedIn(){onb.login=false;$('onbFelix').src=onbFace('delighted');
+  if(slots.some(x=>x.key)){onb.keyOk=true;onbGo(ONB.length-2);$('onbSay').innerHTML=latH('{Salvē iterum|hello again}! You’re logged in and your AI key came with your account. All set!')}
+  else{onbGo(1);$('onbSay').innerHTML=latH('You’re logged in! Your account doesn’t have an AI key saved, so let’s get you one.')}}
 function onbDone(){lsSet('verba-onboarded',true);if($('onb').open)$('onb').close()}
 function openOnb(i=0){onb.keyOk=!!(slots[0].st&&slots[0].key);$('onb').showModal();onbGo(i);$('onbNext').focus()}
 function setupOnboarding(){
-  $('onbNext').onclick=()=>{if(onb.i>=ONB.length-1){onbDone();return}onbGo(onb.i+1)};
-  $('onbBack').onclick=()=>onbGo(onb.i-1);
+  $('onbNext').onclick=()=>{const st=ONB[onb.i];if(st.go)return st.go();if(onb.i>=ONB_LOGIN-1){onbDone();return}onbGo(onb.i+1)};
+  $('onbBack').onclick=()=>{const st=ONB[onb.i];if(st.backTo!==undefined){onb.login=false;return onbGo(st.backTo)}onbGo(onb.i-1)};
   $('onbClose').onclick=()=>onbDone();
   $('onb').addEventListener('close',()=>lsSet('verba-onboarded',true));
   $('kguide').addEventListener('click',()=>openOnb(0));
@@ -2350,7 +2372,7 @@ function react(kind){moodTok++;setFelix(R(REACT_MOODS[kind]))}
 })();
 /* ---------- Accounts: a personal account key, synced through Firebase Firestore ---------- */
 var ACCOUNTS={projectId:'verba-791ca',apiKey:''}; // Firebase project; a web API key is optional (access is governed by firestore.rules)
-var SYNC_KEYS=['xp','days','wk','best','since','profile','topics','bFrames','bIngs','per','mode','limit','prov','tab','keyadv'];
+var SYNC_KEYS=['xp','days','wk','best','since','profile','login','topics','bFrames','bIngs','per','mode','limit','prov','tab','keyadv'];
 var acct={key:'',timer:null,last:null,busy:false};
 try{acct.key=localStorage.getItem('verba-account')||''}catch(e){}
 const acctReady=()=>!!ACCOUNTS.projectId;
@@ -2402,34 +2424,140 @@ function acctDirty(k){if(!acct.key||!acctReady()||!(SYNC_KEYS.includes(k)||k==='
 async function pushNow(){if(!acct.key||!acctReady())return;try{await cloudPut(acct.key,localData());acct.last=new Date();acct.err=''}catch(e){acct.err=e.message}acctUI();try{pushBoard()}catch(e){}}
 async function pullNow(){if(!acct.key||!acctReady())return;acct.pulling=true;try{const d=await cloudGet(acct.key);if(d)applyRemote(d);acct.last=new Date();acct.err=''}catch(e){acct.err=e.message}acct.pulling=false;acctUI()}
 async function makeAccount(){const k=newKey();await cloudPut(k,localData());acct.key=k;try{localStorage.setItem('verba-account',k)}catch(e){}acct.last=new Date();acct.err='';acctUI();profUI();pushBoard();return k}
-function acctUI(){
+async function signInWithKey(k){ // shared by every "log in" path: the account key is what opens the account
+  const d=await cloudGet(k);if(!d)throw new Error('No account uses that key. Check for typos.');
+  acct.key=k;try{localStorage.setItem('verba-account',k)}catch(e){}applyRemote(d);await pushNow();acctUI();try{profUI()}catch(e){}
+  return d;
+}
+/* ---------- Optional email + password login ----------
+   Verba has no server and sends no email. The email and password are stretched together in this browser
+   (PBKDF2-SHA256, 310,000 rounds). Part of the result names a record in logins/, and the rest is an AES key that
+   encrypts the account key stored in that record. The password itself is never stored or sent anywhere, so a
+   wrong password just finds nothing. Only someone holding the account key can change or remove the record
+   (a hash chain made from the account key, checked by firestore.rules). */
+const LOGIN_ITER=310000;
+const normEmail=e=>String(e||'').trim().toLowerCase().normalize('NFC');
+const emailOk=e=>/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(e)&&e.length<=120;
+const u8b64=b=>btoa(String.fromCharCode(...b)),b64u8=s=>Uint8Array.from(atob(s),c=>c.charCodeAt(0));
+async function loginKeys(email,pw){
+  const base=await crypto.subtle.importKey('raw',new TextEncoder().encode(pw),'PBKDF2',false,['deriveBits']);
+  const bits=new Uint8Array(await crypto.subtle.deriveBits({name:'PBKDF2',hash:'SHA-256',salt:new TextEncoder().encode('verba-login-v1:'+normEmail(email)),iterations:LOGIN_ITER},base,384));
+  const id=[...bits.slice(0,16)].map(x=>x.toString(16).padStart(2,'0')).join('');
+  const aes=await crypto.subtle.importKey('raw',bits.slice(16),'AES-GCM',false,['encrypt','decrypt']);
+  return{id,aes};
+}
+const loginLink=async(id,i)=>{const b=new Uint8Array(await crypto.subtle.digest('SHA-256',new TextEncoder().encode('verba-login-chain:'+acct.key+':'+id+':'+i)));return[...b].map(x=>x.toString(16).padStart(2,'0')).join('')};
+const LDOC=id=>`projects/${ACCOUNTS.projectId}/databases/(default)/documents/logins/${id}`;
+const LURL=id=>`https://firestore.googleapis.com/v1/projects/${ACCOUNTS.projectId}/databases/(default)/documents/logins/${id}`+(ACCOUNTS.apiKey?`?key=${ACCOUNTS.apiKey}`:'');
+async function loginGet(id){const r=await fetch(LURL(id));if(r.status===404)return null;if(!r.ok)throw new Error(r.status===403?'Email login isn’t switched on yet (the site’s security rules need publishing).':'The account server returned error '+r.status+'.');
+  const f=(await r.json()).fields||{};return{n:Number((f.n||{}).integerValue||0),iv:(f.iv||{}).stringValue||'',ct:(f.ct||{}).stringValue||''}}
+async function loginWrite(id,old,payload){ // payload null = switch the record off
+  const create=!old,n=create?0:old.n+1,sha=async x=>new Uint8Array(await crypto.subtle.digest('SHA-256',new TextEncoder().encode(x)));
+  const fields={v:{integerValue:'1'},iv:{stringValue:payload?payload.iv:''},ct:{stringValue:payload?payload.ct:''},n:{integerValue:String(n)},
+    prev:{stringValue:create?'':await loginLink(id,old.n)},gate:{bytesValue:u8b64(await sha(await loginLink(id,n)))}};
+  return{update:{name:LDOC(id),fields},updateTransforms:[{fieldPath:'t',setToServerValue:'REQUEST_TIME'}],currentDocument:{exists:!create}};
+}
+async function loginCommit(writes){
+  const r=await fetch(`https://firestore.googleapis.com/v1/projects/${ACCOUNTS.projectId}/databases/(default)/documents:commit`+(ACCOUNTS.apiKey?`?key=${ACCOUNTS.apiKey}`:''),{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({writes})});
+  if(!r.ok)throw new Error(r.status===403?'Saving the email login was refused. If this email and password were used before by a different account, pick a different password. (Or the site’s security rules may not be published yet.)':'Saving the email login failed (error '+r.status+').');
+}
+async function setEmailLogin(email,pw){ // add, or change the email and/or password, for the signed-in account
+  if(!acct.key)throw new Error('Sign in first.');
+  email=normEmail(email);const{id,aes}=await loginKeys(email,pw),cur=store.get('login',null);
+  const ex=await loginGet(id);
+  if(ex&&ex.ct){let mine=false;try{mine=await loginOpen(ex,aes)===acct.key}catch(e){}
+    if(!mine)throw new Error('That email and password are already used by another account. Pick a different password.')}
+  const iv=crypto.getRandomValues(new Uint8Array(12)),ct=new Uint8Array(await crypto.subtle.encrypt({name:'AES-GCM',iv},aes,new TextEncoder().encode(JSON.stringify({k:acct.key}))));
+  const writes=[await loginWrite(id,ex,{iv:u8b64(iv),ct:u8b64(ct)})];
+  if(cur&&cur.id&&cur.id!==id){const o=await loginGet(cur.id);if(o&&o.ct)writes.push(await loginWrite(cur.id,o,null))}
+  await loginCommit(writes);store.set('login',{email,id});await pushNow();
+}
+async function removeEmailLogin(){const cur=store.get('login',null);if(cur&&cur.id){const o=await loginGet(cur.id);if(o&&o.ct)await loginCommit([await loginWrite(cur.id,o,null)])}store.set('login',null);await pushNow()}
+async function loginOpen(rec,aes){const pt=await crypto.subtle.decrypt({name:'AES-GCM',iv:b64u8(rec.iv)},aes,b64u8(rec.ct));return JSON.parse(new TextDecoder().decode(pt)).k}
+async function emailSignIn(email,pw){
+  if(!emailOk(normEmail(email)))throw new Error('Type the email you used for your account.');
+  if(!pw)throw new Error('Type your password.');
+  const{id,aes}=await loginKeys(email,pw),rec=await loginGet(id),bad='Wrong email or password, or no account uses them. Your account key still works if you have it.';
+  if(!rec||!rec.ct)throw new Error(bad);
+  let k;try{k=await loginOpen(rec,aes)}catch(e){throw new Error(bad)}
+  return signInWithKey(k);
+}
+const EMAIL_WARN=`<div class="warnbox"><b>Optional, and please read:</b><ul>
+  <li><b>If you forget your password, it’s gone forever.</b> Verba never sends email, so there’s no “forgot password” link. Your <b>account key</b> still works, so it’s strongly recommended that you keep it saved somewhere safe.</li>
+  <li>Your email is never checked or verified. It’s just the name you log in with.</li>
+  <li>Use a password you don’t use anywhere else, at least 8 characters. Verba isn’t a company and can’t promise this is secure: a short or reused password could let someone into your account.</li>
+  <li>Your password is never stored. Your email is saved in your account, where the site’s owner can see it.</li></ul></div>`;
+const loginFormHTML=px=>`<div class="lgtabs" role="tablist"><button type="button" role="tab" id="${px}TE" aria-selected="true">Email and password</button><button type="button" role="tab" id="${px}TK" aria-selected="false">Account key</button></div>
+  <div id="${px}FE"><input id="${px}Em" type="email" autocomplete="username" placeholder="Email" aria-label="Email"><input id="${px}Pw" type="password" autocomplete="current-password" placeholder="Password" aria-label="Password">
+    <div class="row"><button class="btn" type="button" id="${px}GoE">Log in</button></div></div>
+  <div id="${px}FK" hidden><input id="${px}Key" autocomplete="off" spellcheck="false" placeholder="VERBA-XXXX-XXXX-…" aria-label="Your account key">
+    <div class="row"><button class="btn" type="button" id="${px}GoK">Log in with key</button></div></div>
+  <p class="msg" id="${px}Msg"></p>`;
+function bindLoginForm(px,done){
+  const msg=(t,c)=>{const m=$(px+'Msg');if(m){m.className='msg '+(c||'');m.textContent=t}};
+  const tab=e=>{$(px+'TE').setAttribute('aria-selected',e);$(px+'TK').setAttribute('aria-selected',!e);$(px+'FE').hidden=!e;$(px+'FK').hidden=e;msg('')};
+  $(px+'TE').onclick=()=>tab(true);$(px+'TK').onclick=()=>tab(false);
+  const go=async(f,btn)=>{$(btn).disabled=true;msg('Logging in…');try{await f();msg('');done()}catch(e){msg(e.message,'bad')}finally{if($(btn))$(btn).disabled=false}};
+  $(px+'GoE').onclick=()=>go(()=>emailSignIn($(px+'Em').value,$(px+'Pw').value),px+'GoE');
+  $(px+'GoK').onclick=()=>go(async()=>{const k=normKey($(px+'Key').value);if(k.length!==24)throw new Error('That key looks incomplete. It should be VERBA- plus 24 letters and numbers.');await signInWithKey(k)},px+'GoK');
+  [px+'Pw'].forEach(id=>$(id).addEventListener('keydown',e=>{if(e.key==='Enter')$(px+'GoE').click()}));
+  $(px+'Key').addEventListener('keydown',e=>{if(e.key==='Enter')$(px+'GoK').click()});
+}
+const emailSetHTML=(px,change)=>`${EMAIL_WARN}
+  <input id="${px}Em" type="email" autocomplete="username" placeholder="Email" aria-label="Email" value="${esc((store.get('login',null)||{}).email||'')}">
+  <input id="${px}Pw" type="password" autocomplete="new-password" placeholder="${change?'New password':'Password'} (8+ characters)" aria-label="Password">
+  <input id="${px}Pw2" type="password" autocomplete="new-password" placeholder="Type the password again" aria-label="Type the password again">
+  <label class="chk"><input type="checkbox" id="${px}Ok"> I understand: if I forget this password, it’s gone forever, and I’ll keep my account key saved too.</label>
+  <div class="row"><button class="btn" type="button" id="${px}Go">${change?'Save new email or password':'Add email and password'}</button></div><p class="msg" id="${px}Msg"></p>`;
+function bindEmailSet(px,done){
+  const msg=(t,c)=>{const m=$(px+'Msg');if(m){m.className='msg '+(c||'');m.textContent=t}};
+  $(px+'Go').onclick=async()=>{
+    const em=normEmail($(px+'Em').value),pw=$(px+'Pw').value;
+    if(!emailOk(em))return msg('That doesn’t look like an email address.','bad');
+    if(pw.length<8)return msg('Use at least 8 characters for your password.','bad');
+    if(pw!==$(px+'Pw2').value)return msg('The two passwords don’t match.','bad');
+    if(!$(px+'Ok').checked)return msg('Tick the box to show you understand the password can’t be recovered.','bad');
+    $(px+'Go').disabled=true;msg('Saving… (this takes a second)');
+    try{await setEmailLogin(em,pw);msg('Saved! You can now log in with '+em+' and your password on any device.','ok');done&&done()}catch(e){msg(e.message,'bad')}finally{if($(px+'Go'))$(px+'Go').disabled=false}};
+}
+function acctUI(force){
   try{keysUI()}catch(e){}
   $('acctbtn').classList.toggle('on',!!acct.key);$('acctlbl').textContent=acct.key?'Synced':'Account';
   $('acctbtn').setAttribute('aria-label',acct.key?'Account: synced':'Account: not signed in');
   if(!$('acct').open)return;
   const B=$('acctBody');
-  if(!acctReady()){B.innerHTML=`<h2 id="acctTitle">Accounts are coming soon</h2><p>Accounts will let you keep your XP, streak and settings on every device with one personal key. The site's account server isn't switched on yet.</p>`;return}
+  if(!force&&((B.contains(document.activeElement)&&document.activeElement.tagName==='INPUT')||($('lgForm')&&$('lgForm').innerHTML)))return; // don't wipe a form someone is using
+  if(!acctReady()){B.innerHTML=`<h2 id="acctTitle">Accounts are coming soon</h2><p>Accounts will let you keep your XP, streak and settings on every device. The site's account server isn't switched on yet.</p>`;return}
   if(acct.key){
+    const lg=store.get('login',null);
     B.innerHTML=`<h2 id="acctTitle">Your account</h2><p>This browser is signed in. Your XP, streak, topics and settings save to your account automatically.</p>
+      <p><b>Your account key</b> <span class="hint">(recommended: keep a copy somewhere safe)</span></p>
       <div class="keybox" id="keyshow">${esc(showKey(acct.key))}</div>
-      <div class="row"><button class="btn quiet" id="kcopy">Copy key</button><button class="btn quiet" id="ksync">Sync now</button><button class="btn quiet" id="kout">Sign out here</button></div>
+      <div class="row"><button class="btn quiet" id="kcopy">Copy key</button><button class="btn quiet" id="ksync">Sync now</button><button class="btn quiet" id="kout">Log out here</button></div>
       <p class="msg ${acct.err?'bad':'ok'}" id="kmsg">${acct.err?esc(acct.err):acct.last?'Last synced '+acct.last.toLocaleTimeString():''}</p>
-      <p class="hint">Use this key to sign in on another device. Keep it private: anyone with it can open your progress. Signing out keeps your progress on this browser and in your account.</p>`;
+      <p class="hint">The key always logs you in, even if you also set up an email and password. Keep it private: anyone with it can open your account.</p>
+      <hr><h3 class="ph">Email and password <span class="opt">optional</span></h3>
+      ${lg&&lg.email?`<p>You can log in on any device with <b>${esc(lg.email)}</b> and your password.</p>
+        <div class="row"><button class="btn quiet" id="lgChange">Change email or password</button><button class="btn quiet" id="lgRemove">Turn off email login</button></div><div id="lgForm"></div><p class="msg" id="lgMsg"></p>`
+      :`<p>Add an email and password so you can log in without typing your account key.</p><div class="row"><button class="btn quiet" id="lgAdd">Set up email and password</button></div><div id="lgForm"></div><p class="msg" id="lgMsg"></p>`}`;
     $('kcopy').onclick=async()=>{try{await navigator.clipboard.writeText(showKey(acct.key));$('kmsg').className='msg ok';$('kmsg').textContent='Copied!'}catch(e){$('kmsg').textContent='Select the key above and copy it.'}};
     $('ksync').onclick=async()=>{$('kmsg').textContent='Syncing…';await pullNow();await pushNow()};
-    $('kout').onclick=()=>{if(!confirm('Sign out on this browser? Make sure you have your key saved somewhere first.'))return;acct.key='';board.pidFor='';board.pid='';try{localStorage.removeItem('verba-account')}catch(e){}acctUI();profUI()};
+    $('kout').onclick=()=>{if(!confirm('Log out on this browser? Make sure you have your account key (or your email and password) first.'))return;acct.key='';board.pidFor='';board.pid='';try{localStorage.removeItem('verba-account')}catch(e){}acctUI(true);profUI()};
+    const open=ch=>{$('lgForm').innerHTML=emailSetHTML('lgS',ch);bindEmailSet('lgS',()=>setTimeout(()=>{if($('acct').open)acctUI(true)},2200))};
+    if($('lgAdd'))$('lgAdd').onclick=()=>open(false);
+    if($('lgChange'))$('lgChange').onclick=()=>open(true);
+    if($('lgRemove'))$('lgRemove').onclick=async()=>{if(!confirm('Turn off email login? You’ll need your account key to log in on other devices.'))return;
+      $('lgMsg').textContent='Turning it off…';try{await removeEmailLogin();acctUI(true)}catch(e){$('lgMsg').className='msg bad';$('lgMsg').textContent=e.message}};
     return;
   }
-  B.innerHTML=`<h2 id="acctTitle">Save your progress</h2><p>Make a free account key to keep your XP, streak and settings on every device. No email or password: the key is your account.</p>
-    <div class="row"><button class="btn" id="kmake">Create my account key</button></div>
-    <hr><p><b>Already have a key?</b> Paste it to sign in on this device.</p>
-    <input id="kin" autocomplete="off" spellcheck="false" placeholder="VERBA-XXXX-XXXX-…" aria-label="Your account key">
-    <div class="row"><button class="btn quiet" id="kuse">Sign in with key</button></div>
+  B.innerHTML=`<h2 id="acctTitle">Log in</h2><p>Log in to load your XP, streak, profile and settings on this device.</p>
+    ${loginFormHTML('aL')}
+    <hr><h3 class="ph">New here? Make a free account</h3>
+    <p>An account keeps your progress on every device and puts you on the leaderboard. You get an <b>account key</b>, which is your account. You can also add an email and password so logging in is easier.</p>
+    <div class="row"><button class="btn" id="kmake">Create my account</button></div>
     <p class="msg" id="kmsg"></p>`;
-  const msg=(t,c)=>{$('kmsg').className='msg '+(c||'');$('kmsg').textContent=t};
-  $('kmake').onclick=async()=>{msg('Creating…');try{await makeAccount();$('kmsg').className='msg ok';$('kmsg').textContent='Account created! Copy your key and keep it somewhere safe.'}catch(e){msg(e.message,'bad')}};
-  $('kuse').onclick=async()=>{const k=normKey($('kin').value);if(k.length!==24){msg('That key looks incomplete. It should be VERBA- plus 24 letters and numbers.','bad');return}
-    msg('Signing in…');try{const d=await cloudGet(k);if(!d){msg('No account uses that key. Check for typos.','bad');return}acct.key=k;try{localStorage.setItem('verba-account',k)}catch(e){}applyRemote(d);await pushNow();$('acct').close();acctUI();toast('happy','{Salvē iterum|hello again}! Your progress is loaded.')}catch(e){msg(e.message,'bad')}};
+  bindLoginForm('aL',()=>{$('acct').close();toast('happy','{Salvē iterum|hello again}! Your progress is loaded.')});
+  $('kmake').onclick=async()=>{$('kmsg').className='msg';$('kmsg').textContent='Creating…';try{await makeAccount();acctUI();acctUI(true);const m=$('kmsg');if(m){m.className='msg ok';m.textContent='Account created! Copy your account key and keep it somewhere safe. You can add an email and password below.'}}catch(e){$('kmsg').className='msg bad';$('kmsg').textContent=e.message}};
 }
 /* ---------- Optional profile, profile pages and the public, live leaderboard ----------
    Each account gets a public leaderboard entry at board/<id>, where the id is a hash of the secret account key,

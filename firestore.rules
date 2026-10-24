@@ -10,6 +10,11 @@ rules_version = '2';
 // Usernames: handles/{name} says which board entry owns a username. A board entry can only use a
 // username whose handles document points back at it, and a handles document can only be created in
 // the same write that points its owner's entry at it, so no two students can share a username.
+//
+// Email logins (optional): logins/{id} holds the account key, encrypted in the browser with a key stretched from
+// the email and password. The id comes from the same stretching, so it reveals neither. No email or password is
+// ever stored in readable form, and no email is ever sent. Each change must show the previous link of a hash
+// chain made from the account key, so only someone logged in to that account can change or switch off its login.
 service cloud.firestore {
   match /databases/{database}/documents {
     match /accounts/{id} {
@@ -76,6 +81,29 @@ service cloud.firestore {
         && getAfter(/databases/$(database)/documents/board/$(request.resource.data.owner)).data.hid == hid;
       allow delete: if getAfter(/databases/$(database)/documents/board/$(resource.data.owner)).data.hid != hid;
       allow update: if false;
+    }
+
+    function loginOk(d) {
+      return d.keys().hasOnly(['v', 'iv', 'ct', 'gate', 'n', 'prev', 't'])
+        && d.keys().hasAll(['v', 'iv', 'ct', 'gate', 'n', 'prev', 't'])
+        && d.v == 1
+        && d.iv is string && d.iv.size() <= 24
+        && d.ct is string && d.ct.size() <= 200
+        && d.gate is bytes && d.gate.size() == 32
+        && d.n is int && d.prev is string && d.prev.size() <= 64
+        && d.t == request.time;
+    }
+    match /logins/{id} {
+      allow get: if id.matches('[0-9a-f]{32}');
+      allow list, delete: if false;
+      allow create: if id.matches('[0-9a-f]{32}')
+        && loginOk(request.resource.data)
+        && request.resource.data.n == 0
+        && request.resource.data.prev == ''
+        && request.resource.data.ct.size() > 0;
+      allow update: if loginOk(request.resource.data)
+        && request.resource.data.n == resource.data.n + 1
+        && hashing.sha256(request.resource.data.prev) == resource.data.gate;
     }
 
     match /{document=**} {

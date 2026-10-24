@@ -1,12 +1,12 @@
 # Verba Privacy Statement
 
-*Last updated: October 23, 2026*
+*Last updated: October 23, 2026 (email and password logins added)*
 
 This page explains, as plainly as possible, what information Verba stores, where it goes, and who can see it. Verba is a free practice site made by a student for a Latin class. It is not run by a company, a school or a school district.
 
 ## Our honest promise
 
-Verba keeps as little about you as it can, and tells you plainly about everything it does keep. **Verba cannot promise that anything you give it is private or secure.** Verba has no server of its own, no staff, and no way to encrypt your data. Your practice happens in your own browser. If you choose to make an account or join the leaderboard, that information is stored with Google Firebase, is not encrypted, and can be seen by the site's owner and, for leaderboard information, by anyone. Other companies you connect to through Verba, such as the AI company that checks your answers, have their own privacy policies, and Verba cannot make any promises about what they do. **Only give Verba information you would be comfortable with anyone seeing.** Never type passwords, your address, your phone number or other personal details into Verba.
+Verba keeps as little about you as it can, and tells you plainly about everything it does keep. **Verba cannot promise that anything you give it is private or secure.** Verba has no server of its own, no staff, and no way to encrypt your data. Your practice happens in your own browser. If you choose to make an account or join the leaderboard, that information is stored with Google Firebase, is not encrypted, and can be seen by the site's owner and, for leaderboard information, by anyone. Other companies you connect to through Verba, such as the AI company that checks your answers, have their own privacy policies, and Verba cannot make any promises about what they do. **Only give Verba information you would be comfortable with anyone seeing.** Never type your address, your phone number or other personal details into Verba, and never use a password for Verba that you use anywhere else.
 
 ## At a glance
 
@@ -16,7 +16,9 @@ Verba keeps as little about you as it can, and tells you plainly about everythin
 | Your AI key (not saved) | Nowhere; it is only used while the page is open | Only the AI company it belongs to |
 | Your AI key (saved to this browser) | Your browser, as plain text | Anyone who can use your browser |
 | Your AI key (saved to your account) | Google Firebase, as plain text | Anyone with your account key, and the site's owner |
-| Your account (progress, settings, full profile) | Google Firebase, not encrypted | Anyone with your account key, and the site's owner |
+| Your account (progress, settings, full profile) | Google Firebase, not encrypted | Anyone with your account key or your email and password, and the site's owner |
+| Your email (only if you add email login) | Google Firebase, inside your account, not encrypted | Anyone who can open your account, and the site's owner |
+| Your password (only if you add email login) | Nowhere; only a scrambled, one-way form is kept | No one |
 | Your leaderboard entry and public profile | Google Firebase, public | **Anyone on the internet** |
 | Sentences, your answers and your questions to Fēlix | Sent to the AI company you chose | That company, under its own policy |
 
@@ -45,7 +47,20 @@ Accounts are optional. An account is one document in Google Firebase (Cloud Fire
 - Your whole profile, including your first and last name if you entered them, even if you chose not to show your name on the leaderboard.
 - Your AI key or keys, **only if** you tick "Save key(s) to my account." They are stored as plain text.
 
-**Your account key is the only thing protecting your account.** There is no email or password. Anyone who has your key can open, read and change your account. Keep it private, and never post it anywhere.
+- Your email, **only if** you set up email and password login.
+
+**Your account key, and your email and password if you add them, are the only things protecting your account.** Anyone who has your key, or your email and password, can open, read and change your account. Keep them private, and never post them anywhere.
+
+### Email and password (optional)
+
+You can add an email and password to your account so you can log in without your account key. Your account key keeps working either way.
+
+- **Verba never sends email.** Your email isn't checked or verified, and nothing is ever sent to it. It's only the name you log in with.
+- **Your password is never stored.** Your browser stretches your email and password together into a scrambled code. Part of that code names a small login record in Google Firebase, and the rest locks your account key inside it. Neither your email nor your password can be read from the record. Logging in recomputes the code; a wrong password simply finds nothing.
+- **A lost password can't be recovered.** There is no "forgot password," and the site's owner can't reset it either. If you still have your account key, log in with it and set a new password. If you lose both, the account is gone.
+- **Your email is stored in your account data**, as plain text, so the Account window can show which email you use. Anyone who can open your account, and the site's owner, can see it.
+- **Only someone logged in to the account can change or turn off its email login.** The rules check this using your account key.
+- **This is not bank-level security.** Someone who knows your email could try guessing passwords. Use a long password you don't use anywhere else. Verba is a free project and can't promise your account is safe.
 
 ### On the leaderboard and your public profile (optional)
 
@@ -114,15 +129,17 @@ Verba is meant for high school Latin students.
 
 ## Keeping your information safe
 
-- Keep your account key private, like a password, and store a copy somewhere safe.
+- Keep your account key private, like a password, and store a copy somewhere safe, even if you also use an email and password.
+- If you use email login, pick a password you don't use for anything else.
 - Only save AI keys to your browser on a device that only you use.
 - Never put personal details into the chat with Fēlix or into your profile.
-- If you think someone else has your account key, stop using that account and make a new one. If an AI key may have leaked, delete it on that company's website and make a new one.
+- If you think someone knows your password, log in and change it in the Account window. If you think someone else has your account key, stop using that account and make a new one. If an AI key may have leaked, delete it on that company's website and make a new one.
 
 ## Deleting your information
 
 - **In your browser:** clear this site's data in your browser settings.
 - **On the leaderboard:** turn the leaderboard off in your account settings. This clears your profile from the public entry.
+- **Your email login:** click "Turn off email login" in the Account window. This switches off the login record and removes your email from your account.
 - **Your account and leaderboard entry:** you can't delete these yourself from the site. Ask the site's owner to delete them. Don't post your account key publicly to do this.
 - **With an AI company:** follow that company's own instructions.
 
@@ -132,4 +149,4 @@ If Verba starts storing something new, this page will be updated first. The date
 
 ## Questions
 
-Questions about privacy can be sent to the site's owner through this repository's [issues](https://github.com/janavduraikkannan/verba/issues). **Never include an account key, an AI key, or other personal details in an issue,** because issues are public.
+Questions about privacy can be sent to the site's owner through this repository's [issues](https://github.com/janavduraikkannan/verba/issues). **Never include an account key, a password, an AI key, or other personal details in an issue,** because issues are public.
