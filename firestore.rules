@@ -11,9 +11,9 @@ rules_version = '2';
 // username whose handles document points back at it, and a handles document can only be created in
 // the same write that points its owner's entry at it, so no two students can share a username.
 //
-// Email logins (optional): logins/{id} holds the account key, encrypted in the browser with a key stretched from
-// the email and password. The id comes from the same stretching, so it reveals neither. No email or password is
-// ever stored in readable form, and no email is ever sent. Each change must show the previous link of a hash
+// Password logins (optional): logins/{id} holds the account key, encrypted in the browser with a key stretched from
+// the username and password. The id comes from the same stretching, so it reveals neither. No password is ever
+// stored in readable form, and no email is ever asked for or sent. Each change must show the previous link of a hash
 // chain made from the account key, so only someone logged in to that account can change or switch off its login.
 service cloud.firestore {
   match /databases/{database}/documents {
