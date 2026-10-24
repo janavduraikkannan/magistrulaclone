@@ -104,6 +104,13 @@ img{max-width:100%}
 .builder{margin:16px 0 320px;display:grid;grid-template-columns:minmax(240px,1fr) minmax(260px,2fr);gap:16px}
 .builder .ings{columns:2 230px;column-gap:24px}
 .builder .ings>div{break-inside:avoid}
+.builder .frow{display:flex;align-items:flex-start;gap:6px}
+.builder .frow>label{flex:1;min-width:0}
+.fbtn{flex:none;margin-top:3px;font:inherit;font-size:.74rem;font-weight:800;letter-spacing:.03em;padding:2px 9px;border-radius:999px;border:2px solid var(--line2);background:transparent;color:var(--muted);cursor:pointer}
+.fbtn:hover{border-color:var(--accent2);color:var(--ink)}
+.fbtn[aria-pressed="true"]{background:var(--accent);border-color:var(--accent-shadow);color:var(--accent-ink)}
+.builder .frow.focused>label,.level .frow.focused>label{box-shadow:inset 3px 0 var(--accent)}
+.level .frow{display:flex;align-items:flex-start;gap:6px}.level .frow>label{flex:1;min-width:0}
 .builder p{color:var(--muted);margin:6px 0 0;font-size:.95rem}
 .builder select{background:var(--surface2);border:1px solid var(--line);border-radius:8px;padding:4px 8px}
 @media (max-width:640px){.builder{grid-template-columns:1fr}}
@@ -608,11 +615,12 @@ dialog.acct .warnbox ul{margin:4px 0 0;padding-left:18px}dialog.acct .warnbox li
     <div class="tabs" role="tablist"><button role="tab" id="tabTopics" aria-selected="true">Practice by topic</button><button role="tab" id="tabBuild" aria-selected="false">Build your own sentence type</button></div>
     <div id="paneTopics">
     <p class="legend"><span><span class="sw"></span>Shaded topics are already covered in your class notes.</span><button id="pickTaught">Select the shaded topics</button></p>
+    <p class="hint" style="margin:6px 0 0">Press <b>Focus</b> on topics you want to drill: every sentence will then practice a focus topic, and may also mix in your other ticked topics. Unticked topics never appear.</p>
     <div class="levels" id="levels"></div>
     </div>
     <div id="paneBuild" hidden>
       <div class="builder">
-        <section><h2>Main sentence type</h2><p>Choose one or more. Each sentence uses one of these.</p><div id="frames"></div></section>
+        <section><h2>Main sentence type</h2><p>Choose one or more. Each sentence uses one of these. Press <b>Focus</b> on any item, here or in the next list, and every sentence will include at least one focus item.</p><div id="frames"></div></section>
         <section><h2>What goes inside</h2><p>Each sentence uses some of these inside the main type. Shaded items are covered in your class notes.</p>
           <p style="margin-top:10px">Items per sentence: <select id="per"><option value="1">1</option><option value="2" selected>2</option><option value="3">3</option><option value="all">All selected</option></select></p>
           <div class="ings" id="ings"></div><p id="buildnote"></p></section>
@@ -1114,7 +1122,7 @@ function gPred(){
   return S([N(s,0,k,'nom'),SUMT(t,p),N(pr,0,k,'pred')],`${np(s,k)} ${be(t,p)} ${k?pr.ep:'a '+pr.e}`);
 }
 function gDecl(d){
-  const n=R(ALLN.filter(x=>(x.d[0]>'3'?'45':x.d[0])===d&&!'nzx'.includes(x.tag)));let s;
+  const n=R(ALLN.filter(x=>(x.d[0]>'3'?'45':x.d[0])===d&&!'nzxm'.includes(x.tag)));let s;
   if(n.tag==='p'){const m=R(['s','o','io','gen','cum']);
     s=m==='s'?gTrans({subj:n}):m==='o'?gTrans({obj:n}):m==='io'?gTrans({dat:1,io:n}):m==='gen'?gTrans({gen:1,genN:n}):gPrep({noun:n});}
   else s=('lc'.includes(n.tag)&&chance(.5))||n.tag==='g'&&chance(.4)?gPrep({noun:n}):gTrans({obj:n});
@@ -1580,7 +1588,7 @@ function cond(set,t){
   const av=Object.assign({},a.verbT,{post:','});
   return{tokens:[...(vo?[vo.tok]:[]),W('sī','sī : if'),...lat(a),av,...lat(b),b.verbT],ens,end:'.'};
 }
-function B(frame,ings){
+function B(frame,ings,must){
   let list=[...ings];const only=FRAME_ONLY[frame],not=FRAME_NOT[frame]||[];
   if(only)list=list.filter(x=>only.includes(x));list=list.filter(x=>!not.includes(x));
   for(let tries=0;tries<60;tries++){
@@ -1594,16 +1602,31 @@ function B(frame,ings){
       if(GDAT&&!set.has('dat')&&!set.has('datref')){const g=GDAT;q.enAlt.push(...r.ens.filter(e=>e.includes(g.full)).map(e=>tidy(e.replace(g.full,g.plain)+' '+g.forE)));q.gdat=1}
       return q;
     }
-    if(tries>8&&tries%4===0&&list.length>1)list.splice(Math.floor(Math.random()*list.length),1);
-    if(tries>40)list=[];
+    if(tries>8&&tries%4===0&&list.length>1){const drop=list.map((x,i)=>i).filter(i=>list[i]!==must);if(drop.length)list.splice(R(drop),1);}
+    if(tries>40)list=must&&list.includes(must)?[must]:[];
   }
   return gTrans();
 }
-function makeBuilt(frames,ings,per){
-  ALT=[];const frame=R([...frames]);let pool=[...ings].sort(()=>Math.random()-.5);
-  const n=per==='all'?pool.length:Math.min(pool.length,+per);
-  const q=B(frame,pool.slice(0,n));q.alts=ALT;
-  const fn=FRAMES.find(f=>f[0]===frame)[1],used=(q.built||[]).slice(1).filter(x=>x!=='pass'||!q.built.includes('agent'));
+const fitsFrame=(f,x)=>{const only=FRAME_ONLY[f],not=FRAME_NOT[f]||[];return(!only||only.includes(x))&&!not.includes(x)};
+/* focus: every sentence uses at least one focus item (a main type or an inside item); everything else comes only from what is selected */
+function makeBuilt(frames,ings,per,focus){
+  const fF=[...frames].filter(f=>focus&&focus.has(f)),fI=[...ings].filter(x=>focus&&focus.has(x));
+  const none=!fF.length&&!fI.length,hit=q=>none||!!q.built&&(fF.includes(q.built[0])||q.built.slice(1).some(x=>fI.includes(x)));
+  let q=null;
+  for(let a=0;a<12;a++){
+    ALT=[];let frame=R([...frames]),must=null;
+    const opts=[...fF.map(f=>['f',f]),...fI.map(x=>['i',x])];
+    if(opts.length){const [k,v]=R(opts);
+      if(k==='f')frame=v;
+      else{must=v;const ok=[...frames].filter(f=>fitsFrame(f,v));if(!ok.length)continue;if(!fitsFrame(frame,v))frame=R(ok);}}
+    let pool=[...ings].filter(x=>x!==must).sort(()=>Math.random()-.5);
+    const n=per==='all'?pool.length+(must?1:0):Math.min(pool.length+(must?1:0),+per);
+    if(must)pool=[must,...pool];
+    q=B(frame,pool.slice(0,n),must);q.alts=ALT;
+    if(hit(q))break;
+  }
+  q=q||(ALT=[],B(R([...frames]),[]));
+  const frame=q.built?q.built[0]:R([...frames]),fn=FRAMES.find(f=>f[0]===frame)[1],used=(q.built||[]).slice(1).filter(x=>x!=='pass'||!q.built.includes('agent'));
   q.topic={id:'built',name:fn+(used.length?' + '+used.map(ingName).join(' + '):'')};
   return q;
 }
@@ -1694,6 +1717,27 @@ const TOPICS=[
 ['devices','AP','Reading poetry','Literary devices in the Aeneid',gDevice]
 ].map(([id,level,group,name,gen])=>({id,level,group,name,gen}));
 
+/* how each topic maps onto the sentence builder, so a focus topic can be mixed with other selected topics */
+const TOPIC_PLAN={placeTo:{ing:['placeTo']},dat:{ing:['dat']},datref:{ing:['datref']},placeFrom:{ing:['placeFrom']},sep:{ing:['sep']},means:{ing:['means']},accomp:{ing:['accomp']},manner:{ing:['manner']},placeWhere:{ing:['placeWhere']},agent:{ing:['agent']},town:{ing:['town']},voc:{ing:['voc']},appos:{ing:['appos']},cause:{ing:['cause']},
+ gen:{ing:['genposs']},gendat:{ing:['genposs','gdat']},genpart:{ing:['genpart']},genso:{ing:['genso']},genmat:{ing:['genmat']},adj12:{ing:['adj']},tricky:{ing:['tricky']},adv:{ing:['adv']},conj:{ing:['que']},fut:{ing:['fut']},ppas:{ing:['pass']},fpas:{ing:['pass','fut']},
+ inf:{frame:'ci'},pinf:{frame:'ci',ing:['pass']},ques:{frame:'ne|quis'},gap:{frame:'gap'},indst:{frame:'is'},pcond:{frame:'condP'},fcond:{frame:'condF'}};
+/* every sentence is about one focus topic; other selected topics may join in */
+function makeFocused(selected,focus){
+  const foc=[...focus].filter(x=>selected.has(x));if(!foc.length)return makeQuestion(selected,false);
+  const fid=R(foc),ft=TOPICS.find(t=>t.id===fid),plan=TOPIC_PLAN[fid];
+  const extras=[...selected].filter(x=>x!==fid&&TOPIC_PLAN[x]&&TOPIC_PLAN[x].ing&&!TOPIC_PLAN[x].frame);
+  if(plan&&extras.length&&chance(.65)){
+    const ex=TOPIC_PLAN[R(extras)],frame=plan.frame?R(plan.frame.split('|')):'stmt',must=plan.ing?plan.ing[0]:null;
+    for(let a=0;a<6;a++){
+      ALT=[];const q=B(frame,[...new Set([...(plan.ing||[]),...ex.ing])],must);q.alts=ALT;
+      if(q.built&&q.built[0]===frame&&(!must||q.built.includes(must))){
+        const extraNames=q.built.slice(1).filter(x=>!(plan.ing||[]).includes(x)&&!(x==='pass'&&q.built.includes('agent'))).map(ingName);
+        q.topic=Object.assign({},ft,{name:ft.name+(extraNames.length?' + '+extraNames.join(' + '):'')});return q;
+      }
+    }
+  }
+  return makeQuestion(new Set([fid]),false);
+}
 function makeQuestion(selected,mixed){
   ALT=[];const pickId=R([...selected]),topic=TOPICS.find(t=>t.id===pickId),q=topic.gen();q.alts=ALT;
   q.topic=topic;if(q.choice)return q;
@@ -1742,7 +1786,7 @@ function gradeEnglish(q,input){
   }
   return{ok:false};
 }
-if(typeof module!=='undefined')module.exports={setLimit,makeBuilt,B,FRAMES,ING_ALL,latinOf,TOPICS,makeQuestion,grade,gradeLatin,gradeEnglish,NOUNS,VERBS,ADJ,nf,vf,af,cf};
+if(typeof module!=='undefined')module.exports={setLimit,makeBuilt,makeFocused,TOPIC_PLAN,FRAME_ONLY,FRAME_NOT,B,FRAMES,ING_ALL,latinOf,TOPICS,makeQuestion,grade,gradeLatin,gradeEnglish,NOUNS,VERBS,ADJ,nf,vf,af,cf};
 </script>
 
 <script>
@@ -1750,7 +1794,7 @@ if(typeof module!=='undefined')module.exports={setLimit,makeBuilt,B,FRAMES,ING_A
 const $=id=>document.getElementById(id);
 const LEVELS=[['I','Latin I Honors'],['II','Latin II Honors'],['III','Latin III Honors'],['AP','AP Latin']];
 const TAUGHT=new Set('gen gendat genpart genso genmat cause nom acc placeTo dat datref placeFrom sep means accomp manner placeWhere agent town voc appos d1 d2 adj12 tricky adv pa1 pa2 pa3 pa3i pa4 ppas fut fpas inf pinf ques conj gap indst pcond fcond'.split(' '));
-const bFrames=new Set(),bIngs=new Set();let tab='topics';
+const bFrames=new Set(),bIngs=new Set(),bFocus=new Set(),tFocus=new Set();let tab='topics';
 const selected=new Set();let q=null,checked=false,lastInput=null;
 const stats={right:0,total:0,streak:0};
 const store={get(k,d){try{const v=localStorage.getItem('verba.'+k);return v===null?d:JSON.parse(v)}catch(e){return d}},set(k,v){try{localStorage.setItem('verba.'+k,JSON.stringify(v))}catch(e){}try{acctDirty(k)}catch(e){}}};
@@ -1779,44 +1823,54 @@ const cap=s=>s.charAt(0).toUpperCase()+s.slice(1);
 
 function buildStart(){
   store.get('topics',[]).forEach(id=>TOPICS.some(t=>t.id===id)&&selected.add(id));
+  store.get('tFocus',[]).forEach(id=>selected.has(id)&&tFocus.add(id));
   $('levels').innerHTML=LEVELS.map(([lv,name])=>{
     const ts=TOPICS.filter(t=>t.level===lv),groups=[...new Set(ts.map(t=>t.group))];
     return `<section class="level"><h2><span class="num">${lv}</span>${name}</h2><button class="all" data-lv="${lv}">Select all</button>`+
-      groups.map(g=>`<h3>${g}</h3>`+ts.filter(t=>t.group===g).map(t=>`<label class="${TAUGHT.has(t.id)?'taught':''}"><input type="checkbox" value="${t.id}" ${selected.has(t.id)?'checked':''}><span>${esc(t.name)}</span></label>`).join('')).join('')+`</section>`;
+      groups.map(g=>`<h3>${g}</h3>`+ts.filter(t=>t.group===g).map(t=>`<div class="frow${tFocus.has(t.id)?' focused':''}"><label class="${TAUGHT.has(t.id)?'taught':''}"><input type="checkbox" value="${t.id}" ${selected.has(t.id)?'checked':''}><span>${esc(t.name)}</span></label><button type="button" class="fbtn" data-t="${t.id}" aria-pressed="${tFocus.has(t.id)}" aria-label="Focus on ${esc(t.name)}">Focus</button></div>`).join('')).join('')+`</section>`;
   }).join('');
-  $('levels').addEventListener('change',e=>{if(e.target.value){e.target.checked?selected.add(e.target.value):selected.delete(e.target.value);sync();}});
-  $('levels').addEventListener('click',e=>{const lv=e.target.dataset.lv;if(!lv)return;
+  $('levels').addEventListener('change',e=>{if(e.target.value){e.target.checked?selected.add(e.target.value):(selected.delete(e.target.value),tFocus.delete(e.target.value));tFocusUI();sync();}});
+  $('levels').addEventListener('click',e=>{
+    const fb=e.target.closest('.fbtn');
+    if(fb){const v=fb.dataset.t;if(tFocus.has(v))tFocus.delete(v);else{tFocus.add(v);selected.add(v);fb.parentNode.querySelector('input').checked=true}tFocusUI();sync();return}
+    const lv=e.target.dataset.lv;if(!lv)return;
     const boxes=[...e.target.parentNode.querySelectorAll('input')],on=!boxes.every(b=>b.checked);
-    boxes.forEach(b=>{b.checked=on;on?selected.add(b.value):selected.delete(b.value)});sync();});
+    boxes.forEach(b=>{b.checked=on;on?selected.add(b.value):(selected.delete(b.value),tFocus.delete(b.value))});tFocusUI();sync();});
   const m0=document.querySelector(`input[name=mode][value=${store.get('mode','e2l')}]`);if(m0)m0.checked=true;
   $('pickTaught').addEventListener('click',()=>{document.querySelectorAll('#levels input').forEach(b=>{if(TAUGHT.has(b.value)){b.checked=true;selected.add(b.value)}});sync()});
   $('limit').checked=store.get('limit',true);
   $('prov').value=store.get('prov','auto');
   store.get('bFrames',[]).forEach(x=>FRAMES.some(f=>f[0]===x)&&bFrames.add(x));store.get('bIngs',[]).forEach(x=>ING_ALL.some(f=>f[0]===x)&&bIngs.add(x));
+  store.get('bFocus',[]).forEach(x=>(bFrames.has(x)||bIngs.has(x))&&bFocus.add(x));
   $('per').value=store.get('per','2');
-  $('frames').innerHTML=FRAMES.map(([id,name])=>`<label class="taught"><input type="checkbox" value="${id}" ${bFrames.has(id)?'checked':''}><span>${esc(name)}</span></label>`).join('');
+  $('frames').innerHTML=FRAMES.map(([id,name])=>`<div class="frow${bFocus.has(id)?' focused':''}"><label class="taught"><input type="checkbox" value="${id}" ${bFrames.has(id)?'checked':''}><span>${esc(name)}</span></label><button type="button" class="fbtn" data-f="${id}" aria-pressed="${bFocus.has(id)}" aria-label="Focus on ${esc(name)}">Focus</button></div>`).join('');
   const groups=[...new Set(ING_ALL.map(x=>x[2]))];
-  $('ings').innerHTML=groups.map(g=>`<div><h3>${g}</h3>`+ING_ALL.filter(x=>x[2]===g).map(([id,name])=>`<label class="taught"><input type="checkbox" value="${id}" ${bIngs.has(id)?'checked':''}><span>${esc(name)}</span></label>`).join('')+'</div>').join('');
-  $('frames').addEventListener('change',e=>{const v=e.target.value;e.target.checked?bFrames.add(v):bFrames.delete(v);sync()});
-  $('ings').addEventListener('change',e=>{const v=e.target.value;e.target.checked?bIngs.add(v):bIngs.delete(v);sync()});
+  $('ings').innerHTML=groups.map(g=>`<div><h3>${g}</h3>`+ING_ALL.filter(x=>x[2]===g).map(([id,name])=>`<div class="frow${bFocus.has(id)?' focused':''}"><label class="taught"><input type="checkbox" value="${id}" ${bIngs.has(id)?'checked':''}><span>${esc(name)}</span></label><button type="button" class="fbtn" data-f="${id}" aria-pressed="${bFocus.has(id)}" aria-label="Focus on ${esc(name)}">Focus</button></div>`).join('')+'</div>').join('');
+  $('frames').addEventListener('change',e=>{const v=e.target.value;e.target.checked?bFrames.add(v):(bFrames.delete(v),bFocus.delete(v));focusUI();sync()});
+  $('ings').addEventListener('change',e=>{const v=e.target.value;e.target.checked?bIngs.add(v):(bIngs.delete(v),bFocus.delete(v));focusUI();sync()});
+  $('paneBuild').addEventListener('click',e=>{const b=e.target.closest('.fbtn');if(!b)return;const v=b.dataset.f,isF=FRAMES.some(f=>f[0]===v);
+    if(bFocus.has(v))bFocus.delete(v);else{bFocus.add(v);(isF?bFrames:bIngs).add(v);b.parentNode.querySelector('input').checked=true;}
+    focusUI();sync()});
   $('per').addEventListener('change',()=>store.set('per',$('per').value));
   const setTab=t=>{tab=t;$('tabTopics').setAttribute('aria-selected',t==='topics');$('tabBuild').setAttribute('aria-selected',t==='build');$('paneTopics').hidden=t!=='topics';$('paneBuild').hidden=t!=='build';store.set('tab',t);sync()};
   $('tabTopics').addEventListener('click',()=>setTab('topics'));$('tabBuild').addEventListener('click',()=>setTab('build'));
   setTab(store.get('tab','topics'));
 }
+function tFocusUI(){document.querySelectorAll('#levels .fbtn').forEach(b=>{const on=tFocus.has(b.dataset.t);b.setAttribute('aria-pressed',on);b.parentNode.classList.toggle('focused',on)})}
+function focusUI(){document.querySelectorAll('#paneBuild .fbtn').forEach(b=>{const on=bFocus.has(b.dataset.f);b.setAttribute('aria-pressed',on);b.parentNode.classList.toggle('focused',on)})}
 function sync(){
   if(tab==='build'){
     const n=bFrames.size;$('startbtn').disabled=!n;
-    $('count').textContent=n?`${n} sentence type${n>1?'s':''}, ${bIngs.size} item${bIngs.size===1?'':'s'} inside`:'Choose at least one main sentence type';
+    $('count').textContent=n?`${n} sentence type${n>1?'s':''}, ${bIngs.size} item${bIngs.size===1?'':'s'} inside`+(bFocus.size?`, ${bFocus.size} in focus`:''):'Choose at least one main sentence type';
     const gapOnly=[...bFrames].every(f=>f==='gap'),condOnly=[...bFrames].every(f=>f==='condP'||f==='condF');
     $('buildnote').textContent=bFrames.size&&gapOnly?'Gapping only uses adjectives, adverbs, the future, the passive and the ablative of agent; other items are skipped.':bFrames.size&&condOnly&&bIngs.has('fut')?'Open conditions set their own tense, so “Future tense” is skipped.':'';
-    store.set('bFrames',[...bFrames]);store.set('bIngs',[...bIngs]);
+    store.set('bFrames',[...bFrames]);store.set('bIngs',[...bIngs]);store.set('bFocus',[...bFocus]);
     return;
   }
   const n=selected.size;$('startbtn').disabled=!n;
-  $('count').textContent=n?`${n} topic${n>1?'s':''} selected`:'Choose at least one topic';
+  $('count').textContent=n?`${n} topic${n>1?'s':''} selected`+(tFocus.size?`, ${tFocus.size} in focus`:''):'Choose at least one topic';
   document.querySelectorAll('.all').forEach(b=>{const boxes=[...b.parentNode.querySelectorAll('input')];b.textContent=boxes.every(x=>x.checked)?'Clear all':'Select all'});
-  store.set('topics',[...selected]);
+  store.set('topics',[...selected]);store.set('tFocus',[...tFocus]);
 }
 const mixed=()=>document.querySelector('input[name=style]:checked').value==='mixed';
 const modeSel=()=>document.querySelector('input[name=mode]:checked').value;
@@ -2309,7 +2363,7 @@ function next(){
   renderChat();score();
   setFelix(q.greetMood);
 }
-const makeNext=()=>modeSel()==='id'?makeIdentify():tab==='build'?makeBuilt(bFrames,bIngs,$('per').value):makeQuestion(selected,false);
+const makeNext=()=>modeSel()==='id'?makeIdentify():tab==='build'?makeBuilt(bFrames,bIngs,$('per').value,bFocus):(tFocus.size?makeFocused(selected,tFocus):makeQuestion(selected,false));
 function prep(x){x.mode=(x.choice||x.form)?'blank':modeSel();if(!x.choice&&x.mode!=='blank')x.latin=cap(x.display||x.tokens.map(t=>t.la+(t.post||'')).join(' '))+x.end;x.greeting=R(GREETINGS);return x}
 const RANKS=[['Discipulus','student'],['Tīrō','recruit'],['Mīles','soldier'],['Decuriō','squad leader'],['Centuriō','centurion'],['Tribūnus','tribune'],['Lēgātus','general'],['Praetor','judge'],['Cōnsul','consul'],['Imperātor','emperor']];
 const lvlXP=n=>50*n*(n-1);
@@ -2372,7 +2426,7 @@ function react(kind){moodTok++;setFelix(R(REACT_MOODS[kind]))}
 })();
 /* ---------- Accounts: a personal account key, synced through Firebase Firestore ---------- */
 var ACCOUNTS={projectId:'verba-791ca',apiKey:''}; // Firebase project; a web API key is optional (access is governed by firestore.rules)
-var SYNC_KEYS=['xp','days','wk','best','since','profile','login','topics','bFrames','bIngs','per','mode','limit','prov','tab','keyadv'];
+var SYNC_KEYS=['xp','days','wk','best','since','profile','login','topics','bFrames','bIngs','bFocus','tFocus','per','mode','limit','prov','tab','keyadv'];
 var acct={key:'',timer:null,last:null,busy:false};
 try{acct.key=localStorage.getItem('verba-account')||''}catch(e){}
 const acctReady=()=>!!ACCOUNTS.projectId;
@@ -2412,7 +2466,8 @@ function refreshFromStore(){
   if(typeof selected==='undefined'||!$('levels').children.length)return;
   selected.clear();store.get('topics',[]).forEach(id=>TOPICS.some(t=>t.id===id)&&selected.add(id));
   document.querySelectorAll('#levels input').forEach(b=>b.checked=selected.has(b.value));
-  bFrames.clear();store.get('bFrames',[]).forEach(x=>bFrames.add(x));bIngs.clear();store.get('bIngs',[]).forEach(x=>bIngs.add(x));
+  tFocus.clear();store.get('tFocus',[]).forEach(id=>selected.has(id)&&tFocus.add(id));tFocusUI();
+  bFrames.clear();store.get('bFrames',[]).forEach(x=>bFrames.add(x));bIngs.clear();store.get('bIngs',[]).forEach(x=>bIngs.add(x));bFocus.clear();store.get('bFocus',[]).forEach(x=>(bFrames.has(x)||bIngs.has(x))&&bFocus.add(x));focusUI();
   document.querySelectorAll('#frames input').forEach(b=>b.checked=bFrames.has(b.value));document.querySelectorAll('#ings input').forEach(b=>b.checked=bIngs.has(b.value));
   $('per').value=store.get('per','2');$('limit').checked=store.get('limit',true);$('prov').value=store.get('prov','auto');
   advanced=store.get('keyadv',false);keysUI(true);
@@ -2999,7 +3054,8 @@ function pickXC(qq){
   const nonAcc=c.filter(t=>TY(t.cids[0])!=='acc');return R(nonAcc.length?nonAcc:c);
 }
 function makeIdentify(){
-  let types=tab==='build'?[...bIngs].filter(x=>TYPES[x]):[...selected].map(t=>ID_TOPIC[t]).filter(Boolean);
+  const fb=[...bFocus].filter(x=>TYPES[x]),ft=[...tFocus].map(t=>ID_TOPIC[t]).filter(Boolean);
+  let types=tab==='build'?(fb.length?fb:[...bIngs].filter(x=>TYPES[x])):(ft.length?ft:[...selected].map(t=>ID_TOPIC[t]).filter(Boolean));
   if(!types.length)types=Object.keys(TYPES);
   for(let tries=0;tries<25;tries++){
     const ty=R(types);ALT=[];
